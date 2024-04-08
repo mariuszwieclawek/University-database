@@ -1,18 +1,25 @@
 # Minimalna wersja CMake
 cmake_minimum_required(VERSION 3.10)
 
+set(CMAKE_CXX_STANDARD 20)
+
 # Nazwa projektu
 project(StudentDatabase)
 
 # Pliki źródłowe C++
 set(CXX_SRCS
     src/main.cpp
+    src/database.cpp
+    src/mathStudent.cpp
 )
 
 # Budowanie pliku wykonywalnego
 add_executable(${PROJECT_NAME}-app ${CXX_SRCS})
 
-
+# Dolacz pliki nagłówkowe
+target_include_directories(${PROJECT_NAME}-app PUBLIC
+    inc
+)
 
 
 ########################### Unit Test GTEST Framework ###########################
