@@ -3,6 +3,7 @@
 
 
 static const std::set<std::string> initSubjects = {"Math", "Physics", "Analysis", "Statistics"};
+static const std::string m_fieldOfStudy = "Mathematics";
 
 std::ostream& operator<<(std::ostream & os, const Gender & gender)
 {
@@ -19,6 +20,22 @@ std::ostream& operator<<(std::ostream & os, const Gender & gender)
         break;
     }
     return os;
+}
+
+std::istream& operator>>(std::istream& is, Gender& gender)
+{
+    std::string input;
+    is >> input;
+
+    if (input == "Male") {
+        gender = Gender::Male;
+    } else if (input == "Female") {
+        gender = Gender::Female;
+    } else {
+        gender = Gender::Default;
+    }
+
+    return is;
 }
 
 
@@ -54,6 +71,20 @@ MathStudent::MathStudent(const std::string && name, const std::string && lastnam
         m_subjects.insert(initSubjects.begin(), initSubjects.end());
     };
 
+MathStudent& MathStudent::operator==(const MathStudent & other)
+{
+    if(this != &other)
+    {
+        this->m_name = other.m_name; 
+        this->m_lastname = other.m_lastname;
+        this->m_address = other.m_address;
+        this->m_indexNumber = other.m_indexNumber;
+        this->m_pesel = other.m_pesel;
+        this->m_gender = other.m_gender;
+    }
+    return *this;
+}
+
 std::string MathStudent::getName(void) const
 {
     return m_name;
@@ -64,7 +95,46 @@ void MathStudent::setName(const std::string & name)
     m_name = name;
 }
 
+std::string MathStudent::getLastname(void) const
+{
+    return m_lastname;
+}
+
+void MathStudent::getLastname(const std::string & lastname)
+{
+    m_lastname = lastname;
+}
+
+std::string MathStudent::getPesel(void) const
+{
+    return m_pesel;
+}
+
+void MathStudent::setPesel(const std::string & pesel)
+{
+    m_pesel = pesel;
+}
+
+std::string MathStudent::getFieldOfStudy(void) const
+{
+    return "Mathematics";
+}
+
+
 void MathStudent::showStudent(void) const
+{
+    std::cout << "==========================================================\n";
+    std::cout << "Information about student:\n";
+    std::cout << "Name: " << m_name << std::endl;
+    std::cout << "Last name: " << m_lastname << std::endl;
+    std::cout << "Address: " << m_address << std::endl;
+    std::cout << "Index number: " << m_indexNumber << std::endl;
+    std::cout << "PESEL: " << m_pesel << std::endl;
+    std::cout << "Sex: " << m_gender << std::endl;
+    std::cout << "==========================================================\n";  
+}
+
+void MathStudent::showStudentEx(void) const
 {
     std::cout << "==========================================================\n";
     std::cout << "Information about student:\n";

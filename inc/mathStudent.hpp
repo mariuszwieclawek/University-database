@@ -29,7 +29,7 @@ private:
     map<Subject , map<Comment, Grade> >   
          Comment - for which the student received a grade example: test, quiz, activity, oral answer...
     */
-    std::map<std::string, std::map<std::string, float>> m_grades; 
+    std::map<std::string, std::map<std::string, float>> m_grades;
     
 public:
     MathStudent(void);
@@ -39,16 +39,24 @@ public:
     MathStudent(const std::string && name, const std::string && lastname, const std::string && address = "default",
                          int indexNumber = 0, std::string && pesel = "default", Gender && gender = Gender::Default);
 
-    std::string getName(void) const;
-    void setName(const std::string & name);
+    MathStudent& operator==(const MathStudent & other);
 
-    void showStudent(void) const;
+    std::string getName(void) const override;
+    void setName(const std::string & name) override;
+    std::string getLastname(void) const override;
+    void getLastname(const std::string & lastname) override;
+    std::string getPesel(void) const override;
+    void setPesel(const std::string & name) override;
+    std::string getFieldOfStudy(void) const override;
 
-    void showSubjects(void) const;
-    bool addSubject(const std::string & subjectName);
-    bool removeSubject(const std::string & subjectName);
+    void showStudent(void) const override;
+    void showStudentEx(void) const override;
 
-    void showGrades(void) const;
-    bool addGrade(const std::string & subject, const std::string & comment, float grade);
-    bool removeGrade(const std::string & subject, const std::string & comment);
+    void showSubjects(void) const override;
+    bool addSubject(const std::string & subjectName) override;
+    bool removeSubject(const std::string & subjectName) override;
+
+    void showGrades(void) const override;
+    bool addGrade(const std::string & subject, const std::string & comment, float grade) override;
+    bool removeGrade(const std::string & subject, const std::string & comment) override;
 };

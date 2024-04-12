@@ -9,7 +9,7 @@ project(StudentDatabase)
 # Pliki źródłowe C++
 set(CXX_SRCS
     src/main.cpp
-    src/database.cpp
+    src/studentdatabase.cpp
     src/mathStudent.cpp
 )
 

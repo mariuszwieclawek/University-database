@@ -6,8 +6,14 @@ class Student
 public:
     virtual std::string getName(void) const = 0;
     virtual void setName(const std::string & name) = 0;
+    virtual std::string getLastname(void) const = 0;
+    virtual void getLastname(const std::string & lastname) = 0;
+    virtual std::string getPesel(void) const = 0;
+    virtual void setPesel(const std::string & name) = 0;
+    virtual std::string getFieldOfStudy(void) const = 0;
 
     virtual void showStudent(void) const = 0;
+    virtual void showStudentEx(void) const = 0;
 
     virtual void showSubjects(void) const = 0;
     virtual bool addSubject(const std::string & subjectName) = 0;
