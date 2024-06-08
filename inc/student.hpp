@@ -1,9 +1,11 @@
 #pragma once
 #include <string>
+#include <vector>
 
 class Student
 {
 public:
+    virtual std::vector<std::string> getStudent(void) const = 0;
     virtual std::string getName(void) const = 0;
     virtual void setName(const std::string & name) = 0;
     virtual std::string getLastname(void) const = 0;

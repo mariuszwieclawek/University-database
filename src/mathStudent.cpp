@@ -1,5 +1,6 @@
 #include "mathStudent.hpp"
 #include <iostream>
+#include <sstream>
 
 
 static const std::set<std::string> initSubjects = {"Math", "Physics", "Analysis", "Statistics"};
@@ -41,7 +42,6 @@ std::istream& operator>>(std::istream& is, Gender& gender)
 
 MathStudent::MathStudent(void)
 {
-    std::cout << "Konstruktor bez argumentow" << std::endl;
     m_subjects.insert(initSubjects.begin(), initSubjects.end());
 };
 
@@ -54,7 +54,6 @@ MathStudent::MathStudent(const std::string & name, const std::string & lastname,
     m_pesel(pesel),
     m_gender(gender)
     {
-        std::cout << "Konstruktor kopiujacy argumenty" << std::endl;
         m_subjects.insert(initSubjects.begin(), initSubjects.end());
     };
 
@@ -67,7 +66,6 @@ MathStudent::MathStudent(const std::string && name, const std::string && lastnam
     m_pesel(std::move(pesel)),
     m_gender(std::move(gender))
     {
-        std::cout << "Konstruktor przenoszacy argumenty" << std::endl;
         m_subjects.insert(initSubjects.begin(), initSubjects.end());
     };
 
@@ -83,6 +81,17 @@ MathStudent& MathStudent::operator==(const MathStudent & other)
         this->m_gender = other.m_gender;
     }
     return *this;
+}
+
+std::vector<std::string> MathStudent::getStudent(void) const
+{
+    std::stringstream ssIndexNmb, ssGender;
+    ssIndexNmb << m_indexNumber;
+    ssGender << m_gender;
+    std::string indexNumber = ssIndexNmb.str();
+    std::string gender = ssGender.str();
+
+    return std::vector<std::string>{m_name, m_lastname, m_address, indexNumber, m_pesel, gender};
 }
 
 std::string MathStudent::getName(void) const
@@ -123,15 +132,8 @@ std::string MathStudent::getFieldOfStudy(void) const
 
 void MathStudent::showStudent(void) const
 {
-    std::cout << "==========================================================\n";
-    std::cout << "Information about student:\n";
-    std::cout << "Name: " << m_name << std::endl;
-    std::cout << "Last name: " << m_lastname << std::endl;
-    std::cout << "Address: " << m_address << std::endl;
-    std::cout << "Index number: " << m_indexNumber << std::endl;
-    std::cout << "PESEL: " << m_pesel << std::endl;
-    std::cout << "Sex: " << m_gender << std::endl;
-    std::cout << "==========================================================\n";  
+    std::cout << m_name << " | " << m_lastname << " | " << m_address << " | " 
+              << m_indexNumber << " | " << m_pesel << " | " << m_gender << std::endl;
 }
 
 void MathStudent::showStudentEx(void) const

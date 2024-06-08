@@ -14,6 +14,9 @@ enum class Gender {
     Default
 };
 
+std::ostream& operator<<(std::ostream & os, const Gender & gender);
+std::istream& operator>>(std::istream & is, Gender & gender);
+
 class MathStudent : public Student
 {
 private:
@@ -41,6 +44,7 @@ public:
 
     MathStudent& operator==(const MathStudent & other);
 
+    std::vector<std::string> getStudent(void) const override;
     std::string getName(void) const override;
     void setName(const std::string & name) override;
     std::string getLastname(void) const override;
