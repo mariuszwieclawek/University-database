@@ -134,7 +134,6 @@ void StudentDatabase::readStudentsFromCSV(std::fstream& file)
     file.close();
 }
 
-
 void StudentDatabase::addStudent(std::unique_ptr<Student> student)
 {
     auto data = student->getStudent();
@@ -171,6 +170,21 @@ std::vector<Student*> StudentDatabase::findStudentByLastname(const std::string &
     return foundStudents;
 }
 
+Student* StudentDatabase::findStudentByPesel(const std::string & pesel)
+{
+    auto it = std::find_if(m_students.begin(), m_students.end(),
+                            [&pesel](const std::unique_ptr<Student> & st){return st->getPesel() == pesel;});
+
+    if (it != m_students.end())
+    {
+        return it->get();
+    }
+    else
+    {
+        return nullptr;
+    }
+}
+
 void StudentDatabase::sortStudentByLastname(void)
 {
     std::sort(m_students.begin(), m_students.end(), 
@@ -196,8 +210,6 @@ void StudentDatabase::displayStudents(void) const
     }
 }
 
-
-
 static std::vector<std::string> splitString(const std::string& str, char delimiter) 
 {
     std::vector<std::string> tokens;
@@ -209,7 +221,6 @@ static std::vector<std::string> splitString(const std::string& str, char delimit
     }
     return tokens;
 }
-
 
 static Gender stringToGender(const std::string& str) 
 {

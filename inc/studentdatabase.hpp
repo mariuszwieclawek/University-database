@@ -23,6 +23,7 @@ public:
     bool removeStudentByPesel(const std::string & pesel);
 
     std::vector<Student*> findStudentByLastname(const std::string & lastname);
+    Student* findStudentByPesel(const std::string & pesel);
 
     void sortStudentByLastname(void);
 

@@ -4,7 +4,6 @@
 
 
 static const std::set<std::string> initSubjects = {"Math", "Physics", "Analysis", "Statistics"};
-static const std::string m_fieldOfStudy = "Mathematics";
 
 std::ostream& operator<<(std::ostream & os, const Gender & gender)
 {

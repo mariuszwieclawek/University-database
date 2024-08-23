@@ -6,8 +6,10 @@ ConsoleGUI::ConsoleGUI(StudentDatabase &  db) : m_db(db)
 {
     auto action1 = [this]() { this->action1(); };
     auto action2 = [this]() { this->m_db.displayStudents(); };
-    auto action3 = [this]() { this->addStudentByUser(); };
-    auto action4 = [this]() { this->removeStudentByUser(); };
+    auto action3 = [this]() { this->findStudentByLastname(); };
+    auto action4 = [this]() { this->addStudentByUser(); };
+    auto action5 = [this]() { this->removeStudentByUser(); };
+    auto action6 = [this]() { this->modifyStudentByUser(); };
 
     m_mainMenu =
     {
@@ -16,11 +18,13 @@ ConsoleGUI::ConsoleGUI(StudentDatabase &  db) : m_db(db)
             {"Lista kierunkow na uczelni", nullptr, 
             {
                 {"Podopcja 1", action1, {}},
-                {"Podopcja 2", action1, {}}
+                {"Podopcja 2", action3, {}}
             }},
             {"Lista studentow na uczelni", action2, {}},
-            {"Dodaj studenta", action3, {}},
-            {"Usun studenta", action4, {}}
+            {"Wyszukaj studenta", action3, {}},
+            {"Dodaj studenta", action4, {}},
+            {"Usun studenta", action5, {}},
+            {"Modyfikuj studenta", action6, {}}
         }
     };
 };
@@ -30,21 +34,26 @@ void ConsoleGUI::action1(void)
     std::cout << "hello\n";
 }
 
-void ConsoleGUI::removeStudentByUser(void)
+void ConsoleGUI::findStudentByLastname(void)
 {
-    std::string pesel;
+    std::string lastname;
+    std::cout << "Podaj nazwisko studenta ktorego chcesz wyszukac: ";
+    std::cin >> lastname;
 
-    std::cout << "Podaj numer PESEL studenta ktorego chcesz usunac z bazy danych: ";
-    std::cin >> pesel;
+    std::vector<Student*> students = m_db.findStudentByLastname(lastname);
 
-    if(m_db.removeStudentByPesel(pesel) != true)
+    if(students.empty() == true)
     {
-        std::cout << "Zly numer PESEL! Nie udalo sie usunac" << std::endl;
+        std::cout << "Nie udalo sie znalezc studenta/ow" << std::endl;
     }
     else
     {
-        std::cout << "Usunieto!" << std::endl;
-        m_db.saveAllStudentsToCSV();
+        std::cout << "Wyszukany/i student/ci:" << std::endl;
+        for(auto st : students)
+        {
+            st->showStudentEx();
+            std::cout << "\n\n";
+        }
     }
 }
 
@@ -75,6 +84,42 @@ void ConsoleGUI::addStudentByUser(void)
     m_db.addStudent(std::make_unique<MathStudent>(name, lastname, address, indexNumber, pesel, gnr));
 
     std::cout << "Dodano studenta!\n";
+}
+
+void ConsoleGUI::removeStudentByUser(void)
+{
+    std::string pesel;
+
+    std::cout << "Podaj numer PESEL studenta ktorego chcesz usunac z bazy danych: ";
+    std::cin >> pesel;
+
+    if(m_db.removeStudentByPesel(pesel) != true)
+    {
+        std::cout << "Zly numer PESEL! Nie udalo sie usunac" << std::endl;
+    }
+    else
+    {
+        std::cout << "Usunieto!" << std::endl;
+        m_db.saveAllStudentsToCSV();
+    }
+}
+
+void ConsoleGUI::modifyStudentByUser(void)
+{
+    std::string pesel;
+    std::cout << "Podaj PESEL studenta ktorego chcesz zmodyfikowac: ";
+    std::cin >> pesel;
+
+    Student* stdnt = m_db.findStudentByPesel(pesel);
+
+    if(stdnt == nullptr)
+    {
+        std::cout << "Nie udalo sie znalezc studenta" << std::endl;
+    }
+    else
+    {
+        stdnt->showStudentEx();
+    }
 }
 
 void ConsoleGUI::displayMenu(const MenuItem & selectedMenu) 
@@ -143,6 +188,11 @@ void ConsoleGUI::run()
             if (selectedOption.action != nullptr)
             {
                 performSelectedAction(selectedOption.action);
+            }
+
+            if (selectedOption.subMenu.empty())
+            {
+
             }
         }
 

@@ -26,8 +26,10 @@ public:
 
     void action4(void);
 
+    void findStudentByLastname(void);
     void addStudentByUser(void);
     void removeStudentByUser(void);
+    void modifyStudentByUser(void);
 
     void displayMenu(const MenuItem & selectedMenu);
     void run();
