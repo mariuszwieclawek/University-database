@@ -5,6 +5,28 @@
 
 static const std::set<std::string> initSubjects = {"Math", "Physics", "Analysis", "Statistics"};
 
+
+Gender stringToGender(const std::string& str) 
+{
+    if (str == "Male") 
+    {
+        return Gender::Male;
+    } 
+    else if (str == "Female") 
+    {
+        return Gender::Female;
+    } 
+    else if (str == "Default") 
+    {
+        return Gender::Default;
+    } 
+    else 
+    {
+        std::cerr << "\t[ERROR]\t{stringToGender} - invalid input data " << std::endl;
+        exit(0);
+    }
+}
+
 std::ostream& operator<<(std::ostream & os, const Gender & gender)
 {
     switch (gender)
@@ -149,6 +171,31 @@ void MathStudent::showStudentEx(void) const
     this->showSubjects();
     this->showGrades();
     std::cout << "==========================================================\n";  
+}
+
+void MathStudent::modifyStudent(void)
+{
+    std::cout << "\nModification started. Please enter new values:" << std::endl;
+    std::string input;
+    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    std::cout << "Current Name: " << m_name << std::endl << "Enter new Name or skip(Enter): ";
+    std::getline(std::cin, input);
+    if (!input.empty()) m_name = input;
+    std::cout << "Current Last name: " << m_lastname << std::endl << "Enter new Last name or skip(Enter): ";
+    std::getline(std::cin, input);
+    if (!input.empty()) m_lastname = input;
+    std::cout << "Current Address: " << m_address << std::endl << "Enter new Address or skip(Enter): ";
+    std::getline(std::cin, input);
+    if (!input.empty()) m_address = input;
+    std::cout << "Current Index number: " << m_indexNumber << std::endl << "Enter new Index number or skip(Enter): ";
+    std::getline(std::cin, input);
+    if (!input.empty()) m_indexNumber = std::stoi(input);
+    std::cout << "Current PESEL: " << m_pesel << std::endl << "Enter new PESEL or skip(Enter): ";
+    std::getline(std::cin, input);
+    if (!input.empty()) m_pesel = input;
+    std::cout << "Current Sex: " << m_gender << std::endl << "Enter new Sex or skip(Enter): ";
+    std::getline(std::cin, input);
+    if (!input.empty()) m_gender = stringToGender(input);
 }
 
 void MathStudent::showSubjects(void) const

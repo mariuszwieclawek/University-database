@@ -10,12 +10,13 @@ ConsoleGUI::ConsoleGUI(StudentDatabase &  db) : m_db(db)
     auto action4 = [this]() { this->addStudentByUser(); };
     auto action5 = [this]() { this->removeStudentByUser(); };
     auto action6 = [this]() { this->modifyStudentByUser(); };
+    auto action7 = [this]() { this->displayFieldsOfStudy(); };
 
     m_mainMenu =
     {
-        "Menu glowne", action1,
+        "Menu glowne", nullptr,
         {
-            {"Lista kierunkow na uczelni", nullptr, 
+            {"Lista kierunkow na uczelni", action7, 
             {
                 {"Podopcja 1", action1, {}},
                 {"Podopcja 2", action3, {}}
@@ -32,6 +33,15 @@ ConsoleGUI::ConsoleGUI(StudentDatabase &  db) : m_db(db)
 void ConsoleGUI::action1(void)
 {
     std::cout << "hello\n";
+}
+
+void ConsoleGUI::displayFieldsOfStudy(void)
+{
+    std::set<std::string> fields_of_study = m_db.getFieldsOfStudy();
+    for(auto fld_of_st : fields_of_study)
+    {
+        std::cout << fld_of_st << std::endl;
+    }
 }
 
 void ConsoleGUI::findStudentByLastname(void)
@@ -118,7 +128,11 @@ void ConsoleGUI::modifyStudentByUser(void)
     }
     else
     {
+        std::cout << "Udalo sie znalezc studenta. Aktualne dane:\n" << std::endl;
         stdnt->showStudentEx();
+        stdnt->modifyStudent();
+        m_db.saveAllStudentsToCSV();
+        std::cout << "\nUdalo sie zmodyfikowac studenta!" << std::endl;
     }
 }
 

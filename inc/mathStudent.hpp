@@ -14,6 +14,8 @@ enum class Gender {
     Default
 };
 
+Gender stringToGender(const std::string& str);
+
 std::ostream& operator<<(std::ostream & os, const Gender & gender);
 std::istream& operator>>(std::istream & is, Gender & gender);
 
@@ -55,6 +57,8 @@ public:
 
     void showStudent(void) const override;
     void showStudentEx(void) const override;
+    
+    void modifyStudent(void) override;
 
     void showSubjects(void) const override;
     bool addSubject(const std::string & subjectName) override;

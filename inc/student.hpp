@@ -17,6 +17,8 @@ public:
     virtual void showStudent(void) const = 0;
     virtual void showStudentEx(void) const = 0;
 
+    virtual void modifyStudent(void) = 0;
+
     virtual void showSubjects(void) const = 0;
     virtual bool addSubject(const std::string & subjectName) = 0;
     virtual bool removeSubject(const std::string & subjectName) = 0;

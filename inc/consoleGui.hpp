@@ -24,7 +24,7 @@ public:
 
     void action1(void);
 
-    void action4(void);
+    void displayFieldsOfStudy(void);
 
     void findStudentByLastname(void);
     void addStudentByUser(void);

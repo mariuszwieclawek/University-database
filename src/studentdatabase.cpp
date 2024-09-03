@@ -5,7 +5,6 @@
 #include "mathStudent.hpp"
 
 static std::vector<std::string> splitString(const std::string& str, char delimiter);
-static Gender stringToGender(const std::string& str);
 
 
 StudentDatabase::StudentDatabase(void)
@@ -210,6 +209,23 @@ void StudentDatabase::displayStudents(void) const
     }
 }
 
+std::set<std::string> StudentDatabase::getFieldsOfStudy(void) const
+{
+    std::set<std::string> fields_of_study;
+
+    if (m_students.empty()) {
+        std::cout << "Baza danych jest pusta." << std::endl;
+        return fields_of_study;
+    }
+
+    for(const auto & st : m_students)
+    {
+        fields_of_study.insert(st->getFieldOfStudy());
+    }
+    
+    return fields_of_study;
+}
+
 static std::vector<std::string> splitString(const std::string& str, char delimiter) 
 {
     std::vector<std::string> tokens;
@@ -222,23 +238,3 @@ static std::vector<std::string> splitString(const std::string& str, char delimit
     return tokens;
 }
 
-static Gender stringToGender(const std::string& str) 
-{
-    if (str == "Male") 
-    {
-        return Gender::Male;
-    } 
-    else if (str == "Female") 
-    {
-        return Gender::Female;
-    } 
-    else if (str == "Default") 
-    {
-        return Gender::Default;
-    } 
-    else 
-    {
-        std::cerr << "\t[ERROR]\t{stringToGender} - invalid input data " << std::endl;
-        exit(0);
-    }
-}

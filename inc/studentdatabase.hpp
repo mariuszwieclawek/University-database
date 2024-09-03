@@ -3,6 +3,7 @@
 #include <student.hpp>
 #include <memory>
 #include <fstream>
+#include <set>
 
 class StudentDatabase
 {
@@ -28,4 +29,5 @@ public:
     void sortStudentByLastname(void);
 
     void displayStudents(void) const;
+    std::set<std::string> getFieldsOfStudy(void) const;
 };
