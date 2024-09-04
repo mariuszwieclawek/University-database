@@ -4,7 +4,7 @@
 
 ConsoleGUI::ConsoleGUI(StudentDatabase &  db) : m_db(db)
 {
-    auto action1 = [this]() { this->action1(); };
+    auto action1 = [this]() { this->displayStudentsForSelectedFieldOfStudy(); };
     auto action2 = [this]() { this->m_db.displayStudents(); };
     auto action3 = [this]() { this->findStudentByLastname(); };
     auto action4 = [this]() { this->addStudentByUser(); };
@@ -18,8 +18,8 @@ ConsoleGUI::ConsoleGUI(StudentDatabase &  db) : m_db(db)
         {
             {"Lista kierunkow na uczelni", action7, 
             {
-                {"Podopcja 1", action1, {}},
-                {"Podopcja 2", action3, {}}
+                {"Wyswietl liste studentow wybranego kierunku", action1, {}},
+                {"Podopcja 2", action2, {}}
             }},
             {"Lista studentow na uczelni", action2, {}},
             {"Wyszukaj studenta", action3, {}},
@@ -35,13 +35,21 @@ void ConsoleGUI::action1(void)
     std::cout << "hello\n";
 }
 
-void ConsoleGUI::displayFieldsOfStudy(void)
+void ConsoleGUI::displayFieldsOfStudy(void) const
 {
     std::set<std::string> fields_of_study = m_db.getFieldsOfStudy();
     for(auto fld_of_st : fields_of_study)
     {
         std::cout << fld_of_st << std::endl;
     }
+}
+
+void ConsoleGUI::displayStudentsForSelectedFieldOfStudy(void) const
+{
+    std::string fldOfStd;
+    std::cout << "Please enter field of study: ";
+    std::cin >> fldOfStd;
+    m_db.displayStudentsByFieldOfStudy(fldOfStd);
 }
 
 void ConsoleGUI::findStudentByLastname(void)
@@ -162,12 +170,13 @@ void ConsoleGUI::run()
     menuStack.push(currentMenu);
     m_isMenuEnabled = true;
 
+    system("cls");
+
     while (m_isMenuEnabled) 
     {
-        system("cls");
-
         displayMenu(currentMenu);
         std::cin >> choice;
+        system("cls");
 
         /* Check input parameter */
         if (choice < 0  || choice > currentMenu.subMenu.size()) 
@@ -201,31 +210,32 @@ void ConsoleGUI::run()
 
             if (selectedOption.action != nullptr)
             {
-                performSelectedAction(selectedOption.action);
-            }
-
-            if (selectedOption.subMenu.empty())
-            {
-
-            }
+                selectedOption.action();
+                if (selectedOption.subMenu.empty())
+                {
+                    exitFromSelectedAction(selectedOption.action);
+                }
+            } 
         }
 
     }
 }
 
-void ConsoleGUI::performSelectedAction(std::function<void()> action)
+void ConsoleGUI::exitFromSelectedAction(std::function<void()> action)
 {
     unsigned int choice;
     while(true)
         {
-            system("cls");
-            action();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
             std::cout << "===========================================================================================" << std::endl;
             std::cout << "Wpisz '0' aby wyjsc: ";
             std::cin >> choice;
             if(choice == 0)
             {
+                system("cls");
                 break;
             }
+            system("cls");
+            action();
         }
 }

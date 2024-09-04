@@ -28,6 +28,9 @@ public:
 
     void sortStudentByLastname(void);
 
-    void displayStudents(void) const;
     std::set<std::string> getFieldsOfStudy(void) const;
+
+    void displayStudents(void) const;
+    void displayStudentsByFieldOfStudy(const std::string & fld_of_std) const;
+    
 };

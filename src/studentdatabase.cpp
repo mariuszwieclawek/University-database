@@ -209,6 +209,32 @@ void StudentDatabase::displayStudents(void) const
     }
 }
 
+void StudentDatabase::displayStudentsByFieldOfStudy(const std::string & fldOfStd) const
+{
+    std::vector<Student*> stdForSelecedFldOfStd;
+
+    for(const auto & st : m_students)
+    {
+        if(st->getFieldOfStudy() == fldOfStd)
+        {
+            stdForSelecedFldOfStd.push_back(st.get());
+        }
+    }
+
+    if(stdForSelecedFldOfStd.empty()) return;
+
+    std::cout << "===========================================================================================\n";
+    std::cout << "| No. | Name | Last name | Address | Index number | PESEL | Sex |\n";
+    std::cout << "===========================================================================================\n";
+    int no=1;
+    for(const auto & std : stdForSelecedFldOfStd)
+    {
+        std::cout << "| " << no << " | ";
+        std->showStudent();
+        no++;
+    }
+}
+
 std::set<std::string> StudentDatabase::getFieldsOfStudy(void) const
 {
     std::set<std::string> fields_of_study;
