@@ -43,6 +43,8 @@ public:
                          
     MathStudent(const std::string && name, const std::string && lastname, const std::string && address = "default",
                          int indexNumber = 0, std::string && pesel = "default", Gender && gender = Gender::Default);
+                    
+    MathStudent(const MathStudent &other);
 
     MathStudent& operator==(const MathStudent & other);
 

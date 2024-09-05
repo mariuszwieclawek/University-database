@@ -152,12 +152,16 @@ bool StudentDatabase::removeStudentByPesel(const std::string & pesel)
                                 
     m_students.erase(it, m_students.end());
 
+    /* Update students in the file*/
+    this->saveAllStudentsToCSV();
+
     return isRemoved;
 }
 
-std::vector<Student*> StudentDatabase::findStudentByLastname(const std::string & lastname)
+std::vector<const Student*> StudentDatabase::findStudentsByLastname(const std::string & lastname)
 {
-    std::vector<Student*> foundStudents;
+    /* Return vector because there is a possibility to exist several students with the same lastname */
+    std::vector<const Student*> foundStudents;
     for(const auto & s : m_students)
     {
         if(s->getLastname() == lastname)
@@ -169,19 +173,20 @@ std::vector<Student*> StudentDatabase::findStudentByLastname(const std::string &
     return foundStudents;
 }
 
-Student* StudentDatabase::findStudentByPesel(const std::string & pesel)
+bool StudentDatabase::modifyStudentByPesel(const std::string & pesel)
 {
     auto it = std::find_if(m_students.begin(), m_students.end(),
                             [&pesel](const std::unique_ptr<Student> & st){return st->getPesel() == pesel;});
 
-    if (it != m_students.end())
+    if (it == m_students.end())
     {
-        return it->get();
+        return false;
     }
-    else
-    {
-        return nullptr;
-    }
+
+    (*it)->modifyStudent();
+    this->saveAllStudentsToCSV();
+    
+    return true;
 }
 
 void StudentDatabase::sortStudentByLastname(void)
@@ -197,9 +202,9 @@ void StudentDatabase::displayStudents(void) const
         return;
     }
 
-    std::cout << "===========================================================================================\n";
-    std::cout << "| No. | Name | Last name | Address | Index number | PESEL | Sex |\n";
-    std::cout << "===========================================================================================\n";
+    std::cout << "===========================================================================================" << std::endl;
+    std::cout << "| No. | Name | Last name | Address | Index number | PESEL | Sex |" << std::endl;
+    std::cout << "===========================================================================================" << std::endl;
     int no=1;
     for(const auto & st : m_students)
     {
@@ -223,9 +228,9 @@ void StudentDatabase::displayStudentsByFieldOfStudy(const std::string & fldOfStd
 
     if(stdForSelecedFldOfStd.empty()) return;
 
-    std::cout << "===========================================================================================\n";
-    std::cout << "| No. | Name | Last name | Address | Index number | PESEL | Sex |\n";
-    std::cout << "===========================================================================================\n";
+    std::cout << "===========================================================================================" << std::endl;
+    std::cout << "| No. | Name | Last name | Address | Index number | PESEL | Sex |" << std::endl;
+    std::cout << "===========================================================================================" << std::endl;
     int no=1;
     for(const auto & std : stdForSelecedFldOfStd)
     {

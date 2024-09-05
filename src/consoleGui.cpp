@@ -1,12 +1,15 @@
 #include "consoleGui.hpp"
-
+#include "Windows.h"
+#include "sstream"
+#include <conio.h>
+#include <cctype> 
 
 
 ConsoleGUI::ConsoleGUI(StudentDatabase &  db) : m_db(db)
 {
     auto action1 = [this]() { this->displayStudentsForSelectedFieldOfStudy(); };
     auto action2 = [this]() { this->m_db.displayStudents(); };
-    auto action3 = [this]() { this->findStudentByLastname(); };
+    auto action3 = [this]() { this->displayStudentsByLastname(); };
     auto action4 = [this]() { this->addStudentByUser(); };
     auto action5 = [this]() { this->removeStudentByUser(); };
     auto action6 = [this]() { this->modifyStudentByUser(); };
@@ -32,7 +35,7 @@ ConsoleGUI::ConsoleGUI(StudentDatabase &  db) : m_db(db)
 
 void ConsoleGUI::action1(void)
 {
-    std::cout << "hello\n";
+    std::cout << "hello" << std::endl;
 }
 
 void ConsoleGUI::displayFieldsOfStudy(void) const
@@ -49,28 +52,33 @@ void ConsoleGUI::displayStudentsForSelectedFieldOfStudy(void) const
     std::string fldOfStd;
     std::cout << "Please enter field of study: ";
     std::cin >> fldOfStd;
+    std::cin.clear();
+    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+
     m_db.displayStudentsByFieldOfStudy(fldOfStd);
 }
 
-void ConsoleGUI::findStudentByLastname(void)
+void ConsoleGUI::displayStudentsByLastname(void)
 {
     std::string lastname;
     std::cout << "Podaj nazwisko studenta ktorego chcesz wyszukac: ";
     std::cin >> lastname;
+    std::cin.clear();
+    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
-    std::vector<Student*> students = m_db.findStudentByLastname(lastname);
+    std::vector<const Student*> students = m_db.findStudentsByLastname(lastname);
 
     if(students.empty() == true)
     {
-        std::cout << "Nie udalo sie znalezc studenta/ow" << std::endl;
+        std::cout << "Nie udalo sie znalezc studentow" << std::endl;
     }
     else
     {
-        std::cout << "Wyszukany/i student/ci:" << std::endl;
+        std::cout << "Wyszukani studenci:" << std::endl;
         for(auto st : students)
         {
             st->showStudentEx();
-            std::cout << "\n\n";
+            std::cout << std::endl << std::endl;
         }
     }
 }
@@ -83,25 +91,33 @@ void ConsoleGUI::addStudentByUser(void)
     int indexNumber; 
     std::string pesel; 
     Gender gnr;
-    std::cout << "Prosze wpisac:\nImie:";
+    std::cout << "Prosze wpisac:" << std::endl;
+    std::cout << "Imie:";
     std::cin >> name;
+    std::cin.clear();
     std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
     std::cout << "Nazwisko:";
     std::cin >> lastname;
+    std::cin.clear();
     std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
     std::cout << "Adres:";
     std::getline(std::cin >> std::ws, address);
     std::cout << "Numer indeksu:";
     std::cin >> indexNumber;
+    std::cin.clear();
+    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
     std::cout << "Pesel:";
     std::cin >> pesel;
+    std::cin.clear();
     std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
     std::cout << "Plec:";
     std::cin >> gnr;
+    std::cin.clear();
+    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
     m_db.addStudent(std::make_unique<MathStudent>(name, lastname, address, indexNumber, pesel, gnr));
 
-    std::cout << "Dodano studenta!\n";
+    std::cout << "Dodano studenta!" << std::endl;
 }
 
 void ConsoleGUI::removeStudentByUser(void)
@@ -110,6 +126,9 @@ void ConsoleGUI::removeStudentByUser(void)
 
     std::cout << "Podaj numer PESEL studenta ktorego chcesz usunac z bazy danych: ";
     std::cin >> pesel;
+    std::cin.clear();
+    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+
 
     if(m_db.removeStudentByPesel(pesel) != true)
     {
@@ -118,7 +137,6 @@ void ConsoleGUI::removeStudentByUser(void)
     else
     {
         std::cout << "Usunieto!" << std::endl;
-        m_db.saveAllStudentsToCSV();
     }
 }
 
@@ -128,19 +146,15 @@ void ConsoleGUI::modifyStudentByUser(void)
     std::cout << "Podaj PESEL studenta ktorego chcesz zmodyfikowac: ";
     std::cin >> pesel;
 
-    Student* stdnt = m_db.findStudentByPesel(pesel);
+    bool isModified = m_db.modifyStudentByPesel(pesel);
 
-    if(stdnt == nullptr)
+    if(isModified == false)
     {
         std::cout << "Nie udalo sie znalezc studenta" << std::endl;
     }
     else
     {
-        std::cout << "Udalo sie znalezc studenta. Aktualne dane:\n" << std::endl;
-        stdnt->showStudentEx();
-        stdnt->modifyStudent();
-        m_db.saveAllStudentsToCSV();
-        std::cout << "\nUdalo sie zmodyfikowac studenta!" << std::endl;
+        std::cout << "Udalo sie zmodyfikowac studenta!" << std::endl;
     }
 }
 
@@ -164,7 +178,8 @@ void ConsoleGUI::run()
         return;
     }
 
-    unsigned int choice;
+    char choice_ch;
+    int choice_digit;
     MenuItem currentMenu = m_mainMenu;
     std::stack<MenuItem> menuStack;
     menuStack.push(currentMenu);
@@ -172,20 +187,30 @@ void ConsoleGUI::run()
 
     system("cls");
 
+    
     while (m_isMenuEnabled) 
     {
         displayMenu(currentMenu);
-        std::cin >> choice;
+        choice_ch = _getch();
+        if (isdigit(choice_ch)) 
+        { 
+            choice_digit = choice_ch - '0'; // convert to digit
+        } 
+        else 
+        {
+            std::cout << "Invalid input. Please press a digit key (0-9)." << std::endl;
+            break;
+        }
         system("cls");
 
         /* Check input parameter */
-        if (choice < 0  || choice > currentMenu.subMenu.size()) 
+        if (choice_digit < 0  || choice_digit > currentMenu.subMenu.size()) 
         {
             continue;
         }
 
         /* Menu stack handle */
-        if (choice == 0 && !menuStack.empty())
+        if (choice_digit == 0 && !menuStack.empty())
         {
             menuStack.pop();
             if(!menuStack.empty())
@@ -199,9 +224,9 @@ void ConsoleGUI::run()
         }
 
         /* Run selected submenu */
-        if( choice != 0)
+        if( choice_digit != 0)
         {
-            MenuItem selectedOption = currentMenu.subMenu[choice - 1];
+            MenuItem selectedOption = currentMenu.subMenu[choice_digit - 1];
             if (!selectedOption.subMenu.empty())
             {
                 currentMenu = selectedOption;
@@ -213,29 +238,33 @@ void ConsoleGUI::run()
                 selectedOption.action();
                 if (selectedOption.subMenu.empty())
                 {
-                    exitFromSelectedAction(selectedOption.action);
+                    exitFromSelectedAction();
                 }
             } 
         }
-
     }
 }
 
-void ConsoleGUI::exitFromSelectedAction(std::function<void()> action)
+void ConsoleGUI::exitFromSelectedAction()
 {
-    unsigned int choice;
-    while(true)
+    std::string input;
+    char choice_ch;
+    int choice_digit;
+
+    std::cout << "===========================================================================================" << std::endl;
+    std::cout << "Wcisnij '0' aby wyjsc: " << std::endl;
+    while (true) 
+    {
+        choice_ch = _getch();
+        if (isdigit(choice_ch)) 
+        { 
+            choice_digit = choice_ch - '0'; // convert to digit
+        } 
+
+        if(choice_digit == 0)
         {
-            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-            std::cout << "===========================================================================================" << std::endl;
-            std::cout << "Wpisz '0' aby wyjsc: ";
-            std::cin >> choice;
-            if(choice == 0)
-            {
-                system("cls");
-                break;
-            }
             system("cls");
-            action();
+            break;
         }
+    }
 }

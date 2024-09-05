@@ -90,6 +90,21 @@ MathStudent::MathStudent(const std::string && name, const std::string && lastnam
         m_subjects.insert(initSubjects.begin(), initSubjects.end());
     };
 
+MathStudent::MathStudent(const MathStudent & other)
+{
+    if(this != &other)
+    {
+        m_name = other.m_name;
+        m_lastname = other.m_lastname;
+        m_address = other.m_address;
+        m_indexNumber = other.m_indexNumber;
+        m_pesel = other.m_pesel;
+        m_gender = other.m_gender;
+        m_subjects = other.m_subjects;
+        m_grades = other.m_grades;
+    }
+}
+
 MathStudent& MathStudent::operator==(const MathStudent & other)
 {
     if(this != &other)
@@ -159,54 +174,64 @@ void MathStudent::showStudent(void) const
 
 void MathStudent::showStudentEx(void) const
 {
-    std::cout << "==========================================================\n";
-    std::cout << "Information about student:\n";
+    std::cout << "==========================================================" << std::endl;
+    std::cout << "Information about student:" << std::endl;
     std::cout << "Name: " << m_name << std::endl;
     std::cout << "Last name: " << m_lastname << std::endl;
     std::cout << "Address: " << m_address << std::endl;
     std::cout << "Index number: " << m_indexNumber << std::endl;
     std::cout << "PESEL: " << m_pesel << std::endl;
     std::cout << "Sex: " << m_gender << std::endl;
-    std::cout << "==========================================================\n";  
+    std::cout << "==========================================================" << std::endl;  
     this->showSubjects();
     this->showGrades();
-    std::cout << "==========================================================\n";  
+    std::cout << "==========================================================" << std::endl;  
 }
 
 void MathStudent::modifyStudent(void)
 {
-    std::cout << "\nModification started. Please enter new values:" << std::endl;
+    std::cout << "Actual data for student:" << std::endl;
+    this->showStudentEx();
+    std::cout << "Modification started. Please enter new values:" << std::endl;
     std::string input;
-    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+
     std::cout << "Current Name: " << m_name << std::endl << "Enter new Name or skip(Enter): ";
     std::getline(std::cin, input);
-    if (!input.empty()) m_name = input;
+    if (!input.empty()) m_name;
+    std::cin.clear();
+    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+
     std::cout << "Current Last name: " << m_lastname << std::endl << "Enter new Last name or skip(Enter): ";
     std::getline(std::cin, input);
     if (!input.empty()) m_lastname = input;
+
     std::cout << "Current Address: " << m_address << std::endl << "Enter new Address or skip(Enter): ";
     std::getline(std::cin, input);
     if (!input.empty()) m_address = input;
+
     std::cout << "Current Index number: " << m_indexNumber << std::endl << "Enter new Index number or skip(Enter): ";
     std::getline(std::cin, input);
     if (!input.empty()) m_indexNumber = std::stoi(input);
+
     std::cout << "Current PESEL: " << m_pesel << std::endl << "Enter new PESEL or skip(Enter): ";
     std::getline(std::cin, input);
     if (!input.empty()) m_pesel = input;
+
     std::cout << "Current Sex: " << m_gender << std::endl << "Enter new Sex or skip(Enter): ";
     std::getline(std::cin, input);
     if (!input.empty()) m_gender = stringToGender(input);
+    
 }
 
 void MathStudent::showSubjects(void) const
 {
-    std::cout << "==========================================================\n";
-    std::cout << "Subjects for student:\n";
+    std::cout << "==========================================================" << std::endl;
+    std::cout << "Subjects for student:" << std::endl;
     for(const auto & sb : m_subjects)
     {
         std::cout << "-" << sb << std::endl;
     }
-    std::cout << "==========================================================\n";
+    std::cout << "==========================================================" << std::endl;
 }
 
 bool MathStudent::addSubject(const std::string & subjectName)
@@ -235,8 +260,8 @@ bool MathStudent::removeSubject(const std::string & subjectName)
 
 void MathStudent::showGrades(void) const
 {
-    std::cout << "==========================================================\n";
-    std::cout << "Grades of a " << m_name << " " << m_lastname << ":\n";
+    std::cout << "==========================================================" << std::endl;
+    std::cout << "Grades of a " << m_name << " " << m_lastname << ":" << std::endl;
     for(const auto & [subject, commentAndGrade] : m_grades)
     {
         std::cout << "\rSubject: \n\t" << subject << ":\n\t\t";
@@ -245,7 +270,7 @@ void MathStudent::showGrades(void) const
             std::cout << "* " << grade << "\t(Note:" << comment << ")\n\t\t";
         }
     }
-    std::cout << "\r==========================================================\n";
+    std::cout << "\r==========================================================" << std::endl;
 }
 
 bool MathStudent::addGrade(const std::string & subject, const std::string & comment, float grade)

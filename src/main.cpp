@@ -56,7 +56,7 @@ int main()
     // db.sortStudentByLastname();
     // db.displayStudents();
 
-    // std::vector<Student*> sts = db.findStudentByLastname("Abacki");
+    // std::vector<Student*> sts = db.findStudentsByLastname("Abacki");
     // sts[0]->showStudent();
 
 

@@ -27,7 +27,7 @@ public:
     void displayFieldsOfStudy(void) const;
     void displayStudentsForSelectedFieldOfStudy(void) const;
 
-    void findStudentByLastname(void);
+    void displayStudentsByLastname(void);
     void addStudentByUser(void);
     void removeStudentByUser(void);
     void modifyStudentByUser(void);
@@ -35,6 +35,6 @@ public:
     void displayMenu(const MenuItem & selectedMenu);
     void run();
 
-    void exitFromSelectedAction(std::function<void()> action);
+    void exitFromSelectedAction();
 };
 
