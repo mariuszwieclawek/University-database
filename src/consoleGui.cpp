@@ -7,28 +7,40 @@
 
 ConsoleGUI::ConsoleGUI(StudentDatabase &  db) : m_db(db)
 {
-    auto action1 = [this]() { this->displayStudentsForSelectedFieldOfStudy(); };
-    auto action2 = [this]() { this->m_db.displayStudents(); };
-    auto action3 = [this]() { this->displayStudentsByLastname(); };
-    auto action4 = [this]() { this->addStudentByUser(); };
-    auto action5 = [this]() { this->removeStudentByUser(); };
-    auto action6 = [this]() { this->modifyStudentByUser(); };
-    auto action7 = [this]() { this->displayFieldsOfStudy(); };
+    auto action1 = [this]() { this->displayFieldsOfStudy(); };
+    auto action2 = [this]() { this->displayStudentsForSelectedFieldOfStudy(); };
+    auto action3 = [this]() { this->action1(); };
+    auto action4 = [this]() { this->m_db.displayStudents(); };
+    auto action5 = [this]() { this->displayStudentsByLastname(); };
+    auto action6 = [this]() { this->addStudentByUser(); };
+    auto action7 = [this]() { this->removeStudentByUser(); };
+    auto action8 = [this]() { this->modifyStudentByUser(); };
+    auto action9 = [this]() { this->sortStudentsByLastNameAtoZ(); };
+    auto action10 = [this]() { this->sortStudentsByLastNameZtoA(); };
+    auto action11 = [this]() { this->sortStudentsByIndexAscending(); };
+    auto action12 = [this]() { this->sortStudentsByIndexDescending(); };
 
     m_mainMenu =
     {
-        "Menu glowne", nullptr,
+        "Main Menu", nullptr,
         {
-            {"Lista kierunkow na uczelni", action7, 
+            {"Fields of study list", action1, 
             {
-                {"Wyswietl liste studentow wybranego kierunku", action1, {}},
-                {"Podopcja 2", action2, {}}
+                {"Student list for selected field of study", action2, {}},
+                {"TO DO", action3, {}}
             }},
-            {"Lista studentow na uczelni", action2, {}},
-            {"Wyszukaj studenta", action3, {}},
-            {"Dodaj studenta", action4, {}},
-            {"Usun studenta", action5, {}},
-            {"Modyfikuj studenta", action6, {}}
+            {"Student list", action4, {}},
+            {"Sort student list", nullptr, 
+            {
+                {"Sort students by lastname A to Z", action9, {}},
+                {"Sort students by lastname Z to A", action10, {}},
+                {"Sort students by index number ascending", action11, {}},
+                {"Sort students by index number descending", action12, {}},
+            }},
+            {"Search for student", action5, {}},
+            {"Add student", action6, {}},
+            {"Remove student", action7, {}},
+            {"Modify student", action8, {}}
         }
     };
 };
@@ -40,11 +52,14 @@ void ConsoleGUI::action1(void)
 
 void ConsoleGUI::displayFieldsOfStudy(void) const
 {
+    std::cout << "List of fields of study at the university:" << std::endl;
     std::set<std::string> fields_of_study = m_db.getFieldsOfStudy();
+    int no = 0;
     for(auto fld_of_st : fields_of_study)
     {
-        std::cout << fld_of_st << std::endl;
+        std::cout << "\t" << no << "." << fld_of_st << std::endl;
     }
+    std::cout << std::endl;
 }
 
 void ConsoleGUI::displayStudentsForSelectedFieldOfStudy(void) const
@@ -58,10 +73,12 @@ void ConsoleGUI::displayStudentsForSelectedFieldOfStudy(void) const
     m_db.displayStudentsByFieldOfStudy(fldOfStd);
 }
 
-void ConsoleGUI::displayStudentsByLastname(void)
+void ConsoleGUI::displayStudentsByLastname(void) const
 {
+    m_db.displayStudents();
+    std::cout << "===========================================================================================" << std::endl << std::endl;
     std::string lastname;
-    std::cout << "Podaj nazwisko studenta ktorego chcesz wyszukac: ";
+    std::cout << "Enter student lastname to show extended info: ";
     std::cin >> lastname;
     std::cin.clear();
     std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
@@ -70,11 +87,11 @@ void ConsoleGUI::displayStudentsByLastname(void)
 
     if(students.empty() == true)
     {
-        std::cout << "Nie udalo sie znalezc studentow" << std::endl;
+        std::cout << "Cannot find the students" << std::endl;
     }
     else
     {
-        std::cout << "Wyszukani studenci:" << std::endl;
+        std::cout << "Selected students:" << std::endl;
         for(auto st : students)
         {
             st->showStudentEx();
@@ -83,7 +100,7 @@ void ConsoleGUI::displayStudentsByLastname(void)
     }
 }
 
-void ConsoleGUI::addStudentByUser(void)
+void ConsoleGUI::addStudentByUser(void) const
 {
     std::string name;
     std::string lastname;
@@ -91,40 +108,40 @@ void ConsoleGUI::addStudentByUser(void)
     int indexNumber; 
     std::string pesel; 
     Gender gnr;
-    std::cout << "Prosze wpisac:" << std::endl;
-    std::cout << "Imie:";
+    std::cout << "Please enter:" << std::endl;
+    std::cout << "Name:";
     std::cin >> name;
     std::cin.clear();
     std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-    std::cout << "Nazwisko:";
+    std::cout << "Lastname:";
     std::cin >> lastname;
     std::cin.clear();
     std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-    std::cout << "Adres:";
+    std::cout << "Residential address:";
     std::getline(std::cin >> std::ws, address);
-    std::cout << "Numer indeksu:";
+    std::cout << "Index number:";
     std::cin >> indexNumber;
     std::cin.clear();
     std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-    std::cout << "Pesel:";
+    std::cout << "PESEL:";
     std::cin >> pesel;
     std::cin.clear();
     std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-    std::cout << "Plec:";
+    std::cout << "Gender:";
     std::cin >> gnr;
     std::cin.clear();
     std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
     m_db.addStudent(std::make_unique<MathStudent>(name, lastname, address, indexNumber, pesel, gnr));
 
-    std::cout << "Dodano studenta!" << std::endl;
+    std::cout << "Student added!" << std::endl;
 }
 
-void ConsoleGUI::removeStudentByUser(void)
+void ConsoleGUI::removeStudentByUser(void) const
 {
     std::string pesel;
 
-    std::cout << "Podaj numer PESEL studenta ktorego chcesz usunac z bazy danych: ";
+    std::cout << "Enter the PESEL number of the student you want to remove from the database: ";
     std::cin >> pesel;
     std::cin.clear();
     std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
@@ -132,49 +149,78 @@ void ConsoleGUI::removeStudentByUser(void)
 
     if(m_db.removeStudentByPesel(pesel) != true)
     {
-        std::cout << "Zly numer PESEL! Nie udalo sie usunac" << std::endl;
+        std::cout << "Wrong PESEL number! Could not be removed" << std::endl;
     }
     else
     {
-        std::cout << "Usunieto!" << std::endl;
+        std::cout << "Removed!" << std::endl;
     }
 }
 
-void ConsoleGUI::modifyStudentByUser(void)
+void ConsoleGUI::modifyStudentByUser(void) const
 {
     std::string pesel;
-    std::cout << "Podaj PESEL studenta ktorego chcesz zmodyfikowac: ";
+    std::cout << "Enter the PESEL number of the student you want to modify: ";
     std::cin >> pesel;
 
     bool isModified = m_db.modifyStudentByPesel(pesel);
 
     if(isModified == false)
     {
-        std::cout << "Nie udalo sie znalezc studenta" << std::endl;
+        std::cout << "The student could not be found" << std::endl;
     }
     else
     {
-        std::cout << "Udalo sie zmodyfikowac studenta!" << std::endl;
+        std::cout << "Student modified!" << std::endl;
     }
 }
 
-void ConsoleGUI::displayMenu(const MenuItem & selectedMenu) 
+void ConsoleGUI::sortStudentsByLastNameAtoZ(void) const
+{
+    m_db.sortStudents(StudentDatabase::SORT_BY_LASTNAME_A_TO_Z);
+    std::cout << "Sorted student list:" << std::endl;
+    m_db.displayStudents();
+}
+
+void ConsoleGUI::sortStudentsByLastNameZtoA(void) const
+{
+    m_db.sortStudents(StudentDatabase::SORT_BY_LASTNAME_Z_TO_A);
+    std::cout << "Sorted student list:" << std::endl;
+    m_db.displayStudents();
+}
+
+void ConsoleGUI::sortStudentsByIndexAscending(void) const
+{
+    m_db.sortStudents(StudentDatabase::SORT_BY_INDEX_ASCENDING);
+    std::cout << "Sorted student list:" << std::endl;
+    m_db.displayStudents();
+}
+
+void ConsoleGUI::sortStudentsByIndexDescending(void) const
+{
+    m_db.sortStudents(StudentDatabase::SORT_BY_INDEX_DESCENDING);
+    std::cout << "Sorted student list:" << std::endl;
+    m_db.displayStudents();
+}
+
+void ConsoleGUI::displayMenu(const MenuItem & selectedMenu) const 
 {
     std::cout << "===========================================================================================" << std::endl;
     for (int i = 0; i < selectedMenu.subMenu.size(); i++) 
     {
         std::cout << i+1 << ". " << selectedMenu.subMenu[i].label << std::endl;
     }
+    std::cout << "===========================================================================================" << std::endl;
     std::cout << "0. Wyjscie " << std::endl;
     std::cout << "===========================================================================================" << std::endl;
-    std::cout << "Wybierz opcje: ";
+    std::cout << "Select option: ";
 }
 
 void ConsoleGUI::run() 
 {
     if(m_mainMenu.label.empty())
     {
-        std::cout << "[ERROR] Zdefiniuj menu w konstruktorze ConsoleGUI!";
+        std::cout << "[ERROR] Menu is not defined!";
         return;
     }
 
@@ -198,8 +244,8 @@ void ConsoleGUI::run()
         } 
         else 
         {
-            std::cout << "Invalid input. Please press a digit key (0-9)." << std::endl;
-            break;
+            system("cls");
+            continue;
         }
         system("cls");
 
@@ -252,7 +298,7 @@ void ConsoleGUI::exitFromSelectedAction()
     int choice_digit;
 
     std::cout << "===========================================================================================" << std::endl;
-    std::cout << "Wcisnij '0' aby wyjsc: " << std::endl;
+    std::cout << "Press '0' to return: " << std::endl;
     while (true) 
     {
         choice_ch = _getch();

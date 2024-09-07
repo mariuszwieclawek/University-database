@@ -26,13 +26,17 @@ public:
 
     void displayFieldsOfStudy(void) const;
     void displayStudentsForSelectedFieldOfStudy(void) const;
+    void displayStudentsByLastname(void) const;
 
-    void displayStudentsByLastname(void);
-    void addStudentByUser(void);
-    void removeStudentByUser(void);
-    void modifyStudentByUser(void);
+    void addStudentByUser(void) const;
+    void removeStudentByUser(void) const;
+    void modifyStudentByUser(void) const;
+    void sortStudentsByLastNameAtoZ(void) const;
+    void sortStudentsByLastNameZtoA(void) const;
+    void sortStudentsByIndexAscending(void) const;
+    void sortStudentsByIndexDescending(void) const;
 
-    void displayMenu(const MenuItem & selectedMenu);
+    void displayMenu(const MenuItem & selectedMenu) const;
     void run();
 
     void exitFromSelectedAction();

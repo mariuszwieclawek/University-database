@@ -33,6 +33,26 @@ StudentDatabase::~StudentDatabase(void)
     }
 }
 
+bool StudentDatabase::compareByLastnameAtoZ(const std::unique_ptr<Student>& a, const std::unique_ptr<Student>& b) 
+{
+    return a->getLastname() < b->getLastname();
+}
+
+bool StudentDatabase::compareByLastnameZtoA(const std::unique_ptr<Student>& a, const std::unique_ptr<Student>& b) 
+{
+    return a->getLastname() > b->getLastname();
+}
+
+bool StudentDatabase::compareByIndexAscending(const std::unique_ptr<Student>& a, const std::unique_ptr<Student>& b) 
+{
+    return a->getIndex() < b->getIndex();
+}
+
+bool StudentDatabase::compareByIndexDescending(const std::unique_ptr<Student>& a, const std::unique_ptr<Student>& b) 
+{
+    return a->getIndex() > b->getIndex();
+}
+
 void StudentDatabase::appendToCSV(std::fstream& file, const std::vector<std::string>& data) 
 {
     file.open(m_studentsFilename, std::ios::app);
@@ -59,7 +79,7 @@ void StudentDatabase::saveAllStudentsToCSV(void)
 
     if (!m_file.is_open()) 
     {
-        std::cerr << "\t[ERROR]\t{appendToCSV} - file is closed " << std::endl;
+        std::cerr << "\t[ERROR]\t{saveAllStudentsToCSV} - file is closed " << std::endl;
         exit(0);
     }
     
@@ -189,21 +209,50 @@ bool StudentDatabase::modifyStudentByPesel(const std::string & pesel)
     return true;
 }
 
-void StudentDatabase::sortStudentByLastname(void)
+void StudentDatabase::sortStudents(SortOrder order)
 {
-    std::sort(m_students.begin(), m_students.end(), 
-    [](const std::unique_ptr<Student> & st1, const std::unique_ptr<Student> & st2){return st1->getLastname() < st2->getLastname();});
+    switch(order)
+    {
+        case SORT_BY_LASTNAME_A_TO_Z:
+        {
+            std::sort(m_students.begin(), m_students.end(), StudentDatabase::compareByLastnameAtoZ);
+            break;
+        }
+        case SORT_BY_LASTNAME_Z_TO_A:
+        {
+            std::sort(m_students.begin(), m_students.end(), StudentDatabase::compareByLastnameZtoA);
+            break;
+        }
+        case SORT_BY_INDEX_ASCENDING:
+        {
+            std::sort(m_students.begin(), m_students.end(), StudentDatabase::compareByIndexAscending);
+            break;
+        }
+        case SORT_BY_INDEX_DESCENDING:
+        {
+            std::sort(m_students.begin(), m_students.end(), StudentDatabase::compareByIndexDescending);
+            break;
+        }
+        default:
+        {
+            std::sort(m_students.begin(), m_students.end(), StudentDatabase::compareByLastnameAtoZ);
+            break;
+        }
+            
+    }
+    
+    this->saveAllStudentsToCSV();
 }
 
 void StudentDatabase::displayStudents(void) const
 {
     if (m_students.empty()) {
-        std::cout << "Baza danych jest pusta." << std::endl;
+        std::cout << "Student database is empty." << std::endl;
         return;
     }
 
     std::cout << "===========================================================================================" << std::endl;
-    std::cout << "| No. | Name | Last name | Address | Index number | PESEL | Sex |" << std::endl;
+    std::cout << "| No. | Name | Last name | Address | Index number | PESEL | Gender |" << std::endl;
     std::cout << "===========================================================================================" << std::endl;
     int no=1;
     for(const auto & st : m_students)
@@ -229,7 +278,7 @@ void StudentDatabase::displayStudentsByFieldOfStudy(const std::string & fldOfStd
     if(stdForSelecedFldOfStd.empty()) return;
 
     std::cout << "===========================================================================================" << std::endl;
-    std::cout << "| No. | Name | Last name | Address | Index number | PESEL | Sex |" << std::endl;
+    std::cout << "| No. | Name | Last name | Address | Index number | PESEL | Gender |" << std::endl;
     std::cout << "===========================================================================================" << std::endl;
     int no=1;
     for(const auto & std : stdForSelecedFldOfStd)
@@ -245,7 +294,7 @@ std::set<std::string> StudentDatabase::getFieldsOfStudy(void) const
     std::set<std::string> fields_of_study;
 
     if (m_students.empty()) {
-        std::cout << "Baza danych jest pusta." << std::endl;
+        std::cout << "Student database is empty." << std::endl;
         return fields_of_study;
     }
 

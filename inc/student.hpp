@@ -12,6 +12,8 @@ public:
     virtual void getLastname(const std::string & lastname) = 0;
     virtual std::string getPesel(void) const = 0;
     virtual void setPesel(const std::string & name) = 0;
+    virtual int getIndex(void) const = 0;
+    virtual void setIndex(const int & index) = 0;
     virtual std::string getFieldOfStudy(void) const = 0;
 
     virtual void showStudent(void) const = 0;

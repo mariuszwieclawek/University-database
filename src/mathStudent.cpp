@@ -160,6 +160,15 @@ void MathStudent::setPesel(const std::string & pesel)
     m_pesel = pesel;
 }
 
+int MathStudent::getIndex(void) const
+{
+    return m_indexNumber;
+}
+void MathStudent::setIndex(const int & index)
+{
+    m_indexNumber = index;
+}
+
 std::string MathStudent::getFieldOfStudy(void) const
 {
     return "Mathematics";
@@ -181,7 +190,7 @@ void MathStudent::showStudentEx(void) const
     std::cout << "Address: " << m_address << std::endl;
     std::cout << "Index number: " << m_indexNumber << std::endl;
     std::cout << "PESEL: " << m_pesel << std::endl;
-    std::cout << "Sex: " << m_gender << std::endl;
+    std::cout << "Gender: " << m_gender << std::endl;
     std::cout << "==========================================================" << std::endl;  
     this->showSubjects();
     this->showGrades();
@@ -217,7 +226,7 @@ void MathStudent::modifyStudent(void)
     std::getline(std::cin, input);
     if (!input.empty()) m_pesel = input;
 
-    std::cout << "Current Sex: " << m_gender << std::endl << "Enter new Sex or skip(Enter): ";
+    std::cout << "Current gender: " << m_gender << std::endl << "Enter new Gender or skip(Enter): ";
     std::getline(std::cin, input);
     if (!input.empty()) m_gender = stringToGender(input);
     

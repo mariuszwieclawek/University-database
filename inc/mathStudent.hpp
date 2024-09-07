@@ -55,6 +55,8 @@ public:
     void getLastname(const std::string & lastname) override;
     std::string getPesel(void) const override;
     void setPesel(const std::string & name) override;
+    int getIndex(void) const override;
+    void setIndex(const int & index) override;
     std::string getFieldOfStudy(void) const override;
 
     void showStudent(void) const override;
