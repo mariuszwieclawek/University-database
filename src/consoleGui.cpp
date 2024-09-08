@@ -9,7 +9,7 @@ ConsoleGUI::ConsoleGUI(StudentDatabase &  db) : m_db(db)
 {
     auto action1 = [this]() { this->displayFieldsOfStudy(); };
     auto action2 = [this]() { this->displayStudentsForSelectedFieldOfStudy(); };
-    auto action3 = [this]() { this->action1(); };
+    auto action3 = [this]() { this->displaySubjectsForSelectedFieldOfStudy(); };
     auto action4 = [this]() { this->m_db.displayStudents(); };
     auto action5 = [this]() { this->displayStudentsByLastname(); };
     auto action6 = [this]() { this->addStudentByUser(); };
@@ -26,8 +26,8 @@ ConsoleGUI::ConsoleGUI(StudentDatabase &  db) : m_db(db)
         {
             {"Fields of study list", action1, 
             {
-                {"Student list for selected field of study", action2, {}},
-                {"TO DO", action3, {}}
+                {"Enter field of study and display Student list", action2, {}},
+                {"Enter field of study and display Subject list", action3, {}}
             }},
             {"Student list", action4, {}},
             {"Sort student list", nullptr, 
@@ -54,16 +54,16 @@ void ConsoleGUI::displayFieldsOfStudy(void) const
 {
     std::cout << "List of fields of study at the university:" << std::endl;
     std::set<std::string> fields_of_study = m_db.getFieldsOfStudy();
-    int no = 0;
     for(auto fld_of_st : fields_of_study)
     {
-        std::cout << "\t" << no << "." << fld_of_st << std::endl;
+        std::cout << "\t-" << fld_of_st << std::endl;
     }
     std::cout << std::endl;
 }
 
 void ConsoleGUI::displayStudentsForSelectedFieldOfStudy(void) const
 {
+    this->displayFieldsOfStudy();
     std::string fldOfStd;
     std::cout << "Please enter field of study: ";
     std::cin >> fldOfStd;
@@ -71,6 +71,24 @@ void ConsoleGUI::displayStudentsForSelectedFieldOfStudy(void) const
     std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
     m_db.displayStudentsByFieldOfStudy(fldOfStd);
+}
+
+void ConsoleGUI::displaySubjectsForSelectedFieldOfStudy(void) const
+{
+    this->displayFieldsOfStudy();
+    std::string fldOfStd;
+    std::cout << "Please enter field of study: ";
+    std::cin >> fldOfStd;
+    std::cin.clear();
+    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+
+    std::set<std::string> subjects = m_db.getSubjectsForSelectedFieldOfStudy(fldOfStd);
+    std::cout << "===========================================================================================" << std::endl;
+    std::cout << "Subject list for " << fldOfStd << ":" << std::endl;
+    for( auto & sub : subjects )
+    {
+        std::cout << "\t-" << sub << std::endl;
+    }
 }
 
 void ConsoleGUI::displayStudentsByLastname(void) const
@@ -104,41 +122,64 @@ void ConsoleGUI::addStudentByUser(void) const
 {
     std::string name;
     std::string lastname;
+    std::tm birthdate;
     std::string address;
     int indexNumber; 
     std::string pesel; 
     Gender gnr;
     std::cout << "Please enter:" << std::endl;
+
     std::cout << "Name:";
     std::cin >> name;
     std::cin.clear();
     std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+
     std::cout << "Lastname:";
     std::cin >> lastname;
     std::cin.clear();
     std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+
+    std::cout << "Birthdate..." << std::endl << "\tDay:";
+    std::cin >> birthdate.tm_mday;
+    std::cin.clear();
+    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    std::cout << "\tMonth:";
+    std::cin >> birthdate.tm_mon;
+    std::cin.clear();
+    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    std::cout << "\tYear:";
+    std::cin >> birthdate.tm_year;
+    birthdate.tm_year -= 1900;
+    std::cin.clear();
+    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+
     std::cout << "Residential address:";
     std::getline(std::cin >> std::ws, address);
+
     std::cout << "Index number:";
     std::cin >> indexNumber;
     std::cin.clear();
     std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+
     std::cout << "PESEL:";
     std::cin >> pesel;
     std::cin.clear();
     std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+
     std::cout << "Gender:";
     std::cin >> gnr;
     std::cin.clear();
     std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
-    m_db.addStudent(std::make_unique<MathStudent>(name, lastname, address, indexNumber, pesel, gnr));
+    m_db.addStudent(std::make_unique<MathStudent>(name, lastname, birthdate, address, indexNumber, pesel, gnr));
 
     std::cout << "Student added!" << std::endl;
 }
 
 void ConsoleGUI::removeStudentByUser(void) const
 {
+    m_db.displayStudents();
+    std::cout << "===========================================================================================" << std::endl;
     std::string pesel;
 
     std::cout << "Enter the PESEL number of the student you want to remove from the database: ";
@@ -159,6 +200,8 @@ void ConsoleGUI::removeStudentByUser(void) const
 
 void ConsoleGUI::modifyStudentByUser(void) const
 {
+    m_db.displayStudents();
+    std::cout << "===========================================================================================" << std::endl;
     std::string pesel;
     std::cout << "Enter the PESEL number of the student you want to modify: ";
     std::cin >> pesel;
@@ -211,7 +254,7 @@ void ConsoleGUI::displayMenu(const MenuItem & selectedMenu) const
         std::cout << i+1 << ". " << selectedMenu.subMenu[i].label << std::endl;
     }
     std::cout << "===========================================================================================" << std::endl;
-    std::cout << "0. Wyjscie " << std::endl;
+    std::cout << "0. Exit " << std::endl;
     std::cout << "===========================================================================================" << std::endl;
     std::cout << "Select option: ";
 }
@@ -233,10 +276,12 @@ void ConsoleGUI::run()
 
     system("cls");
 
-    
+    MenuItem selectedOption;
     while (m_isMenuEnabled) 
     {
         displayMenu(currentMenu);
+
+        /* Handle user input parameter*/
         choice_ch = _getch();
         if (isdigit(choice_ch)) 
         { 
@@ -272,7 +317,7 @@ void ConsoleGUI::run()
         /* Run selected submenu */
         if( choice_digit != 0)
         {
-            MenuItem selectedOption = currentMenu.subMenu[choice_digit - 1];
+            selectedOption = currentMenu.subMenu[choice_digit - 1];
             if (!selectedOption.subMenu.empty())
             {
                 currentMenu = selectedOption;
@@ -285,8 +330,13 @@ void ConsoleGUI::run()
                 if (selectedOption.subMenu.empty())
                 {
                     exitFromSelectedAction();
+                    /* If action for current menu is defined call action */
+                    if(currentMenu.action != nullptr)
+                    {
+                        currentMenu.action();
+                    }
                 }
-            } 
+            }      
         }
     }
 }

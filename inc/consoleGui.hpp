@@ -26,6 +26,7 @@ public:
 
     void displayFieldsOfStudy(void) const;
     void displayStudentsForSelectedFieldOfStudy(void) const;
+    void displaySubjectsForSelectedFieldOfStudy(void) const;
     void displayStudentsByLastname(void) const;
 
     void addStudentByUser(void) const;

@@ -4,6 +4,7 @@
 #include <set>
 #include <map>
 #include <vector>
+#include <ctime>
 
 #define MIN_GRADE 0
 #define MAX_GRADE 6
@@ -15,6 +16,8 @@ enum class Gender {
 };
 
 Gender stringToGender(const std::string& str);
+std::tm stringToTm(const std::string& dateStr, const std::string& format);
+std::string TmToString(const std::tm & tmdate, const std::string& format);
 
 std::ostream& operator<<(std::ostream & os, const Gender & gender);
 std::istream& operator>>(std::istream & is, Gender & gender);
@@ -24,6 +27,7 @@ class MathStudent : public Student
 private:
     std::string m_name;
     std::string m_lastname;
+    std::tm m_birthDate;
     std::string m_address;
     int m_indexNumber;
     std::string m_pesel;
@@ -38,10 +42,10 @@ private:
     
 public:
     MathStudent(void);
-    MathStudent(const std::string & name, const std::string & lastname, const std::string & address = "default",
+    MathStudent(const std::string & name, const std::string & lastname, const std::tm & birthDate, const std::string & address = "default",
                          int indexNumber = 0, const std::string & pesel = "default", Gender gender = Gender::Default);
                          
-    MathStudent(const std::string && name, const std::string && lastname, const std::string && address = "default",
+    MathStudent(const std::string && name, const std::string && lastname, const std::tm && birthDate, const std::string && address = "default",
                          int indexNumber = 0, std::string && pesel = "default", Gender && gender = Gender::Default);
                     
     MathStudent(const MathStudent &other);
@@ -57,6 +61,7 @@ public:
     void setPesel(const std::string & name) override;
     int getIndex(void) const override;
     void setIndex(const int & index) override;
+    std::set<std::string> getMandatorySubjects(void) const override;
     std::string getFieldOfStudy(void) const override;
 
     void showStudent(void) const override;

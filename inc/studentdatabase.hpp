@@ -9,7 +9,7 @@ class StudentDatabase
 {
 private:
     std::vector<std::unique_ptr<Student>> m_students;
-    std::string m_studentsFilename = "../output/students.csv";
+    std::string m_studentsFilename = "../database/students.csv";
     std::fstream m_file;
 
     static bool compareByLastnameAtoZ(const std::unique_ptr<Student>& a, const std::unique_ptr<Student>& b);
@@ -40,7 +40,7 @@ public:
     void sortStudents(SortOrder order);
 
     std::set<std::string> getFieldsOfStudy(void) const;
+    std::set<std::string> getSubjectsForSelectedFieldOfStudy(const std::string & fldOfStd) const;
     void displayStudents(void) const;
-    void displayStudentsByFieldOfStudy(const std::string & fld_of_std) const;
-    
+    void displayStudentsByFieldOfStudy(const std::string & fldOfStd) const;
 };

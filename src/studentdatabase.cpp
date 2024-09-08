@@ -13,7 +13,7 @@ StudentDatabase::StudentDatabase(void)
     {
         std::vector<std::string> data = 
         {
-            "Name", "Lastname", "Address", "Index number", "PESEL", "Gender",
+            "Name", "Lastname", "Birthdate", "Address", "Index number", "PESEL", "Gender",
         };
 
         appendToCSV(m_file, data);
@@ -65,7 +65,6 @@ void StudentDatabase::appendToCSV(std::fstream& file, const std::vector<std::str
     
     for (const auto& value : data) 
     {
-        std::cout << value << std::endl;
         file << value << ",";
     }
     file << "\n";
@@ -137,16 +136,28 @@ void StudentDatabase::readStudentsFromCSV(std::fstream& file)
         std::cout << line << std::endl;
         std::vector<std::string> objectFields = splitString(line, ',');
 
-        if (objectFields.size() != 6) 
+        if (objectFields.size() != 7) 
         {
             std::cerr << "\t[ERROR]\t{readStudentsFromCSV} - invalid input data " << std::endl;
             exit(0);
         }
 
-        Gender gender = stringToGender(objectFields[5]);
+        Gender gender;
+        std::tm birthdate;
+        try
+        {
+            gender = stringToGender(objectFields[6]);
+            birthdate = stringToTm(objectFields[2], "%d.%m.%Y");
+        }
+        catch (const std::exception& e) 
+        {
+            std::cerr << "\t[ERROR]\t{readStudentsFromCSV} - " << e.what() << std::endl;
+            exit(0);
+        }
+        
   
-        std::unique_ptr<Student> student = std::make_unique<MathStudent>(objectFields[0], objectFields[1], objectFields[2], 
-                                                                        std::stoi(objectFields[3]), objectFields[4], gender);
+        std::unique_ptr<Student> student = std::make_unique<MathStudent>(objectFields[0], objectFields[1], birthdate, objectFields[3], 
+                                                                         std::stoi(objectFields[4]), objectFields[5], gender);
         m_students.push_back(std::move(student));
     }
 
@@ -252,7 +263,7 @@ void StudentDatabase::displayStudents(void) const
     }
 
     std::cout << "===========================================================================================" << std::endl;
-    std::cout << "| No. | Name | Last name | Address | Index number | PESEL | Gender |" << std::endl;
+    std::cout << "| No. | Name | Last name | Birthday | Address | Index number | PESEL | Gender |" << std::endl;
     std::cout << "===========================================================================================" << std::endl;
     int no=1;
     for(const auto & st : m_students)
@@ -304,6 +315,25 @@ std::set<std::string> StudentDatabase::getFieldsOfStudy(void) const
     }
     
     return fields_of_study;
+}
+
+std::set<std::string> StudentDatabase::getSubjectsForSelectedFieldOfStudy(const std::string & fldOfStd) const
+{
+    std::vector<Student*> stdForSelecedFldOfStd;
+    std::set<std::string> subjects;
+
+    for(const auto & st : m_students)
+    {
+        if(st->getFieldOfStudy() == fldOfStd)
+        {
+            stdForSelecedFldOfStd.push_back(st.get());
+        }
+    }
+
+    if(stdForSelecedFldOfStd.empty()) return subjects;
+
+    /* Every students have the same mandatory subjects so we can use get subjects for any student */
+    return stdForSelecedFldOfStd[0]->getMandatorySubjects();
 }
 
 static std::vector<std::string> splitString(const std::string& str, char delimiter) 

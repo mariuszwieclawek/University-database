@@ -1,9 +1,11 @@
 #include "mathStudent.hpp"
 #include <iostream>
 #include <sstream>
+#include <ctime>
+#include <iomanip>
 
 
-static const std::set<std::string> initSubjects = {"Math", "Physics", "Analysis", "Statistics"};
+static const std::set<std::string> mandatorySubjects = {"Math", "Physics", "Analysis", "Statistics"};
 
 
 Gender stringToGender(const std::string& str) 
@@ -22,9 +24,31 @@ Gender stringToGender(const std::string& str)
     } 
     else 
     {
-        std::cerr << "\t[ERROR]\t{stringToGender} - invalid input data " << std::endl;
-        exit(0);
+        throw std::runtime_error(std::string(__func__) + " function failed");
     }
+}
+
+std::tm stringToTm(const std::string& dateStr, const std::string& format) 
+{
+    std::tm tm = {};
+    std::istringstream ss(dateStr);
+    ss >> std::get_time(&tm, format.c_str());
+    
+    if (ss.fail())
+    {
+        throw std::runtime_error(std::string(__func__) + " function failed");
+    }
+    
+    return tm;
+}
+
+std::string TmToString(const std::tm & tmdate, const std::string& format) 
+{
+    std::stringstream ssBirthday;
+    ssBirthday << std::put_time(&tmdate, format.c_str());
+    std::string birthdate = ssBirthday.str();
+    
+    return birthdate;
 }
 
 std::ostream& operator<<(std::ostream & os, const Gender & gender)
@@ -63,31 +87,33 @@ std::istream& operator>>(std::istream& is, Gender& gender)
 
 MathStudent::MathStudent(void)
 {
-    m_subjects.insert(initSubjects.begin(), initSubjects.end());
+    m_subjects.insert(mandatorySubjects.begin(), mandatorySubjects.end());
 };
 
-MathStudent::MathStudent(const std::string & name, const std::string & lastname, const std::string & address,
+MathStudent::MathStudent(const std::string & name, const std::string & lastname, const std::tm & birthDate, const std::string & address,
                          int indexNumber, const std::string & pesel, Gender gender) : 
     m_name(name), 
     m_lastname(lastname),
+    m_birthDate(birthDate),
     m_address(address),
     m_indexNumber(indexNumber),
     m_pesel(pesel),
     m_gender(gender)
     {
-        m_subjects.insert(initSubjects.begin(), initSubjects.end());
+        m_subjects.insert(mandatorySubjects.begin(), mandatorySubjects.end());
     };
 
-MathStudent::MathStudent(const std::string && name, const std::string && lastname, const std::string && address,
+MathStudent::MathStudent(const std::string && name, const std::string && lastname, const std::tm && birthDate, const std::string && address,
                          int indexNumber, std::string && pesel, Gender && gender) :  
     m_name(std::move(name)), 
     m_lastname(std::move(lastname)),
+    m_birthDate(std::move(birthDate)),
     m_address(std::move(address)),
     m_indexNumber(indexNumber),
     m_pesel(std::move(pesel)),
     m_gender(std::move(gender))
     {
-        m_subjects.insert(initSubjects.begin(), initSubjects.end());
+        m_subjects.insert(mandatorySubjects.begin(), mandatorySubjects.end());
     };
 
 MathStudent::MathStudent(const MathStudent & other)
@@ -96,6 +122,7 @@ MathStudent::MathStudent(const MathStudent & other)
     {
         m_name = other.m_name;
         m_lastname = other.m_lastname;
+        m_birthDate = other.m_birthDate;
         m_address = other.m_address;
         m_indexNumber = other.m_indexNumber;
         m_pesel = other.m_pesel;
@@ -111,23 +138,27 @@ MathStudent& MathStudent::operator==(const MathStudent & other)
     {
         this->m_name = other.m_name; 
         this->m_lastname = other.m_lastname;
+        this->m_birthDate = other.m_birthDate;
         this->m_address = other.m_address;
         this->m_indexNumber = other.m_indexNumber;
         this->m_pesel = other.m_pesel;
         this->m_gender = other.m_gender;
+        this->m_subjects = other.m_subjects;
+        this->m_grades = other.m_grades;
     }
     return *this;
 }
 
 std::vector<std::string> MathStudent::getStudent(void) const
 {
-    std::stringstream ssIndexNmb, ssGender;
+    std::stringstream ssIndexNmb, ssGender, ssBirthday;
     ssIndexNmb << m_indexNumber;
     ssGender << m_gender;
+    ssBirthday << std::put_time(&m_birthDate, "%d.%m.%Yr");
     std::string indexNumber = ssIndexNmb.str();
     std::string gender = ssGender.str();
-
-    return std::vector<std::string>{m_name, m_lastname, m_address, indexNumber, m_pesel, gender};
+    std::string birthdate = ssBirthday.str();
+    return std::vector<std::string>{m_name, m_lastname, birthdate, m_address, indexNumber, m_pesel, gender};
 }
 
 std::string MathStudent::getName(void) const
@@ -169,6 +200,11 @@ void MathStudent::setIndex(const int & index)
     m_indexNumber = index;
 }
 
+std::set<std::string> MathStudent::getMandatorySubjects(void) const
+{
+    return mandatorySubjects;
+}
+
 std::string MathStudent::getFieldOfStudy(void) const
 {
     return "Mathematics";
@@ -177,7 +213,11 @@ std::string MathStudent::getFieldOfStudy(void) const
 
 void MathStudent::showStudent(void) const
 {
-    std::cout << m_name << " | " << m_lastname << " | " << m_address << " | " 
+    
+    std::stringstream ssBirthday;
+    ssBirthday << std::put_time(&m_birthDate, "%d.%m.%Yr");
+    std::string birthdate = ssBirthday.str();
+    std::cout << m_name << " | " << m_lastname << " | " << birthdate << " | " << m_address << " | " 
               << m_indexNumber << " | " << m_pesel << " | " << m_gender << std::endl;
 }
 
@@ -213,6 +253,10 @@ void MathStudent::modifyStudent(void)
     std::cout << "Current Last name: " << m_lastname << std::endl << "Enter new Last name or skip(Enter): ";
     std::getline(std::cin, input);
     if (!input.empty()) m_lastname = input;
+
+    std::cout << "Current birthday date: " << TmToString(m_birthDate, "%d.%m.%Y") << std::endl << "Enter new Birthday date or skip(Enter): ";
+    std::getline(std::cin, input);
+    if (!input.empty()) m_birthDate = stringToTm(input, "%d.%m.%Y");
 
     std::cout << "Current Address: " << m_address << std::endl << "Enter new Address or skip(Enter): ";
     std::getline(std::cin, input);

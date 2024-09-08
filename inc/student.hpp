@@ -1,6 +1,7 @@
 #pragma once
 #include <string>
 #include <vector>
+#include <set>
 
 class Student
 {
@@ -14,6 +15,7 @@ public:
     virtual void setPesel(const std::string & name) = 0;
     virtual int getIndex(void) const = 0;
     virtual void setIndex(const int & index) = 0;
+    virtual std::set<std::string> getMandatorySubjects(void) const = 0;
     virtual std::string getFieldOfStudy(void) const = 0;
 
     virtual void showStudent(void) const = 0;
