@@ -5,8 +5,8 @@
 #include <limits>
 #include <memory>
 
-#include "studentdatabase.hpp"
-#include "mathStudent.hpp"
+#include "UniversityDatabase.hpp"
+#include "Student.hpp"
 
 struct MenuItem {
     std::string label;
@@ -14,28 +14,28 @@ struct MenuItem {
     std::vector<MenuItem> subMenu;
 };
 
-class ConsoleGUI {
+class CommandLineInterface {
 private:
-    StudentDatabase & m_db;
+    UniversityDatabase & m_db;
     MenuItem m_mainMenu;
     bool m_isMenuEnabled;
 public:
-    ConsoleGUI(StudentDatabase &  db);
+    CommandLineInterface(UniversityDatabase &  db);
 
     void action1(void);
 
     void displayFieldsOfStudy(void) const;
     void displayStudentsForSelectedFieldOfStudy(void) const;
     void displaySubjectsForSelectedFieldOfStudy(void) const;
-    void displayStudentsByLastname(void) const;
+    void displayEntitiesByLastname(void) const;
 
-    void addStudentByUser(void) const;
-    void removeStudentByUser(void) const;
-    void modifyStudentByUser(void) const;
-    void sortStudentsByLastNameAtoZ(void) const;
-    void sortStudentsByLastNameZtoA(void) const;
-    void sortStudentsByIndexAscending(void) const;
-    void sortStudentsByIndexDescending(void) const;
+    void addEntityByUser(void) const;
+    void removeEntityByUser(void) const;
+    void modifyEntityByUser(void) const;
+    void sortEntitiesByLastNameAtoZ(void) const;
+    void sortEntitiesByLastNameZtoA(void) const;
+    void sortEntitiesByIndexAscending(void) const;
+    void sortEntitiesByIndexDescending(void) const;
 
     void displayMenu(const MenuItem & selectedMenu) const;
     void run();

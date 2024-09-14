@@ -1,4 +1,4 @@
-#include "mathStudent.hpp"
+#include "Student.hpp"
 #include <iostream>
 #include <sstream>
 #include <ctime>
@@ -85,12 +85,12 @@ std::istream& operator>>(std::istream& is, Gender& gender)
 }
 
 
-MathStudent::MathStudent(void)
+Student::Student(void)
 {
     m_subjects.insert(mandatorySubjects.begin(), mandatorySubjects.end());
 };
 
-MathStudent::MathStudent(const std::string & name, const std::string & lastname, const std::tm & birthDate, const std::string & address,
+Student::Student(const std::string & name, const std::string & lastname, const std::tm & birthDate, const std::string & address,
                          int indexNumber, const std::string & pesel, Gender gender) : 
     m_name(name), 
     m_lastname(lastname),
@@ -103,7 +103,7 @@ MathStudent::MathStudent(const std::string & name, const std::string & lastname,
         m_subjects.insert(mandatorySubjects.begin(), mandatorySubjects.end());
     };
 
-MathStudent::MathStudent(const std::string && name, const std::string && lastname, const std::tm && birthDate, const std::string && address,
+Student::Student(const std::string && name, const std::string && lastname, const std::tm && birthDate, const std::string && address,
                          int indexNumber, std::string && pesel, Gender && gender) :  
     m_name(std::move(name)), 
     m_lastname(std::move(lastname)),
@@ -116,7 +116,7 @@ MathStudent::MathStudent(const std::string && name, const std::string && lastnam
         m_subjects.insert(mandatorySubjects.begin(), mandatorySubjects.end());
     };
 
-MathStudent::MathStudent(const MathStudent & other)
+Student::Student(const Student & other)
 {
     if(this != &other)
     {
@@ -132,7 +132,7 @@ MathStudent::MathStudent(const MathStudent & other)
     }
 }
 
-MathStudent& MathStudent::operator==(const MathStudent & other)
+Student& Student::operator==(const Student & other)
 {
     if(this != &other)
     {
@@ -149,7 +149,7 @@ MathStudent& MathStudent::operator==(const MathStudent & other)
     return *this;
 }
 
-std::vector<std::string> MathStudent::getStudent(void) const
+std::string Student::serialize(void) const
 {
     std::stringstream ssIndexNmb, ssGender, ssBirthday;
     ssIndexNmb << m_indexNumber;
@@ -158,60 +158,62 @@ std::vector<std::string> MathStudent::getStudent(void) const
     std::string indexNumber = ssIndexNmb.str();
     std::string gender = ssGender.str();
     std::string birthdate = ssBirthday.str();
-    return std::vector<std::string>{m_name, m_lastname, birthdate, m_address, indexNumber, m_pesel, gender};
+    std::string ret_val = m_name + "," + m_lastname + "," + birthdate + "," + m_address + "," + indexNumber + "," +
+                          m_pesel + "," + gender + "\n";
+    return ret_val;
 }
 
-std::string MathStudent::getName(void) const
+std::string Student::getName(void) const
 {
     return m_name;
 }
 
-void MathStudent::setName(const std::string & name)
+void Student::setName(const std::string & name)
 {
     m_name = name;
 }
 
-std::string MathStudent::getLastname(void) const
+std::string Student::getLastname(void) const
 {
     return m_lastname;
 }
 
-void MathStudent::getLastname(const std::string & lastname)
+void Student::setLastname(const std::string & lastname)
 {
     m_lastname = lastname;
 }
 
-std::string MathStudent::getPesel(void) const
+std::string Student::getPesel(void) const
 {
     return m_pesel;
 }
 
-void MathStudent::setPesel(const std::string & pesel)
+void Student::setPesel(const std::string & pesel)
 {
     m_pesel = pesel;
 }
 
-int MathStudent::getIndex(void) const
+int Student::getIndex(void) const
 {
     return m_indexNumber;
 }
-void MathStudent::setIndex(const int & index)
+void Student::setIndex(const int & index)
 {
     m_indexNumber = index;
 }
 
-std::set<std::string> MathStudent::getMandatorySubjects(void) const
+std::set<std::string> Student::getMandatorySubjects(void) const
 {
     return mandatorySubjects;
 }
 
-std::string MathStudent::getFieldOfStudy(void) const
+std::string Student::getFieldOfStudy(void) const
 {
     return "Mathematics";
 }
 
 
-void MathStudent::showStudent(void) const
+void Student::show(void) const
 {
     
     std::stringstream ssBirthday;
@@ -221,7 +223,7 @@ void MathStudent::showStudent(void) const
               << m_indexNumber << " | " << m_pesel << " | " << m_gender << std::endl;
 }
 
-void MathStudent::showStudentEx(void) const
+void Student::showExtented(void) const
 {
     std::cout << "==========================================================" << std::endl;
     std::cout << "Information about student:" << std::endl;
@@ -237,18 +239,19 @@ void MathStudent::showStudentEx(void) const
     std::cout << "==========================================================" << std::endl;  
 }
 
-void MathStudent::modifyStudent(void)
+void Student::modify(void)
 {
     std::cout << "Actual data for student:" << std::endl;
-    this->showStudentEx();
+    this->showExtented();
     std::cout << "Modification started. Please enter new values:" << std::endl;
     std::string input;
 
-    std::cout << "Current Name: " << m_name << std::endl << "Enter new Name or skip(Enter): ";
-    std::getline(std::cin, input);
-    if (!input.empty()) m_name;
     std::cin.clear();
     std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+
+    std::cout << "Current Name: " << m_name << std::endl << "Enter new Name or skip(Enter): ";
+    std::getline(std::cin, input);
+    if (!input.empty()) m_name = input;
 
     std::cout << "Current Last name: " << m_lastname << std::endl << "Enter new Last name or skip(Enter): ";
     std::getline(std::cin, input);
@@ -276,7 +279,7 @@ void MathStudent::modifyStudent(void)
     
 }
 
-void MathStudent::showSubjects(void) const
+void Student::showSubjects(void) const
 {
     std::cout << "==========================================================" << std::endl;
     std::cout << "Subjects for student:" << std::endl;
@@ -287,17 +290,17 @@ void MathStudent::showSubjects(void) const
     std::cout << "==========================================================" << std::endl;
 }
 
-bool MathStudent::addSubject(const std::string & subjectName)
+bool Student::addSubject(const std::string & subjectName)
 {
     auto isSubjectInserted = m_subjects.insert(subjectName); 
     if( false == isSubjectInserted.second)
     {
-        std::cerr << "\t[ERROR]\t{addSubject} - insert failed" << std::endl;
+        std::cerr << "\t[ERROR]\t" + std::string(__func__) + " function failed" << std::endl;
     }
     return isSubjectInserted.second;
 }
 
-bool MathStudent::removeSubject(const std::string & subjectName)
+bool Student::removeSubject(const std::string & subjectName)
 {
     bool isExist = m_subjects.contains(subjectName);
     if( true == isExist)
@@ -306,12 +309,12 @@ bool MathStudent::removeSubject(const std::string & subjectName)
     }
     else
     {
-        std::cerr << "\t[ERROR]\t{removeSubject} - Subject is not exist" << std::endl;
+        std::cerr << "\t[ERROR]\t" + std::string(__func__) + " function failed" << std::endl;
     }
     return isExist;
 }
 
-void MathStudent::showGrades(void) const
+void Student::showGrades(void) const
 {
     std::cout << "==========================================================" << std::endl;
     std::cout << "Grades of a " << m_name << " " << m_lastname << ":" << std::endl;
@@ -326,17 +329,17 @@ void MathStudent::showGrades(void) const
     std::cout << "\r==========================================================" << std::endl;
 }
 
-bool MathStudent::addGrade(const std::string & subject, const std::string & comment, float grade)
+bool Student::addGrade(const std::string & subject, const std::string & comment, float grade)
 {
     if( (grade < MIN_GRADE) && (grade > MAX_GRADE) )
     {
-        std::cerr << "\t[ERROR]\t{addGrade} - Invalid grade" << std::endl; 
+        std::cerr << "\t[ERROR]\t" + std::string(__func__) + " function failed" << std::endl;
         return false;
     }
 
     if( bool subjectIsAdded = m_subjects.contains(subject); false == subjectIsAdded )
     {
-        std::cerr << "\t[ERROR]\t{addGrade} - Subject is not exist" << std::endl;
+        std::cerr << "\t[ERROR]\t" + std::string(__func__) + " function failed" << std::endl;
         return false;
     }
 
@@ -346,18 +349,18 @@ bool MathStudent::addGrade(const std::string & subject, const std::string & comm
     }
     else
     {
-        std::cerr << "\t[ERROR]\t{addGrade} - Grade for this comment is already added" << std::endl;
+        std::cerr << "\t[ERROR]\t" + std::string(__func__) + " function failed" << std::endl;
         return false;
     }
 
     return true;
 }
     
-bool MathStudent::removeGrade(const std::string & subject, const std::string & comment)
+bool Student::removeGrade(const std::string & subject, const std::string & comment)
 {
     if( bool subjectIsAdded = m_subjects.contains(subject); false == subjectIsAdded )
     {
-        std::cerr << "\t[ERROR]\t{removeGrade} - Subject is not exist" << std::endl;
+        std::cerr << "\t[ERROR]\t" + std::string(__func__) + " function failed" << std::endl;
         return false;
     }
 
@@ -367,7 +370,7 @@ bool MathStudent::removeGrade(const std::string & subject, const std::string & c
     }
     else
     {
-        std::cerr << "\t[ERROR]\t{removeGrade} - Grade for this comment is not exist" << std::endl;
+        std::cerr << "\t[ERROR]\t" + std::string(__func__) + " function failed" << std::endl;
         return false;
     }
 

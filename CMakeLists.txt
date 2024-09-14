@@ -4,14 +4,14 @@ cmake_minimum_required(VERSION 3.10)
 set(CMAKE_CXX_STANDARD 20)
 
 # Nazwa projektu
-project(StudentDatabase)
+project(UniversityDatabase)
 
 # Pliki źródłowe C++
 set(CXX_SRCS
-    src/main.cpp
-    src/studentdatabase.cpp
-    src/mathStudent.cpp
-    src/consoleGui.cpp
+    src/Main.cpp
+    src/UniversityDatabase.cpp
+    src/Student.cpp
+    src/CommandLineInterface.cpp
 )
 
 # Budowanie pliku wykonywalnego
@@ -39,7 +39,7 @@ FetchContent_MakeAvailable(googletest)
 
 enable_testing()
 
-add_executable(${PROJECT_NAME}-ut src/tests.cpp)
+add_executable(${PROJECT_NAME}-ut src/Tests.cpp)
 target_link_libraries(${PROJECT_NAME}-ut GTest::gtest_main)
 
 include(GoogleTest)

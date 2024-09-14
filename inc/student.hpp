@@ -1,33 +1,79 @@
 #pragma once
+#include "Entity.hpp"
 #include <string>
-#include <vector>
 #include <set>
+#include <map>
+#include <vector>
+#include <ctime>
 
-class Student
+#define MIN_GRADE 0
+#define MAX_GRADE 6
+
+enum class Gender {
+    Male,
+    Female,
+    Default
+};
+
+Gender stringToGender(const std::string& str);
+std::tm stringToTm(const std::string& dateStr, const std::string& format);
+std::string TmToString(const std::tm & tmdate, const std::string& format);
+
+std::ostream& operator<<(std::ostream & os, const Gender & gender);
+std::istream& operator>>(std::istream & is, Gender & gender);
+
+class Student : public Entity
 {
+private:
+    std::string m_name;
+    std::string m_lastname;
+    std::tm m_birthDate;
+    std::string m_address;
+    int m_indexNumber;
+    std::string m_pesel;
+    Gender m_gender;
+    std::set<std::string> m_subjects;
+    /* 
+    Grades is stored in convention as below 
+    map<Subject , map<Comment, Grade> >   
+         Comment - for which the student received a grade example: test, quiz, activity, oral answer...
+    */
+    std::map<std::string, std::map<std::string, float>> m_grades;
+    
 public:
-    virtual std::vector<std::string> getStudent(void) const = 0;
-    virtual std::string getName(void) const = 0;
-    virtual void setName(const std::string & name) = 0;
-    virtual std::string getLastname(void) const = 0;
-    virtual void getLastname(const std::string & lastname) = 0;
-    virtual std::string getPesel(void) const = 0;
-    virtual void setPesel(const std::string & name) = 0;
-    virtual int getIndex(void) const = 0;
-    virtual void setIndex(const int & index) = 0;
-    virtual std::set<std::string> getMandatorySubjects(void) const = 0;
-    virtual std::string getFieldOfStudy(void) const = 0;
+    Student(void);
+    Student(const std::string & name, const std::string & lastname, const std::tm & birthDate, const std::string & address = "default",
+                         int indexNumber = 0, const std::string & pesel = "default", Gender gender = Gender::Default);
+                         
+    Student(const std::string && name, const std::string && lastname, const std::tm && birthDate, const std::string && address = "default",
+                         int indexNumber = 0, std::string && pesel = "default", Gender && gender = Gender::Default);
+                    
+    Student(const Student &other);
 
-    virtual void showStudent(void) const = 0;
-    virtual void showStudentEx(void) const = 0;
+    Student& operator==(const Student & other);
 
-    virtual void modifyStudent(void) = 0;
+    std::string serialize(void) const override;
+    std::string getName(void) const override;
+    void setName(const std::string & name) override;
+    std::string getLastname(void) const override;
+    void setLastname(const std::string & lastname) override;
+    std::string getPesel(void) const override;
+    void setPesel(const std::string & name) override;
+    int getIndex(void) const override;
+    void setIndex(const int & index) override;
+    std::set<std::string> getMandatorySubjects(void) const override;
+    std::string getFieldOfStudy(void) const override;
 
-    virtual void showSubjects(void) const = 0;
-    virtual bool addSubject(const std::string & subjectName) = 0;
-    virtual bool removeSubject(const std::string & subjectName) = 0;
+    void show(void) const override;
+    void showExtented(void) const override;
+    
+    void modify(void) override;
 
-    virtual void showGrades(void) const = 0;
-    virtual bool addGrade(const std::string & subject, const std::string & comment, float grade) = 0;
-    virtual bool removeGrade(const std::string & subject, const std::string & comment) = 0;
+    void showSubjects(void) const override;
+    bool addSubject(const std::string & subjectName) override;
+    bool removeSubject(const std::string & subjectName) override;
+
+    void showGrades(void) const override;
+    bool addGrade(const std::string & subject, const std::string & comment, float grade) override;
+    bool removeGrade(const std::string & subject, const std::string & comment) override;
 };

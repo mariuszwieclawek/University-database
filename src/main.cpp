@@ -1,18 +1,18 @@
 #include <iostream>
 #include <memory>
 
-#include "student.hpp"
-#include "mathStudent.hpp"
-#include "studentdatabase.hpp"
-#include "consoleGui.hpp"
+#include "Entity.hpp"
+#include "Student.hpp"
+#include "UniversityDatabase.hpp"
+#include "CommandLineInterface.hpp"
 
 
 
 int main()
 {
-    // std::unique_ptr<Student> student = std::make_unique<MathStudent>("Mariusz", "Kowalski", "Czarna 21 33-300 Nowy Sacz",
+    // std::unique_ptr<Entity> student = std::make_unique<Student>("Mariusz", "Kowalski", "Czarna 21 33-300 Nowy Sacz",
     //                                                                 400201, "99020213134", Gender::Male);
-    // student->showStudent();
+    // student->show();
     // student->showSubjects();
     // student->addSubject("English");
     // student->removeSubject("Statistics");
@@ -32,35 +32,35 @@ int main()
     // student->removeGrade("Physics", "asdaasda");
     // student->showGrades();
 
-    StudentDatabase db;
-    // db.addStudent(std::move(student));
+    UniversityDatabase db;
+    // db.addEntity(std::move(student));
 
-    // student = std::make_unique<MathStudent>("Michal", "Niemy", "Biala 221 30-302 Krakow",
+    // student = std::make_unique<Student>("Michal", "Niemy", "Biala 221 30-302 Krakow",
     //                                         400202, "99020212345", Gender::Male);
     // student->addGrade("Math", "Activity1", 5.0);
     // student->addGrade("Math", "Test1", 3.5);
     // student->addGrade("Physics", "Activity1", 4.5);
     // student->addGrade("Physics", "Test1", 4.5);
     // student->showGrades();
-    // db.addStudent(std::move(student));
+    // db.addEntity(std::move(student));
 
-    // student = std::make_unique<MathStudent>("Andrzej", "Abacki", "Zolta 12a 30-302 Krakow",
+    // student = std::make_unique<Student>("Andrzej", "Abacki", "Zolta 12a 30-302 Krakow",
     //                                         400203, "99020254321", Gender::Male);
     // student->addGrade("Math", "Activity1", 2.0);
     // student->addGrade("Math", "Test1", 2.5);
     // student->addGrade("Physics", "Activity1", 1.5);
     // student->addGrade("Physics", "Test1", 3.5);
     // student->showGrades();
-    // db.addStudent(std::move(student));
+    // db.addEntity(std::move(student));
 
     // db.sortStudentByLastname();
-    // db.displayStudents();
+    // db.displayEntities();
 
-    // std::vector<Student*> sts = db.findStudentsByLastname("Abacki");
-    // sts[0]->showStudent();
+    // std::vector<Entity*> sts = db.findEntitiesByLastname("Abacki");
+    // sts[0]->show();
 
 
-    ConsoleGUI menu(db);
+    CommandLineInterface menu(db);
     menu.run();
 
     return 0;

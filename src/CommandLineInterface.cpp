@@ -1,24 +1,24 @@
-#include "consoleGui.hpp"
+#include "CommandLineInterface.hpp"
 #include "Windows.h"
 #include "sstream"
 #include <conio.h>
 #include <cctype> 
 
 
-ConsoleGUI::ConsoleGUI(StudentDatabase &  db) : m_db(db)
+CommandLineInterface::CommandLineInterface(UniversityDatabase &  db) : m_db(db)
 {
     auto action1 = [this]() { this->displayFieldsOfStudy(); };
     auto action2 = [this]() { this->displayStudentsForSelectedFieldOfStudy(); };
     auto action3 = [this]() { this->displaySubjectsForSelectedFieldOfStudy(); };
-    auto action4 = [this]() { this->m_db.displayStudents(); };
-    auto action5 = [this]() { this->displayStudentsByLastname(); };
-    auto action6 = [this]() { this->addStudentByUser(); };
-    auto action7 = [this]() { this->removeStudentByUser(); };
-    auto action8 = [this]() { this->modifyStudentByUser(); };
-    auto action9 = [this]() { this->sortStudentsByLastNameAtoZ(); };
-    auto action10 = [this]() { this->sortStudentsByLastNameZtoA(); };
-    auto action11 = [this]() { this->sortStudentsByIndexAscending(); };
-    auto action12 = [this]() { this->sortStudentsByIndexDescending(); };
+    auto action4 = [this]() { this->m_db.displayEntities(); };
+    auto action5 = [this]() { this->displayEntitiesByLastname(); };
+    auto action6 = [this]() { this->addEntityByUser(); };
+    auto action7 = [this]() { this->removeEntityByUser(); };
+    auto action8 = [this]() { this->modifyEntityByUser(); };
+    auto action9 = [this]() { this->sortEntitiesByLastNameAtoZ(); };
+    auto action10 = [this]() { this->sortEntitiesByLastNameZtoA(); };
+    auto action11 = [this]() { this->sortEntitiesByIndexAscending(); };
+    auto action12 = [this]() { this->sortEntitiesByIndexDescending(); };
 
     m_mainMenu =
     {
@@ -29,28 +29,28 @@ ConsoleGUI::ConsoleGUI(StudentDatabase &  db) : m_db(db)
                 {"Enter field of study and display Student list", action2, {}},
                 {"Enter field of study and display Subject list", action3, {}}
             }},
-            {"Student list", action4, {}},
-            {"Sort student list", nullptr, 
+            {"List of entities at the university", action4, {}},
+            {"Sort entity list", nullptr, 
             {
-                {"Sort students by lastname A to Z", action9, {}},
-                {"Sort students by lastname Z to A", action10, {}},
-                {"Sort students by index number ascending", action11, {}},
-                {"Sort students by index number descending", action12, {}},
+                {"Sort entities by lastname A to Z", action9, {}},
+                {"Sort entities by lastname Z to A", action10, {}},
+                {"Sort entities by index number ascending", action11, {}},
+                {"Sort entities by index number descending", action12, {}},
             }},
-            {"Search for student", action5, {}},
-            {"Add student", action6, {}},
-            {"Remove student", action7, {}},
-            {"Modify student", action8, {}}
+            {"Search for entities", action5, {}},
+            {"Add entity", action6, {}},
+            {"Remove entity", action7, {}},
+            {"Modify entity", action8, {}}
         }
     };
 };
 
-void ConsoleGUI::action1(void)
+void CommandLineInterface::action1(void)
 {
     std::cout << "hello" << std::endl;
 }
 
-void ConsoleGUI::displayFieldsOfStudy(void) const
+void CommandLineInterface::displayFieldsOfStudy(void) const
 {
     std::cout << "List of fields of study at the university:" << std::endl;
     std::set<std::string> fields_of_study = m_db.getFieldsOfStudy();
@@ -61,7 +61,7 @@ void ConsoleGUI::displayFieldsOfStudy(void) const
     std::cout << std::endl;
 }
 
-void ConsoleGUI::displayStudentsForSelectedFieldOfStudy(void) const
+void CommandLineInterface::displayStudentsForSelectedFieldOfStudy(void) const
 {
     this->displayFieldsOfStudy();
     std::string fldOfStd;
@@ -70,10 +70,10 @@ void ConsoleGUI::displayStudentsForSelectedFieldOfStudy(void) const
     std::cin.clear();
     std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
-    m_db.displayStudentsByFieldOfStudy(fldOfStd);
+    m_db.displayEntitiesByFieldOfStudy(fldOfStd);
 }
 
-void ConsoleGUI::displaySubjectsForSelectedFieldOfStudy(void) const
+void CommandLineInterface::displaySubjectsForSelectedFieldOfStudy(void) const
 {
     this->displayFieldsOfStudy();
     std::string fldOfStd;
@@ -91,34 +91,34 @@ void ConsoleGUI::displaySubjectsForSelectedFieldOfStudy(void) const
     }
 }
 
-void ConsoleGUI::displayStudentsByLastname(void) const
+void CommandLineInterface::displayEntitiesByLastname(void) const
 {
-    m_db.displayStudents();
+    m_db.displayEntities();
     std::cout << "===========================================================================================" << std::endl << std::endl;
     std::string lastname;
-    std::cout << "Enter student lastname to show extended info: ";
+    std::cout << "Enter entity lastname to show extended info: ";
     std::cin >> lastname;
     std::cin.clear();
     std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
-    std::vector<const Student*> students = m_db.findStudentsByLastname(lastname);
+    std::vector<const Entity*> entities = m_db.findEntitiesByLastname(lastname);
 
-    if(students.empty() == true)
+    if(entities.empty() == true)
     {
-        std::cout << "Cannot find the students" << std::endl;
+        std::cout << "Cannot find the entities" << std::endl;
     }
     else
     {
-        std::cout << "Selected students:" << std::endl;
-        for(auto st : students)
+        std::cout << "Selected entities:" << std::endl;
+        for(auto ent : entities)
         {
-            st->showStudentEx();
+            ent->showExtented();
             std::cout << std::endl << std::endl;
         }
     }
 }
 
-void ConsoleGUI::addStudentByUser(void) const
+void CommandLineInterface::addEntityByUser(void) const
 {
     std::string name;
     std::string lastname;
@@ -145,6 +145,7 @@ void ConsoleGUI::addStudentByUser(void) const
     std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
     std::cout << "\tMonth:";
     std::cin >> birthdate.tm_mon;
+    birthdate.tm_mon -= 1;
     std::cin.clear();
     std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
     std::cout << "\tYear:";
@@ -171,24 +172,24 @@ void ConsoleGUI::addStudentByUser(void) const
     std::cin.clear();
     std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
-    m_db.addStudent(std::make_unique<MathStudent>(name, lastname, birthdate, address, indexNumber, pesel, gnr));
+    m_db.addEntity(std::make_unique<Student>(name, lastname, birthdate, address, indexNumber, pesel, gnr));
 
-    std::cout << "Student added!" << std::endl;
+    std::cout << "Entity added!" << std::endl;
 }
 
-void ConsoleGUI::removeStudentByUser(void) const
+void CommandLineInterface::removeEntityByUser(void) const
 {
-    m_db.displayStudents();
+    m_db.displayEntities();
     std::cout << "===========================================================================================" << std::endl;
     std::string pesel;
 
-    std::cout << "Enter the PESEL number of the student you want to remove from the database: ";
+    std::cout << "Enter the PESEL number of the entity you want to remove from the database: ";
     std::cin >> pesel;
     std::cin.clear();
     std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
 
-    if(m_db.removeStudentByPesel(pesel) != true)
+    if(m_db.removeEntityByPesel(pesel) != true)
     {
         std::cout << "Wrong PESEL number! Could not be removed" << std::endl;
     }
@@ -198,55 +199,55 @@ void ConsoleGUI::removeStudentByUser(void) const
     }
 }
 
-void ConsoleGUI::modifyStudentByUser(void) const
+void CommandLineInterface::modifyEntityByUser(void) const
 {
-    m_db.displayStudents();
+    m_db.displayEntities();
     std::cout << "===========================================================================================" << std::endl;
     std::string pesel;
-    std::cout << "Enter the PESEL number of the student you want to modify: ";
+    std::cout << "Enter the PESEL number of the entity you want to modify: ";
     std::cin >> pesel;
 
-    bool isModified = m_db.modifyStudentByPesel(pesel);
+    bool isModified = m_db.modifyEntityByPesel(pesel);
 
     if(isModified == false)
     {
-        std::cout << "The student could not be found" << std::endl;
+        std::cout << "The entity could not be found" << std::endl;
     }
     else
     {
-        std::cout << "Student modified!" << std::endl;
+        std::cout << "Entity modified!" << std::endl;
     }
 }
 
-void ConsoleGUI::sortStudentsByLastNameAtoZ(void) const
+void CommandLineInterface::sortEntitiesByLastNameAtoZ(void) const
 {
-    m_db.sortStudents(StudentDatabase::SORT_BY_LASTNAME_A_TO_Z);
-    std::cout << "Sorted student list:" << std::endl;
-    m_db.displayStudents();
+    m_db.sortEntities(UniversityDatabase::SORT_BY_LASTNAME_A_TO_Z);
+    std::cout << "Sorted entity list:" << std::endl;
+    m_db.displayEntities();
 }
 
-void ConsoleGUI::sortStudentsByLastNameZtoA(void) const
+void CommandLineInterface::sortEntitiesByLastNameZtoA(void) const
 {
-    m_db.sortStudents(StudentDatabase::SORT_BY_LASTNAME_Z_TO_A);
-    std::cout << "Sorted student list:" << std::endl;
-    m_db.displayStudents();
+    m_db.sortEntities(UniversityDatabase::SORT_BY_LASTNAME_Z_TO_A);
+    std::cout << "Sorted entity list:" << std::endl;
+    m_db.displayEntities();
 }
 
-void ConsoleGUI::sortStudentsByIndexAscending(void) const
+void CommandLineInterface::sortEntitiesByIndexAscending(void) const
 {
-    m_db.sortStudents(StudentDatabase::SORT_BY_INDEX_ASCENDING);
-    std::cout << "Sorted student list:" << std::endl;
-    m_db.displayStudents();
+    m_db.sortEntities(UniversityDatabase::SORT_BY_INDEX_ASCENDING);
+    std::cout << "Sorted entity list:" << std::endl;
+    m_db.displayEntities();
 }
 
-void ConsoleGUI::sortStudentsByIndexDescending(void) const
+void CommandLineInterface::sortEntitiesByIndexDescending(void) const
 {
-    m_db.sortStudents(StudentDatabase::SORT_BY_INDEX_DESCENDING);
-    std::cout << "Sorted student list:" << std::endl;
-    m_db.displayStudents();
+    m_db.sortEntities(UniversityDatabase::SORT_BY_INDEX_DESCENDING);
+    std::cout << "Sorted entity list:" << std::endl;
+    m_db.displayEntities();
 }
 
-void ConsoleGUI::displayMenu(const MenuItem & selectedMenu) const 
+void CommandLineInterface::displayMenu(const MenuItem & selectedMenu) const 
 {
     std::cout << "===========================================================================================" << std::endl;
     for (int i = 0; i < selectedMenu.subMenu.size(); i++) 
@@ -259,11 +260,11 @@ void ConsoleGUI::displayMenu(const MenuItem & selectedMenu) const
     std::cout << "Select option: ";
 }
 
-void ConsoleGUI::run() 
+void CommandLineInterface::run() 
 {
     if(m_mainMenu.label.empty())
     {
-        std::cout << "[ERROR] Menu is not defined!";
+        std::cerr << "\t[ERROR]\t" + std::string(__func__) + " function failed" << std::endl;
         return;
     }
 
@@ -341,7 +342,7 @@ void ConsoleGUI::run()
     }
 }
 
-void ConsoleGUI::exitFromSelectedAction()
+void CommandLineInterface::exitFromSelectedAction()
 {
     std::string input;
     char choice_ch;
