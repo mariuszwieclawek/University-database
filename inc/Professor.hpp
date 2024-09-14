@@ -1,14 +1,8 @@
 #pragma once
 #include "Entity.hpp"
-#include <string>
-#include <set>
-#include <map>
-#include <vector>
 
-#define MIN_GRADE 0
-#define MAX_GRADE 6
 
-class Student : public Entity
+class Professor : public Entity
 {
 private:
     std::string m_name;
@@ -18,25 +12,17 @@ private:
     int m_indexNumber;
     std::string m_pesel;
     Gender m_gender;
-    std::set<std::string> m_subjects;
-    /* 
-    Grades is stored in convention as below 
-    map<Subject , map<Comment, Grade> >   
-         Comment - for which the student received a grade example: test, quiz, activity, oral answer...
-    */
-    std::map<std::string, std::map<std::string, float>> m_grades;
-    
 public:
-    Student(void);
-    Student(const std::string & name, const std::string & lastname, const std::tm & birthDate, const std::string & address = "default",
+    Professor(void);
+    Professor(const std::string & name, const std::string & lastname, const std::tm & birthDate, const std::string & address = "default",
                          int indexNumber = 0, const std::string & pesel = "default", Gender gender = Gender::Default);
                          
-    Student(const std::string && name, const std::string && lastname, const std::tm && birthDate, const std::string && address = "default",
+    Professor(const std::string && name, const std::string && lastname, const std::tm && birthDate, const std::string && address = "default",
                          int indexNumber = 0, std::string && pesel = "default", Gender && gender = Gender::Default);
                     
-    Student(const Student &other);
+    Professor(const Professor &other);
 
-    Student& operator==(const Student & other);
+    Professor& operator==(const Professor & other);
 
     std::string getName(void) const override;
     void setName(const std::string & name) override;
@@ -57,11 +43,4 @@ public:
     void showExtented(void) const override;
     void modify(void) override;
 
-
-    void showSubjects(void) const;
-    bool addSubject(const std::string & subjectName);
-    bool removeSubject(const std::string & subjectName);
-    void showGrades(void) const;
-    bool addGrade(const std::string & subject, const std::string & comment, float grade);
-    bool removeGrade(const std::string & subject, const std::string & comment);
 };

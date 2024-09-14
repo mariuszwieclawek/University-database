@@ -2,11 +2,13 @@
 #include <string>
 #include <vector>
 #include <set>
+#include <iomanip>
+#include "EntityUtils.hpp"
+
 
 class Entity
 {
 public:
-    virtual std::string serialize(void) const = 0;
     virtual std::string getName(void) const = 0;
     virtual void setName(const std::string & name) = 0;
     virtual std::string getLastname(void) const = 0;
@@ -15,6 +17,10 @@ public:
     virtual void setPesel(const std::string & name) = 0;
     virtual int getIndex(void) const = 0;
     virtual void setIndex(const int & index) = 0;
+    virtual EntityType getEntityType() const = 0;
+
+    virtual std::string serialize(void) const = 0;
+
     virtual std::set<std::string> getMandatorySubjects(void) const = 0;
     virtual std::string getFieldOfStudy(void) const = 0;
 
@@ -23,11 +29,4 @@ public:
 
     virtual void modify(void) = 0;
 
-    virtual void showSubjects(void) const = 0;
-    virtual bool addSubject(const std::string & subjectName) = 0;
-    virtual bool removeSubject(const std::string & subjectName) = 0;
-
-    virtual void showGrades(void) const = 0;
-    virtual bool addGrade(const std::string & subject, const std::string & comment, float grade) = 0;
-    virtual bool removeGrade(const std::string & subject, const std::string & comment) = 0;
 };

@@ -1,89 +1,9 @@
 #include "Student.hpp"
 #include <iostream>
-#include <sstream>
-#include <ctime>
-#include <iomanip>
+
 
 
 static const std::set<std::string> mandatorySubjects = {"Math", "Physics", "Analysis", "Statistics"};
-
-
-Gender stringToGender(const std::string& str) 
-{
-    if (str == "Male") 
-    {
-        return Gender::Male;
-    } 
-    else if (str == "Female") 
-    {
-        return Gender::Female;
-    } 
-    else if (str == "Default") 
-    {
-        return Gender::Default;
-    } 
-    else 
-    {
-        throw std::runtime_error(std::string(__func__) + " function failed");
-    }
-}
-
-std::tm stringToTm(const std::string& dateStr, const std::string& format) 
-{
-    std::tm tm = {};
-    std::istringstream ss(dateStr);
-    ss >> std::get_time(&tm, format.c_str());
-    
-    if (ss.fail())
-    {
-        throw std::runtime_error(std::string(__func__) + " function failed");
-    }
-    
-    return tm;
-}
-
-std::string TmToString(const std::tm & tmdate, const std::string& format) 
-{
-    std::stringstream ssBirthday;
-    ssBirthday << std::put_time(&tmdate, format.c_str());
-    std::string birthdate = ssBirthday.str();
-    
-    return birthdate;
-}
-
-std::ostream& operator<<(std::ostream & os, const Gender & gender)
-{
-    switch (gender)
-    {
-    case Gender::Male:
-        os << "Male";
-        break;
-    case Gender::Female:
-        os << "Female";
-        break;
-    default:
-        os << "Default";
-        break;
-    }
-    return os;
-}
-
-std::istream& operator>>(std::istream& is, Gender& gender)
-{
-    std::string input;
-    is >> input;
-
-    if (input == "Male") {
-        gender = Gender::Male;
-    } else if (input == "Female") {
-        gender = Gender::Female;
-    } else {
-        gender = Gender::Default;
-    }
-
-    return is;
-}
-
 
 Student::Student(void)
 {
@@ -151,15 +71,17 @@ Student& Student::operator==(const Student & other)
 
 std::string Student::serialize(void) const
 {
-    std::stringstream ssIndexNmb, ssGender, ssBirthday;
+    std::stringstream ssIndexNmb, ssEntityType, ssGender, ssBirthday;
     ssIndexNmb << m_indexNumber;
+    ssEntityType << this->getEntityType();
     ssGender << m_gender;
     ssBirthday << std::put_time(&m_birthDate, "%d.%m.%Yr");
     std::string indexNumber = ssIndexNmb.str();
+    std::string entityType = ssEntityType.str();
     std::string gender = ssGender.str();
     std::string birthdate = ssBirthday.str();
-    std::string ret_val = m_name + "," + m_lastname + "," + birthdate + "," + m_address + "," + indexNumber + "," +
-                          m_pesel + "," + gender + "\n";
+    std::string ret_val = indexNumber + "," + entityType + "," + m_name + "," + m_lastname + "," + birthdate + "," + m_address + "," +
+                          m_pesel + "," + gender + "," + this->getFieldOfStudy() + "\n";
     return ret_val;
 }
 
@@ -202,6 +124,11 @@ void Student::setIndex(const int & index)
     m_indexNumber = index;
 }
 
+EntityType Student::getEntityType(void) const
+{
+    return EntityType::Student;
+}
+
 std::set<std::string> Student::getMandatorySubjects(void) const
 {
     return mandatorySubjects;
@@ -215,17 +142,16 @@ std::string Student::getFieldOfStudy(void) const
 
 void Student::show(void) const
 {
-    
     std::stringstream ssBirthday;
     ssBirthday << std::put_time(&m_birthDate, "%d.%m.%Yr");
     std::string birthdate = ssBirthday.str();
-    std::cout << m_name << " | " << m_lastname << " | " << birthdate << " | " << m_address << " | " 
-              << m_indexNumber << " | " << m_pesel << " | " << m_gender << std::endl;
+    std::cout << "| " << m_indexNumber << " | " << this->getEntityType() << " | " << m_name << " | " << m_lastname << " | " << birthdate << " | " 
+    << m_address << " | " << m_pesel << " | " << m_gender << " | " << this->getFieldOfStudy() << " | " << std::endl;
 }
 
 void Student::showExtented(void) const
 {
-    std::cout << "==========================================================" << std::endl;
+    std::cout << "===========================================================================================================" << std::endl;
     std::cout << "Information about student:" << std::endl;
     std::cout << "Name: " << m_name << std::endl;
     std::cout << "Last name: " << m_lastname << std::endl;
@@ -233,10 +159,10 @@ void Student::showExtented(void) const
     std::cout << "Index number: " << m_indexNumber << std::endl;
     std::cout << "PESEL: " << m_pesel << std::endl;
     std::cout << "Gender: " << m_gender << std::endl;
-    std::cout << "==========================================================" << std::endl;  
+    std::cout << "===========================================================================================================" << std::endl;  
     this->showSubjects();
     this->showGrades();
-    std::cout << "==========================================================" << std::endl;  
+    std::cout << "===========================================================================================================" << std::endl;  
 }
 
 void Student::modify(void)
@@ -281,13 +207,13 @@ void Student::modify(void)
 
 void Student::showSubjects(void) const
 {
-    std::cout << "==========================================================" << std::endl;
+    std::cout << "===========================================================================================================" << std::endl;
     std::cout << "Subjects for student:" << std::endl;
     for(const auto & sb : m_subjects)
     {
         std::cout << "-" << sb << std::endl;
     }
-    std::cout << "==========================================================" << std::endl;
+    std::cout << "===========================================================================================================" << std::endl;
 }
 
 bool Student::addSubject(const std::string & subjectName)
@@ -316,7 +242,7 @@ bool Student::removeSubject(const std::string & subjectName)
 
 void Student::showGrades(void) const
 {
-    std::cout << "==========================================================" << std::endl;
+    std::cout << "===========================================================================================================" << std::endl;
     std::cout << "Grades of a " << m_name << " " << m_lastname << ":" << std::endl;
     for(const auto & [subject, commentAndGrade] : m_grades)
     {
@@ -326,7 +252,7 @@ void Student::showGrades(void) const
             std::cout << "* " << grade << "\t(Note:" << comment << ")\n\t\t";
         }
     }
-    std::cout << "\r==========================================================" << std::endl;
+    std::cout << "\r===========================================================================================================" << std::endl;
 }
 
 bool Student::addGrade(const std::string & subject, const std::string & comment, float grade)

@@ -83,7 +83,7 @@ void CommandLineInterface::displaySubjectsForSelectedFieldOfStudy(void) const
     std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
     std::set<std::string> subjects = m_db.getSubjectsForSelectedFieldOfStudy(fldOfStd);
-    std::cout << "===========================================================================================" << std::endl;
+    std::cout << "===========================================================================================================" << std::endl;
     std::cout << "Subject list for " << fldOfStd << ":" << std::endl;
     for( auto & sub : subjects )
     {
@@ -180,7 +180,7 @@ void CommandLineInterface::addEntityByUser(void) const
 void CommandLineInterface::removeEntityByUser(void) const
 {
     m_db.displayEntities();
-    std::cout << "===========================================================================================" << std::endl;
+    std::cout << "===========================================================================================================" << std::endl;
     std::string pesel;
 
     std::cout << "Enter the PESEL number of the entity you want to remove from the database: ";
@@ -202,7 +202,7 @@ void CommandLineInterface::removeEntityByUser(void) const
 void CommandLineInterface::modifyEntityByUser(void) const
 {
     m_db.displayEntities();
-    std::cout << "===========================================================================================" << std::endl;
+    std::cout << "===========================================================================================================" << std::endl;
     std::string pesel;
     std::cout << "Enter the PESEL number of the entity you want to modify: ";
     std::cin >> pesel;
@@ -249,14 +249,14 @@ void CommandLineInterface::sortEntitiesByIndexDescending(void) const
 
 void CommandLineInterface::displayMenu(const MenuItem & selectedMenu) const 
 {
-    std::cout << "===========================================================================================" << std::endl;
+    std::cout << "===========================================================================================================" << std::endl;
     for (int i = 0; i < selectedMenu.subMenu.size(); i++) 
     {
         std::cout << i+1 << ". " << selectedMenu.subMenu[i].label << std::endl;
     }
-    std::cout << "===========================================================================================" << std::endl;
+    std::cout << "===========================================================================================================" << std::endl;
     std::cout << "0. Exit " << std::endl;
-    std::cout << "===========================================================================================" << std::endl;
+    std::cout << "===========================================================================================================" << std::endl;
     std::cout << "Select option: ";
 }
 
@@ -348,7 +348,7 @@ void CommandLineInterface::exitFromSelectedAction()
     char choice_ch;
     int choice_digit;
 
-    std::cout << "===========================================================================================" << std::endl;
+    std::cout << "===========================================================================================================" << std::endl;
     std::cout << "Press '0' to return: " << std::endl;
     while (true) 
     {

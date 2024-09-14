@@ -13,11 +13,9 @@ int main()
     // std::unique_ptr<Entity> student = std::make_unique<Student>("Mariusz", "Kowalski", "Czarna 21 33-300 Nowy Sacz",
     //                                                                 400201, "99020213134", Gender::Male);
     // student->show();
-    // student->showSubjects();
+
     // student->addSubject("English");
     // student->removeSubject("Statistics");
-    // student->removeSubject("asd");
-    // student->showSubjects();
 
     // student->addGrade("Math", "Activity1", 5.0);
     // student->addGrade("Math", "Test1", 3.5);

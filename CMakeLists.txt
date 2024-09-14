@@ -12,6 +12,7 @@ set(CXX_SRCS
     src/UniversityDatabase.cpp
     src/Student.cpp
     src/CommandLineInterface.cpp
+    src/EntityUtils.cpp
 )
 
 # Budowanie pliku wykonywalnego

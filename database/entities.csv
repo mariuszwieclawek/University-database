@@ -1,12 +1,13 @@
-Name, Lastname, Date of birth, Address, Index number, PESEL, Gender
-Magdalena,Abacka,30.03.2001r,ul.Slowacka 15 Krakow,141414,77889912345,Female
-Mikolaj,Jetpak,30.03.1999r,Konopnicka 12 30-300 krakow,123599,12040090909,Male
-Mateusz,Kolucha,21.09.1997r,Czarnowiejska 21 Krakow,234234,12121312345,Default
-Mati,Kowal,01.08.2002r,Ulana 23 krakow,141414,15611412345,Default
-Michal,Kowalski,18.10.2001r,Dluga 12 Krakow,123456,31313112345,Male
-Michal,Koziara,09.04.1999r,Molowa 12 Krakow 30-302,142142,12345678910,Default
-Izabela,Matta,30.06.2001r,ul.Kalwaryjska 12 Krakow,444999,45454512345,Female
-Mateusz,Matuszczka,01.01.2001r,ul.Mateczna 14 Krakow ,501501,55667712345,Male
-Mikolaj,Swiety,05.03.1999r,Lapland,999111,45454512345,Default
-Mariusz,Wieclawek,18.02.1999r,ul.Kowalna 20 33-300 Nowy Sacz,401521,99021812345,Male
-Karol,Wysocki,12.08.1999r,Slowackiego 12 Krakow 31300,444444,12131412345,Male
+Index, Entity Type, Name, Lastname, Date of birth, Address, PESEL, Gender, Field of study
+444444,Student,Karol,Wysocki,12.08.1999r,Slowackiego 12 Krakow 31300,12131412345,Male,Mathematics
+401521,Student,Mariusz,Wieclawek,18.02.1999r,ul.Kowalna 20 33-300 Nowy Sacz,99021812345,Male,Mathematics
+999111,Student,Mikolaj,Swiety,05.03.1999r,Lapland,45454512345,Default,Mathematics
+501501,Student,Mateusz,Matuszczka,01.01.2001r,ul.Mateczna 14 Krakow ,55667712345,Male,Mathematics
+444999,Student,Izabela,Matta,30.06.2001r,ul.Kalwaryjska 12 Krakow,45454512345,Female,Mathematics
+142142,Student,Michal,Koziara,09.04.1999r,Molowa 12 Krakow 30-302,12345678910,Default,Mathematics
+123456,Student,Michal,Kowalski,18.10.2001r,Dluga 12 Krakow,31313112345,Male,Mathematics
+141414,Student,Mati,Kowal,01.08.2002r,Ulana 23 krakow,15611412345,Default,Mathematics
+234234,Student,Mateusz,Kolucha,21.09.1997r,Czarnowiejska 21 Krakow,12121312345,Default,Mathematics
+123599,Student,Mikolaj,Jetpak,30.03.1999r,Konopnicka 12 30-300 krakow,12040090909,Male,Mathematics
+141414,Student,Magdalena,Abacka,30.03.2001r,ul.Slowacka 15 Krakow,77889912345,Female,Mathematics
+989898,Student,Marcelina,Kartofel,04.08.1999r,ul.Boberska 103 Krakow,44556612345,Female,Mathematics

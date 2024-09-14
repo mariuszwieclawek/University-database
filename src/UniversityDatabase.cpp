@@ -11,11 +11,7 @@ UniversityDatabase::UniversityDatabase(void)
 {
     if( true == isCSVFileEmpty(m_file) )
     {
-        std::string data = 
-        {
-            "Name, Lastname, Date of birth, Address, Index number, PESEL, Gender\n"
-        };
-
+        std::string data = "Index, Entity Type, Name, Lastname, Date of birth, Address, PESEL, Gender, Field of study\n";
         appendToCSV(m_file, data);
     }
     else
@@ -79,7 +75,7 @@ void UniversityDatabase::saveAllEntitiesToCSV(void)
     }
     
     /* Write the header */
-    m_file <<  "Name, Lastname, Date of birth, Address, Index number, PESEL, Gender\n";
+    m_file <<  "Index, Entity Type, Name, Lastname, Date of birth, Address, PESEL, Gender, Field of study\n";
     
     /* Write all entites */ 
     for (const auto& ent : m_entities) 
@@ -125,10 +121,9 @@ void UniversityDatabase::readEntitiesFromCSV(std::fstream& file)
     std::string line;
     while(std::getline(file, line))
     {
-        std::cout << line << std::endl;
         std::vector<std::string> objectFields = splitString(line, ',');
 
-        if (objectFields.size() != 7) 
+        if (objectFields.size() != 9) 
         {
             std::cerr << "\t[ERROR]\t" + std::string(__func__) + " function failed" << std::endl;
             exit(0);
@@ -136,20 +131,21 @@ void UniversityDatabase::readEntitiesFromCSV(std::fstream& file)
 
         Gender gender;
         std::tm birthdate;
+        int index_number;
         try
         {
-            gender = stringToGender(objectFields[6]);
-            birthdate = stringToTm(objectFields[2], "%d.%m.%Y");
+            index_number = std::stoi(objectFields[0]);
+            birthdate = stringToTm(objectFields[4], "%d.%m.%Y");
+            gender = stringToGender(objectFields[7]);
         }
         catch (const std::exception& e) 
         {
-            std::cerr << "\t[ERROR]\t" + std::string(__func__) << e.what() << std::endl;
+            std::cerr << "\t[ERROR]\t" << e.what() << std::endl;
             exit(0);
         }
-        
   
-        std::unique_ptr<Entity> student = std::make_unique<Student>(objectFields[0], objectFields[1], birthdate, objectFields[3], 
-                                                                         std::stoi(objectFields[4]), objectFields[5], gender);
+        std::unique_ptr<Entity> student = std::make_unique<Student>(objectFields[2], objectFields[3], birthdate, objectFields[5], 
+                                                                         index_number, objectFields[6], gender);
         m_entities.push_back(std::move(student));
     }
 
@@ -254,15 +250,12 @@ void UniversityDatabase::displayEntities(void) const
         return;
     }
 
-    std::cout << "===========================================================================================" << std::endl;
-    std::cout << "| No. | Name | Last name | Birthday | Address | Index number | PESEL | Gender |" << std::endl;
-    std::cout << "===========================================================================================" << std::endl;
-    int no=1;
+    std::cout << "===========================================================================================================" << std::endl;
+    std::cout << "| Index | Entity type | Name | Last name | Birthday | Address | PESEL | Gender | Field of study |" << std::endl;
+    std::cout << "===========================================================================================================" << std::endl;
     for(const auto & ent : m_entities)
     {
-        std::cout << "| " << no << " | ";
         ent->show();
-        no++;
     }
 }
 
@@ -280,15 +273,12 @@ void UniversityDatabase::displayEntitiesByFieldOfStudy(const std::string & fldOf
 
     if(entForSelecedFldOfStd.empty()) return;
 
-    std::cout << "===========================================================================================" << std::endl;
-    std::cout << "| No. | Name | Last name | Address | Index number | PESEL | Gender |" << std::endl;
-    std::cout << "===========================================================================================" << std::endl;
-    int no=1;
-    for(const auto & ent : entForSelecedFldOfStd)
+    std::cout << "===========================================================================================================" << std::endl;
+    std::cout << "| Index | Entity type | Name | Last name | Birthday | Address | PESEL | Gender | Field of study |" << std::endl;
+    std::cout << "===========================================================================================================" << std::endl;
+    for(const auto & ent : m_entities)
     {
-        std::cout << "| " << no << " | ";
         ent->show();
-        no++;
     }
 }
 
