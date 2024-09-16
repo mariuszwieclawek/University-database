@@ -18,6 +18,7 @@ private:
     int m_indexNumber;
     std::string m_pesel;
     Gender m_gender;
+    std::string m_fieldOfStudy;
     std::set<std::string> m_subjects;
     /* 
     Grades is stored in convention as below 
@@ -29,10 +30,10 @@ private:
 public:
     Student(void);
     Student(const std::string & name, const std::string & lastname, const std::tm & birthDate, const std::string & address = "default",
-                         int indexNumber = 0, const std::string & pesel = "default", Gender gender = Gender::Default);
+            int indexNumber = 0, const std::string & pesel = "default", Gender gender = Gender::Default, const std::string & fldOfStudy = "default");
                          
     Student(const std::string && name, const std::string && lastname, const std::tm && birthDate, const std::string && address = "default",
-                         int indexNumber = 0, std::string && pesel = "default", Gender && gender = Gender::Default);
+            int && indexNumber = 0, const std::string && pesel = "default", Gender && gender = Gender::Default, const std::string && fldOfStudy = "default");
                     
     Student(const Student &other);
 
@@ -43,15 +44,16 @@ public:
     std::string getLastname(void) const override;
     void setLastname(const std::string & lastname) override;
     std::string getPesel(void) const override;
-    void setPesel(const std::string & name) override;
+    void setPesel(const std::string & pesel) override;
     int getIndex(void) const override;
     void setIndex(const int & index) override;
     EntityType getEntityType(void) const override;
+    std::string getFieldOfStudy(void) const override;
+    void setFieldOfStudy(const std::string & fldOfStudy) override;
 
     std::string serialize(void) const override;
 
     std::set<std::string> getMandatorySubjects(void) const override;
-    std::string getFieldOfStudy(void) const override;
 
     void show(void) const override;
     void showExtented(void) const override;

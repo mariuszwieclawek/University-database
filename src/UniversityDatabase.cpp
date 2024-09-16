@@ -145,7 +145,7 @@ void UniversityDatabase::readEntitiesFromCSV(std::fstream& file)
         }
   
         std::unique_ptr<Entity> student = std::make_unique<Student>(objectFields[2], objectFields[3], birthdate, objectFields[5], 
-                                                                         index_number, objectFields[6], gender);
+                                                                         index_number, objectFields[6], gender, objectFields[8]);
         m_entities.push_back(std::move(student));
     }
 
@@ -265,6 +265,8 @@ void UniversityDatabase::displayEntitiesByFieldOfStudy(const std::string & fldOf
 
     for(const auto & ent : m_entities)
     {
+        Entity* test = ent.get();
+        std::string test2 = ent->getFieldOfStudy();
         if(ent->getFieldOfStudy() == fldOfStd)
         {
             entForSelecedFldOfStd.push_back(ent.get());
@@ -276,7 +278,7 @@ void UniversityDatabase::displayEntitiesByFieldOfStudy(const std::string & fldOf
     std::cout << "===========================================================================================================" << std::endl;
     std::cout << "| Index | Entity type | Name | Last name | Birthday | Address | PESEL | Gender | Field of study |" << std::endl;
     std::cout << "===========================================================================================================" << std::endl;
-    for(const auto & ent : m_entities)
+    for(const auto & ent : entForSelecedFldOfStd)
     {
         ent->show();
     }

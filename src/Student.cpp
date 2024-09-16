@@ -11,27 +11,29 @@ Student::Student(void)
 };
 
 Student::Student(const std::string & name, const std::string & lastname, const std::tm & birthDate, const std::string & address,
-                         int indexNumber, const std::string & pesel, Gender gender) : 
+                    int indexNumber, const std::string & pesel, Gender gender, const std::string & fldOfStudy): 
     m_name(name), 
     m_lastname(lastname),
     m_birthDate(birthDate),
     m_address(address),
     m_indexNumber(indexNumber),
     m_pesel(pesel),
-    m_gender(gender)
+    m_gender(gender),
+    m_fieldOfStudy(fldOfStudy)
     {
         m_subjects.insert(mandatorySubjects.begin(), mandatorySubjects.end());
     };
 
 Student::Student(const std::string && name, const std::string && lastname, const std::tm && birthDate, const std::string && address,
-                         int indexNumber, std::string && pesel, Gender && gender) :  
+                    int && indexNumber, const std::string && pesel, Gender && gender, const std::string && fldOfStudy) :  
     m_name(std::move(name)), 
     m_lastname(std::move(lastname)),
     m_birthDate(std::move(birthDate)),
     m_address(std::move(address)),
     m_indexNumber(indexNumber),
     m_pesel(std::move(pesel)),
-    m_gender(std::move(gender))
+    m_gender(std::move(gender)),
+    m_fieldOfStudy(std::move(fldOfStudy))
     {
         m_subjects.insert(mandatorySubjects.begin(), mandatorySubjects.end());
     };
@@ -129,16 +131,20 @@ EntityType Student::getEntityType(void) const
     return EntityType::Student;
 }
 
+std::string Student::getFieldOfStudy(void) const
+{
+    return m_fieldOfStudy;
+}
+
+void Student::setFieldOfStudy(const std::string & fldOfStudy)
+{
+    m_fieldOfStudy = fldOfStudy;
+}
+
 std::set<std::string> Student::getMandatorySubjects(void) const
 {
     return mandatorySubjects;
 }
-
-std::string Student::getFieldOfStudy(void) const
-{
-    return "Mathematics";
-}
-
 
 void Student::show(void) const
 {
@@ -146,7 +152,7 @@ void Student::show(void) const
     ssBirthday << std::put_time(&m_birthDate, "%d.%m.%Yr");
     std::string birthdate = ssBirthday.str();
     std::cout << "| " << m_indexNumber << " | " << this->getEntityType() << " | " << m_name << " | " << m_lastname << " | " << birthdate << " | " 
-    << m_address << " | " << m_pesel << " | " << m_gender << " | " << this->getFieldOfStudy() << " | " << std::endl;
+    << m_address << " | " << m_pesel << " | " << m_gender << " | " << m_fieldOfStudy << " | " << std::endl;
 }
 
 void Student::showExtented(void) const
@@ -172,8 +178,14 @@ void Student::modify(void)
     std::cout << "Modification started. Please enter new values:" << std::endl;
     std::string input;
 
-    std::cin.clear();
-    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    std::cout << "Current Index number: " << m_indexNumber << std::endl << "Enter new Index number or skip(Enter): ";
+    std::getline(std::cin, input);
+    if (!input.empty()) m_indexNumber = std::stoi(input);
+
+    std::cout << "Current Entity Type: " << this->getEntityType() << std::endl << "Enter new Entity Type or skip(Enter): ";
+    std::getline(std::cin, input);
+    // TBD
+    // if (!input.empty()) m_name = input; 
 
     std::cout << "Current Name: " << m_name << std::endl << "Enter new Name or skip(Enter): ";
     std::getline(std::cin, input);
@@ -191,10 +203,6 @@ void Student::modify(void)
     std::getline(std::cin, input);
     if (!input.empty()) m_address = input;
 
-    std::cout << "Current Index number: " << m_indexNumber << std::endl << "Enter new Index number or skip(Enter): ";
-    std::getline(std::cin, input);
-    if (!input.empty()) m_indexNumber = std::stoi(input);
-
     std::cout << "Current PESEL: " << m_pesel << std::endl << "Enter new PESEL or skip(Enter): ";
     std::getline(std::cin, input);
     if (!input.empty()) m_pesel = input;
@@ -202,6 +210,10 @@ void Student::modify(void)
     std::cout << "Current gender: " << m_gender << std::endl << "Enter new Gender or skip(Enter): ";
     std::getline(std::cin, input);
     if (!input.empty()) m_gender = stringToGender(input);
+
+    std::cout << "Current Field of Study: " << m_fieldOfStudy << std::endl << "Enter new Field of Study or skip(Enter): ";
+    std::getline(std::cin, input);
+    if (!input.empty()) m_fieldOfStudy = input;
     
 }
 

@@ -65,10 +65,8 @@ void CommandLineInterface::displayStudentsForSelectedFieldOfStudy(void) const
 {
     this->displayFieldsOfStudy();
     std::string fldOfStd;
-    std::cout << "Please enter field of study: ";
-    std::cin >> fldOfStd;
-    std::cin.clear();
-    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    std::cout << "Please enter Field of Study: ";
+    std::getline(std::cin, fldOfStd);
 
     m_db.displayEntitiesByFieldOfStudy(fldOfStd);
 }
@@ -77,10 +75,8 @@ void CommandLineInterface::displaySubjectsForSelectedFieldOfStudy(void) const
 {
     this->displayFieldsOfStudy();
     std::string fldOfStd;
-    std::cout << "Please enter field of study: ";
-    std::cin >> fldOfStd;
-    std::cin.clear();
-    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    std::cout << "Please enter Field of Study: ";
+    std::getline(std::cin, fldOfStd);
 
     std::set<std::string> subjects = m_db.getSubjectsForSelectedFieldOfStudy(fldOfStd);
     std::cout << "===========================================================================================================" << std::endl;
@@ -97,9 +93,7 @@ void CommandLineInterface::displayEntitiesByLastname(void) const
     std::cout << "===========================================================================================" << std::endl << std::endl;
     std::string lastname;
     std::cout << "Enter entity lastname to show extended info: ";
-    std::cin >> lastname;
-    std::cin.clear();
-    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    std::getline(std::cin,lastname);
 
     std::vector<const Entity*> entities = m_db.findEntitiesByLastname(lastname);
 
@@ -120,59 +114,58 @@ void CommandLineInterface::displayEntitiesByLastname(void) const
 
 void CommandLineInterface::addEntityByUser(void) const
 {
+    std::string input;
+    int indexNumber;
+    EntityType entitytype;
     std::string name;
     std::string lastname;
     std::tm birthdate;
     std::string address;
-    int indexNumber; 
     std::string pesel; 
     Gender gnr;
+    std::string fieldofstudy;
     std::cout << "Please enter:" << std::endl;
 
+    std::cout << "Index number:";
+    std::getline(std::cin, input);
+    indexNumber = stoi(input);
+
+    std::cout << "Entity Type:";
+    std::getline(std::cin, input);
+    entitytype = stringToEntityType(input);
+
     std::cout << "Name:";
-    std::cin >> name;
-    std::cin.clear();
-    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    std::getline(std::cin, name);
 
     std::cout << "Lastname:";
-    std::cin >> lastname;
-    std::cin.clear();
-    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    std::getline(std::cin, lastname);
 
     std::cout << "Birthdate..." << std::endl << "\tDay:";
-    std::cin >> birthdate.tm_mday;
-    std::cin.clear();
-    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    std::getline(std::cin, input);
+    birthdate.tm_mday = stoi(input);
     std::cout << "\tMonth:";
-    std::cin >> birthdate.tm_mon;
+    std::getline(std::cin, input);
+    birthdate.tm_mon = stoi(input);
     birthdate.tm_mon -= 1;
-    std::cin.clear();
-    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
     std::cout << "\tYear:";
-    std::cin >> birthdate.tm_year;
+    std::getline(std::cin, input);
+    birthdate.tm_year = stoi(input);
     birthdate.tm_year -= 1900;
-    std::cin.clear();
-    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
     std::cout << "Residential address:";
     std::getline(std::cin >> std::ws, address);
 
-    std::cout << "Index number:";
-    std::cin >> indexNumber;
-    std::cin.clear();
-    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-
     std::cout << "PESEL:";
-    std::cin >> pesel;
-    std::cin.clear();
-    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    std::getline(std::cin, pesel);
 
     std::cout << "Gender:";
-    std::cin >> gnr;
-    std::cin.clear();
-    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    std::getline(std::cin, input);
+    gnr = stringToGender(input);
 
-    m_db.addEntity(std::make_unique<Student>(name, lastname, birthdate, address, indexNumber, pesel, gnr));
+    std::cout << "Field of study:";
+    std::getline(std::cin, fieldofstudy);
+
+    m_db.addEntity(std::make_unique<Student>(name, lastname, birthdate, address, indexNumber, pesel, gnr, fieldofstudy));
 
     std::cout << "Entity added!" << std::endl;
 }
@@ -184,10 +177,7 @@ void CommandLineInterface::removeEntityByUser(void) const
     std::string pesel;
 
     std::cout << "Enter the PESEL number of the entity you want to remove from the database: ";
-    std::cin >> pesel;
-    std::cin.clear();
-    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-
+    std::getline(std::cin, pesel);
 
     if(m_db.removeEntityByPesel(pesel) != true)
     {
@@ -205,7 +195,7 @@ void CommandLineInterface::modifyEntityByUser(void) const
     std::cout << "===========================================================================================================" << std::endl;
     std::string pesel;
     std::cout << "Enter the PESEL number of the entity you want to modify: ";
-    std::cin >> pesel;
+    std::getline(std::cin, pesel);
 
     bool isModified = m_db.modifyEntityByPesel(pesel);
 
