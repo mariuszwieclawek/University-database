@@ -5,54 +5,24 @@
 
 static const std::set<std::string> mandatorySubjects = {"Math", "Physics", "Analysis", "Statistics"};
 
-Student::Student(void)
-{
-    m_subjects.insert(mandatorySubjects.begin(), mandatorySubjects.end());
-};
 
-Student::Student(const std::string & name, const std::string & lastname, const std::tm & birthDate, const std::string & address,
-                    int indexNumber, const std::string & pesel, Gender gender, const std::string & fldOfStudy): 
-    m_name(name), 
-    m_lastname(lastname),
-    m_birthDate(birthDate),
-    m_address(address),
-    m_indexNumber(indexNumber),
-    m_pesel(pesel),
-    m_gender(gender),
+Student::Student(int indexNumber, const std::string & name, const std::string & lastname, const std::tm & birthDate, 
+                    const std::string & address, const std::string & pesel, Gender gender, const std::string & fldOfStudy):
+    Entity(indexNumber, name, lastname, birthDate, address, pesel, gender),
     m_fieldOfStudy(fldOfStudy)
     {
         m_subjects.insert(mandatorySubjects.begin(), mandatorySubjects.end());
     };
 
-Student::Student(const std::string && name, const std::string && lastname, const std::tm && birthDate, const std::string && address,
-                    int && indexNumber, const std::string && pesel, Gender && gender, const std::string && fldOfStudy) :  
-    m_name(std::move(name)), 
-    m_lastname(std::move(lastname)),
-    m_birthDate(std::move(birthDate)),
-    m_address(std::move(address)),
-    m_indexNumber(indexNumber),
-    m_pesel(std::move(pesel)),
-    m_gender(std::move(gender)),
+Student::Student(int && indexNumber, const std::string && name, const std::string && lastname, const std::tm && birthDate, 
+                const std::string && address, const std::string && pesel, Gender && gender, const std::string && fldOfStudy):
+    Entity(std::move(indexNumber), std::move(name), std::move(lastname), std::move(birthDate), std::move(address), std::move(pesel), std::move(gender)),  
     m_fieldOfStudy(std::move(fldOfStudy))
     {
         m_subjects.insert(mandatorySubjects.begin(), mandatorySubjects.end());
     };
 
-Student::Student(const Student & other)
-{
-    if(this != &other)
-    {
-        m_name = other.m_name;
-        m_lastname = other.m_lastname;
-        m_birthDate = other.m_birthDate;
-        m_address = other.m_address;
-        m_indexNumber = other.m_indexNumber;
-        m_pesel = other.m_pesel;
-        m_gender = other.m_gender;
-        m_subjects = other.m_subjects;
-        m_grades = other.m_grades;
-    }
-}
+Student::Student(const Student & other): Entity(other), m_fieldOfStudy(other.m_fieldOfStudy){};
 
 Student& Student::operator==(const Student & other)
 {
@@ -87,44 +57,6 @@ std::string Student::serialize(void) const
     return ret_val;
 }
 
-std::string Student::getName(void) const
-{
-    return m_name;
-}
-
-void Student::setName(const std::string & name)
-{
-    m_name = name;
-}
-
-std::string Student::getLastname(void) const
-{
-    return m_lastname;
-}
-
-void Student::setLastname(const std::string & lastname)
-{
-    m_lastname = lastname;
-}
-
-std::string Student::getPesel(void) const
-{
-    return m_pesel;
-}
-
-void Student::setPesel(const std::string & pesel)
-{
-    m_pesel = pesel;
-}
-
-int Student::getIndex(void) const
-{
-    return m_indexNumber;
-}
-void Student::setIndex(const int & index)
-{
-    m_indexNumber = index;
-}
 
 EntityType Student::getEntityType(void) const
 {
@@ -139,11 +71,6 @@ std::string Student::getFieldOfStudy(void) const
 void Student::setFieldOfStudy(const std::string & fldOfStudy)
 {
     m_fieldOfStudy = fldOfStudy;
-}
-
-std::set<std::string> Student::getMandatorySubjects(void) const
-{
-    return mandatorySubjects;
 }
 
 void Student::show(void) const
@@ -256,18 +183,18 @@ void Student::showGrades(void) const
 {
     std::cout << "===========================================================================================================" << std::endl;
     std::cout << "Grades of a " << m_name << " " << m_lastname << ":" << std::endl;
-    for(const auto & [subject, commentAndGrade] : m_grades)
+    for(const auto & [subject, grades] : m_grades)
     {
         std::cout << "\rSubject: \n\t" << subject << ":\n\t\t";
-        for(const auto & [comment, grade] : commentAndGrade)
+        for(const auto & grade : grades)
         {
-            std::cout << "* " << grade << "\t(Note:" << comment << ")\n\t\t";
+            std::cout << grade << ",";
         }
     }
     std::cout << "\r===========================================================================================================" << std::endl;
 }
 
-bool Student::addGrade(const std::string & subject, const std::string & comment, float grade)
+bool Student::addGrade(const std::string & subject, float grade)
 {
     if( (grade < MIN_GRADE) && (grade > MAX_GRADE) )
     {
@@ -281,20 +208,12 @@ bool Student::addGrade(const std::string & subject, const std::string & comment,
         return false;
     }
 
-    if( bool commentIsAdded = m_grades[subject].contains(comment); false == commentIsAdded )
-    {
-        m_grades[subject][comment] = grade;
-    }
-    else
-    {
-        std::cerr << "\t[ERROR]\t" + std::string(__func__) + " function failed" << std::endl;
-        return false;
-    }
+    m_grades[subject].push_back(grade);
 
     return true;
 }
     
-bool Student::removeGrade(const std::string & subject, const std::string & comment)
+bool Student::removeGrade(const std::string & subject)
 {
     if( bool subjectIsAdded = m_subjects.contains(subject); false == subjectIsAdded )
     {
@@ -302,15 +221,7 @@ bool Student::removeGrade(const std::string & subject, const std::string & comme
         return false;
     }
 
-    if( bool commentIsAdded = m_grades[subject].contains(comment); true == commentIsAdded )
-    {
-        m_grades[subject].erase(comment);
-    }
-    else
-    {
-        std::cerr << "\t[ERROR]\t" + std::string(__func__) + " function failed" << std::endl;
-        return false;
-    }
+    m_grades[subject].clear();
 
     return true;
 }

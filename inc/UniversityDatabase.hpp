@@ -40,7 +40,6 @@ public:
     void sortEntities(SortOrder order);
 
     std::set<std::string> getFieldsOfStudy(void) const;
-    std::set<std::string> getSubjectsForSelectedFieldOfStudy(const std::string & fldOfStd) const;
     void displayEntities(void) const;
     void displayEntitiesByFieldOfStudy(const std::string & fldOfStd) const;
 };

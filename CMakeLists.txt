@@ -9,8 +9,10 @@ project(UniversityDatabase)
 # Pliki źródłowe C++
 set(CXX_SRCS
     src/Main.cpp
+    src/Entity.cpp
     src/UniversityDatabase.cpp
     src/Student.cpp
+    src/Professor.cpp
     src/CommandLineInterface.cpp
     src/EntityUtils.cpp
 )

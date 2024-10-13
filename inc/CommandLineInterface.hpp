@@ -7,6 +7,7 @@
 
 #include "UniversityDatabase.hpp"
 #include "Student.hpp"
+#include "Professor.hpp"
 
 struct MenuItem {
     std::string label;
@@ -25,11 +26,12 @@ public:
     void action1(void);
 
     void displayFieldsOfStudy(void) const;
-    void displayStudentsForSelectedFieldOfStudy(void) const;
-    void displaySubjectsForSelectedFieldOfStudy(void) const;
+    void displayEntitiesForSelectedFieldOfStudy(void) const;
     void displayEntitiesByLastname(void) const;
 
     void addEntityByUser(void) const;
+    void addStudentByUser(void) const;
+    void addProfessorByUser(void) const;
     void removeEntityByUser(void) const;
     void modifyEntityByUser(void) const;
     void sortEntitiesByLastNameAtoZ(void) const;

@@ -3,6 +3,7 @@
 
 #include "UniversityDatabase.hpp"
 #include "Student.hpp"
+#include "Professor.hpp"
 
 static std::vector<std::string> splitString(const std::string& str, char delimiter);
 
@@ -143,10 +144,20 @@ void UniversityDatabase::readEntitiesFromCSV(std::fstream& file)
             std::cerr << "\t[ERROR]\t" << e.what() << std::endl;
             exit(0);
         }
-  
-        std::unique_ptr<Entity> student = std::make_unique<Student>(objectFields[2], objectFields[3], birthdate, objectFields[5], 
-                                                                         index_number, objectFields[6], gender, objectFields[8]);
-        m_entities.push_back(std::move(student));
+
+        EntityType enttype = stringToEntityType(objectFields[1]);
+        if(enttype == EntityType::Student)
+        {
+            std::unique_ptr<Entity> student = std::make_unique<Student>(index_number, objectFields[2], objectFields[3], birthdate, 
+                                                            objectFields[5], objectFields[6], gender, objectFields[8]);
+            m_entities.push_back(std::move(student));
+        }
+        else if(enttype == EntityType::Professor)
+        {
+            std::unique_ptr<Entity> proff = std::make_unique<Professor>(index_number, objectFields[2], objectFields[3], birthdate, 
+                                                            objectFields[5], objectFields[6], gender);
+            m_entities.push_back(std::move(proff));
+        }
     }
 
     file.close();
@@ -299,25 +310,6 @@ std::set<std::string> UniversityDatabase::getFieldsOfStudy(void) const
     }
     
     return fields_of_study;
-}
-
-std::set<std::string> UniversityDatabase::getSubjectsForSelectedFieldOfStudy(const std::string & fldOfStd) const
-{
-    std::vector<Entity*> entForSelecedFldOfStd;
-    std::set<std::string> subjects;
-
-    for(const auto & ent : m_entities)
-    {
-        if(ent->getFieldOfStudy() == fldOfStd)
-        {
-            entForSelecedFldOfStd.push_back(ent.get());
-        }
-    }
-
-    if(entForSelecedFldOfStd.empty()) return subjects;
-
-    /* Every entities have the same mandatory subjects so we can use get subjects for any entity */
-    return entForSelecedFldOfStd[0]->getMandatorySubjects();
 }
 
 static std::vector<std::string> splitString(const std::string& str, char delimiter) 

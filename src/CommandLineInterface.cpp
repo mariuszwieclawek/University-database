@@ -8,8 +8,7 @@
 CommandLineInterface::CommandLineInterface(UniversityDatabase &  db) : m_db(db)
 {
     auto action1 = [this]() { this->displayFieldsOfStudy(); };
-    auto action2 = [this]() { this->displayStudentsForSelectedFieldOfStudy(); };
-    auto action3 = [this]() { this->displaySubjectsForSelectedFieldOfStudy(); };
+    auto action2 = [this]() { this->displayEntitiesForSelectedFieldOfStudy(); };
     auto action4 = [this]() { this->m_db.displayEntities(); };
     auto action5 = [this]() { this->displayEntitiesByLastname(); };
     auto action6 = [this]() { this->addEntityByUser(); };
@@ -26,8 +25,7 @@ CommandLineInterface::CommandLineInterface(UniversityDatabase &  db) : m_db(db)
         {
             {"Fields of study list", action1, 
             {
-                {"Enter field of study and display Student list", action2, {}},
-                {"Enter field of study and display Subject list", action3, {}}
+                {"Enter field of study and display Entity list", action2, {}},
             }},
             {"List of entities at the university", action4, {}},
             {"Sort entity list", nullptr, 
@@ -61,7 +59,7 @@ void CommandLineInterface::displayFieldsOfStudy(void) const
     std::cout << std::endl;
 }
 
-void CommandLineInterface::displayStudentsForSelectedFieldOfStudy(void) const
+void CommandLineInterface::displayEntitiesForSelectedFieldOfStudy(void) const
 {
     this->displayFieldsOfStudy();
     std::string fldOfStd;
@@ -69,22 +67,6 @@ void CommandLineInterface::displayStudentsForSelectedFieldOfStudy(void) const
     std::getline(std::cin, fldOfStd);
 
     m_db.displayEntitiesByFieldOfStudy(fldOfStd);
-}
-
-void CommandLineInterface::displaySubjectsForSelectedFieldOfStudy(void) const
-{
-    this->displayFieldsOfStudy();
-    std::string fldOfStd;
-    std::cout << "Please enter Field of Study: ";
-    std::getline(std::cin, fldOfStd);
-
-    std::set<std::string> subjects = m_db.getSubjectsForSelectedFieldOfStudy(fldOfStd);
-    std::cout << "===========================================================================================================" << std::endl;
-    std::cout << "Subject list for " << fldOfStd << ":" << std::endl;
-    for( auto & sub : subjects )
-    {
-        std::cout << "\t-" << sub << std::endl;
-    }
 }
 
 void CommandLineInterface::displayEntitiesByLastname(void) const
@@ -114,9 +96,51 @@ void CommandLineInterface::displayEntitiesByLastname(void) const
 
 void CommandLineInterface::addEntityByUser(void) const
 {
+    std::map<int,std::string> digit_to_ent_type = 
+    {
+        {1, "Student"},
+        {2, "Professor"},
+    };
+    char choice_ch;
+    int choice_digit;
+
+    std::cout << "Select Entity Type:" << std::endl;
+    for( const auto & [digit, ent_type] : digit_to_ent_type)
+    {
+        std::cout << digit << "." << ent_type << std::endl;
+    }
+    std::cout << "Enter number..." << std::endl << std::endl;
+
+    /* Handle user input parameter*/
+    while(true)
+    {
+        choice_ch = _getch();
+        if(isdigit(choice_ch))
+        {
+            choice_digit = choice_ch - '0'; // convert to digit
+            /* check if map contains selected digit */
+            if(digit_to_ent_type.find(choice_digit) != digit_to_ent_type.end()) break;
+        }   
+    }
+    
+    if("Student" == digit_to_ent_type[choice_digit])
+    {
+        this->addStudentByUser();
+    }
+    else if("Professor" == digit_to_ent_type[choice_digit])
+    {
+        this->addProfessorByUser();
+    }
+    else
+    {
+        /*TBD*/
+    }
+}
+
+void CommandLineInterface::addStudentByUser(void) const
+{
     std::string input;
     int indexNumber;
-    EntityType entitytype;
     std::string name;
     std::string lastname;
     std::tm birthdate;
@@ -129,10 +153,6 @@ void CommandLineInterface::addEntityByUser(void) const
     std::cout << "Index number:";
     std::getline(std::cin, input);
     indexNumber = stoi(input);
-
-    std::cout << "Entity Type:";
-    std::getline(std::cin, input);
-    entitytype = stringToEntityType(input);
 
     std::cout << "Name:";
     std::getline(std::cin, name);
@@ -165,9 +185,62 @@ void CommandLineInterface::addEntityByUser(void) const
     std::cout << "Field of study:";
     std::getline(std::cin, fieldofstudy);
 
-    m_db.addEntity(std::make_unique<Student>(name, lastname, birthdate, address, indexNumber, pesel, gnr, fieldofstudy));
+    m_db.addEntity(std::make_unique<Student>(indexNumber, name, lastname, birthdate, address, pesel, gnr, fieldofstudy));
 
-    std::cout << "Entity added!" << std::endl;
+    std::cout << "Student added!" << std::endl;
+}
+
+void CommandLineInterface::addProfessorByUser(void) const
+{
+    std::string input;
+    int indexNumber;
+    EntityType entitytype;
+    std::string name;
+    std::string lastname;
+    std::tm birthdate;
+    std::string address;
+    std::string pesel; 
+    Gender gnr;
+    std::string fieldofstudy;
+    std::cout << "Please enter:" << std::endl;
+
+    std::cout << "Index number:";
+    std::getline(std::cin, input);
+    indexNumber = stoi(input);
+
+    entitytype = EntityType::Professor;
+
+    std::cout << "Name:";
+    std::getline(std::cin, name);
+
+    std::cout << "Lastname:";
+    std::getline(std::cin, lastname);
+
+    std::cout << "Birthdate..." << std::endl << "\tDay:";
+    std::getline(std::cin, input);
+    birthdate.tm_mday = stoi(input);
+    std::cout << "\tMonth:";
+    std::getline(std::cin, input);
+    birthdate.tm_mon = stoi(input);
+    birthdate.tm_mon -= 1;
+    std::cout << "\tYear:";
+    std::getline(std::cin, input);
+    birthdate.tm_year = stoi(input);
+    birthdate.tm_year -= 1900;
+
+    std::cout << "Residential address:";
+    std::getline(std::cin >> std::ws, address);
+
+    std::cout << "PESEL:";
+    std::getline(std::cin, pesel);
+
+    std::cout << "Gender:";
+    std::getline(std::cin, input);
+    gnr = stringToGender(input);
+
+    m_db.addEntity(std::make_unique<Professor>(indexNumber, name, lastname, birthdate, address, pesel, gnr));
+
+    std::cout << "Professor added!" << std::endl;
 }
 
 void CommandLineInterface::removeEntityByUser(void) const
