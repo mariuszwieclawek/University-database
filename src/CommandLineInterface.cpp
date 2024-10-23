@@ -1,14 +1,21 @@
 #include "CommandLineInterface.hpp"
-#include "Windows.h"
-#include "sstream"
+#include <iostream>
+#include <stack>
+#include <limits>
+#include <memory>
+#include <sstream>
 #include <conio.h>
-#include <cctype> 
+#include <cctype>
+#include "Windows.h"
 
+#include "Student.hpp"
+#include "Professor.hpp"
+#include "EntityUtils.hpp"
 
 CommandLineInterface::CommandLineInterface(UniversityDatabase &  db) : m_db(db)
 {
-    auto action1 = [this]() { this->displayFieldsOfStudy(); };
-    auto action2 = [this]() { this->displayEntitiesForSelectedFieldOfStudy(); };
+    //auto action1 = [this]() { this->displayFieldsOfStudy(); };
+    //auto action2 = [this]() { this->displayEntitiesForSelectedFieldOfStudy(); };
     auto action4 = [this]() { this->m_db.displayEntities(); };
     auto action5 = [this]() { this->displayEntitiesByLastname(); };
     auto action6 = [this]() { this->addEntityByUser(); };
@@ -23,9 +30,9 @@ CommandLineInterface::CommandLineInterface(UniversityDatabase &  db) : m_db(db)
     {
         "Main Menu", nullptr,
         {
-            {"Fields of study list", action1, 
+            {"Fields of study list", nullptr, 
             {
-                {"Enter field of study and display Entity list", action2, {}},
+                {"Enter field of study and display Entity list", nullptr, {}},
             }},
             {"List of entities at the university", action4, {}},
             {"Sort entity list", nullptr, 
@@ -48,31 +55,31 @@ void CommandLineInterface::action1(void)
     std::cout << "hello" << std::endl;
 }
 
-void CommandLineInterface::displayFieldsOfStudy(void) const
-{
-    std::cout << "List of fields of study at the university:" << std::endl;
-    std::set<std::string> fields_of_study = m_db.getFieldsOfStudy();
-    for(auto fld_of_st : fields_of_study)
-    {
-        std::cout << "\t-" << fld_of_st << std::endl;
-    }
-    std::cout << std::endl;
-}
+// void CommandLineInterface::displayFieldsOfStudy(void) const
+// {
+//     std::cout << "List of fields of study at the university:" << std::endl;
+//     std::set<std::string> fields_of_study = m_db.getFieldsOfStudy();
+//     for(auto fld_of_st : fields_of_study)
+//     {
+//         std::cout << "\t-" << fld_of_st << std::endl;
+//     }
+//     std::cout << std::endl;
+// }
 
-void CommandLineInterface::displayEntitiesForSelectedFieldOfStudy(void) const
-{
-    this->displayFieldsOfStudy();
-    std::string fldOfStd;
-    std::cout << "Please enter Field of Study: ";
-    std::getline(std::cin, fldOfStd);
+// void CommandLineInterface::displayEntitiesForSelectedFieldOfStudy(void) const
+// {
+//     this->displayFieldsOfStudy();
+//     std::string fldOfStd;
+//     std::cout << "Please enter Field of Study: ";
+//     std::getline(std::cin, fldOfStd);
 
-    m_db.displayEntitiesByFieldOfStudy(fldOfStd);
-}
+//     m_db.displayEntitiesByFieldOfStudy(fldOfStd);
+// }
 
 void CommandLineInterface::displayEntitiesByLastname(void) const
 {
     m_db.displayEntities();
-    std::cout << "===========================================================================================" << std::endl << std::endl;
+    std::cout << "=====================================================================================================================" << std::endl << std::endl;
     std::string lastname;
     std::cout << "Enter entity lastname to show extended info: ";
     std::getline(std::cin,lastname);
@@ -148,6 +155,8 @@ void CommandLineInterface::addStudentByUser(void) const
     std::string pesel; 
     Gender gnr;
     std::string fieldofstudy;
+    std::string subjects;
+    std::string grades;
     std::cout << "Please enter:" << std::endl;
 
     std::cout << "Index number:";
@@ -185,7 +194,13 @@ void CommandLineInterface::addStudentByUser(void) const
     std::cout << "Field of study:";
     std::getline(std::cin, fieldofstudy);
 
-    m_db.addEntity(std::make_unique<Student>(indexNumber, name, lastname, birthdate, address, pesel, gnr, fieldofstudy));
+    std::cout << "Subjects (format: 'Math; Computer Science; Psychics'):";
+    std::getline(std::cin, subjects);
+
+    std::cout << "Grades (format: 'Math={2.5 3 4.5 2};Psychics={3.5 5 3.5 4};' ):";
+    std::getline(std::cin, grades);
+
+    m_db.addEntity(std::make_unique<Student>(indexNumber, name, lastname, birthdate, address, pesel, gnr, fieldofstudy, subjects, grades));
 
     std::cout << "Student added!" << std::endl;
 }
@@ -201,7 +216,8 @@ void CommandLineInterface::addProfessorByUser(void) const
     std::string address;
     std::string pesel; 
     Gender gnr;
-    std::string fieldofstudy;
+    AcademicTitle acdtitle;
+    Department department;
     std::cout << "Please enter:" << std::endl;
 
     std::cout << "Index number:";
@@ -238,7 +254,15 @@ void CommandLineInterface::addProfessorByUser(void) const
     std::getline(std::cin, input);
     gnr = stringToGender(input);
 
-    m_db.addEntity(std::make_unique<Professor>(indexNumber, name, lastname, birthdate, address, pesel, gnr));
+    std::cout << "Academic Title:";
+    std::getline(std::cin, input);
+    acdtitle = stringToAcademicTitle(input);
+
+    std::cout << "Department:";
+    std::getline(std::cin, input);
+    department = stringToDepartment(input);
+
+    m_db.addEntity(std::make_unique<Professor>(indexNumber, name, lastname, birthdate, address, pesel, gnr, acdtitle, department));
 
     std::cout << "Professor added!" << std::endl;
 }
@@ -246,7 +270,7 @@ void CommandLineInterface::addProfessorByUser(void) const
 void CommandLineInterface::removeEntityByUser(void) const
 {
     m_db.displayEntities();
-    std::cout << "===========================================================================================================" << std::endl;
+    std::cout << "===================================================================================================================================================" << std::endl;
     std::string pesel;
 
     std::cout << "Enter the PESEL number of the entity you want to remove from the database: ";
@@ -265,7 +289,7 @@ void CommandLineInterface::removeEntityByUser(void) const
 void CommandLineInterface::modifyEntityByUser(void) const
 {
     m_db.displayEntities();
-    std::cout << "===========================================================================================================" << std::endl;
+    std::cout << "===================================================================================================================================================" << std::endl;
     std::string pesel;
     std::cout << "Enter the PESEL number of the entity you want to modify: ";
     std::getline(std::cin, pesel);
@@ -312,14 +336,14 @@ void CommandLineInterface::sortEntitiesByIndexDescending(void) const
 
 void CommandLineInterface::displayMenu(const MenuItem & selectedMenu) const 
 {
-    std::cout << "===========================================================================================================" << std::endl;
+    std::cout << "===================================================================================================================================================" << std::endl;
     for (int i = 0; i < selectedMenu.subMenu.size(); i++) 
     {
         std::cout << i+1 << ". " << selectedMenu.subMenu[i].label << std::endl;
     }
-    std::cout << "===========================================================================================================" << std::endl;
+    std::cout << "===================================================================================================================================================" << std::endl;
     std::cout << "0. Exit " << std::endl;
-    std::cout << "===========================================================================================================" << std::endl;
+    std::cout << "===================================================================================================================================================" << std::endl;
     std::cout << "Select option: ";
 }
 
@@ -411,7 +435,7 @@ void CommandLineInterface::exitFromSelectedAction()
     char choice_ch;
     int choice_digit;
 
-    std::cout << "===========================================================================================================" << std::endl;
+    std::cout << "===================================================================================================================================================" << std::endl;
     std::cout << "Press '0' to return: " << std::endl;
     while (true) 
     {

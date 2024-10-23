@@ -1,43 +1,18 @@
 #include "Professor.hpp"
-#include <iostream>
-
-
-std::map<AcademicTitle, std::string> academicTitleToString = 
-{
-    {AcademicTitle::AssociateProfessor, "Associate Professor"},
-    {AcademicTitle::Professor, "Professor"},
-    {AcademicTitle::TitularProfessor, "Titular Professor"},
-    {AcademicTitle::DoctorHabilitatus, "Doctor habilitatus"}
-};
-
-std::map<Department, std::string> departmentToString = 
-{
-    {Department::ComputerScience, "Computer Science"},
-    {Department::ElectronicsAndTelecommunications, "Electronics and Telecommunications"},
-    {Department::Architecture, "Architecture"},
-    {Department::Mathematics, "Mathematics"},
-    {Department::Physics, "Physics"},
-    {Department::Chemistry, "Chemistry"},
-    {Department::Medicine, "Medicine"},
-    {Department::Pharmacy, "Pharmacy"},
-    {Department::Psychology, "Psychology"}
-};
-
+#include "EntityUtils.hpp"
 
 Professor::Professor(int indexNumber, const std::string & name, const std::string & lastname, const std::tm & birthDate, const std::string & address,
-                        const std::string & pesel, const Gender & gender, const AcademicTitle & acdtitle, const Department & dprtm, const std::tm & hireDate):
+                        const std::string & pesel, const Gender & gender, const AcademicTitle & acdtitle, const Department & dprtm):
     Entity(indexNumber, name, lastname, birthDate, address, pesel, gender),
     m_academicTitle(acdtitle),
-    m_department(dprtm),
-    m_hireDate(hireDate)
+    m_department(dprtm)
     {};
 
 Professor::Professor(int && indexNumber, std::string && name, std::string && lastname, std::tm && birthDate, std::string && address,
-                        std::string && pesel, Gender && gender, AcademicTitle && acdtitle, Department && dprtm, std::tm && hireDate):
+                        std::string && pesel, Gender && gender, AcademicTitle && acdtitle, Department && dprtm):
     Entity(std::move(indexNumber), std::move(name), std::move(lastname), std::move(birthDate), std::move(address), std::move(pesel), std::move(gender)),
     m_academicTitle(std::move(acdtitle)),
-    m_department(std::move(dprtm)),
-    m_hireDate(std::move(hireDate))
+    m_department(std::move(dprtm))
     {};
 
 Professor::Professor(const Professor & other): Entity(other){};
@@ -69,7 +44,8 @@ std::string Professor::serialize(void) const
     std::string gender = ssGender.str();
     std::string birthdate = ssBirthday.str();
     std::string ret_val = indexNumber + "," + entityType + "," + m_name + "," + m_lastname + "," + birthdate + "," + m_address + "," +
-                          m_pesel + "," + gender + "," + this->getFieldOfStudy() + "\n";
+                          m_pesel + "," + gender + "," + "N/A" + "," + "N/A" + "," + "N/A" + "," + academicTitleToString(m_academicTitle)
+                          + "," + departmentToString(m_department) + "," + "\n";
     return ret_val;
 }
 
@@ -77,11 +53,6 @@ std::string Professor::serialize(void) const
 EntityType Professor::getEntityType(void) const
 {
     return EntityType::Professor;
-}
-
-std::string Professor::getFieldOfStudy(void) const
-{
-    return "TBD";
 }
 
 void Professor::setFieldOfStudy(const std::string & fldOfStudy)
@@ -95,12 +66,13 @@ void Professor::show(void) const
     ssBirthday << std::put_time(&m_birthDate, "%d.%m.%Yr");
     std::string birthdate = ssBirthday.str();
     std::cout << "| " << m_indexNumber << " | " << this->getEntityType() << " | " << m_name << " | " << m_lastname << " | " << birthdate << " | " 
-    << m_address << " | " << m_pesel << " | " << m_gender << " | " << this->getFieldOfStudy() << " | " << std::endl;
+              << m_address << " | " << m_pesel << " | " << m_gender << " | " << "N/A" << " | " << "N/A" << " | " << "N/A" << " | " 
+              << academicTitleToString(m_academicTitle) << " | " << departmentToString(m_department)<< std::endl;
 }
 
 void Professor::showExtented(void) const
 {
-    std::cout << "===========================================================================================================" << std::endl;
+    std::cout << "===================================================================================================================================================" << std::endl;
     std::cout << "Information about Professor:" << std::endl;
     std::cout << "Name: " << m_name << std::endl;
     std::cout << "Last name: " << m_lastname << std::endl;
@@ -108,8 +80,8 @@ void Professor::showExtented(void) const
     std::cout << "Index number: " << m_indexNumber << std::endl;
     std::cout << "PESEL: " << m_pesel << std::endl;
     std::cout << "Gender: " << m_gender << std::endl;
-    std::cout << "===========================================================================================================" << std::endl;  
-    std::cout << "===========================================================================================================" << std::endl;  
+    std::cout << "===================================================================================================================================================" << std::endl;  
+    std::cout << "===================================================================================================================================================" << std::endl;  
 }
 
 void Professor::modify(void)
@@ -148,7 +120,15 @@ void Professor::modify(void)
     std::getline(std::cin, input);
     if (!input.empty()) m_pesel = input;
 
-    std::cout << "Current gender: " << m_gender << std::endl << "Enter new Gender or skip(Enter): ";
+    std::cout << "Current Gender: " << m_gender << std::endl << "Enter new Gender or skip(Enter): ";
     std::getline(std::cin, input);
     if (!input.empty()) m_gender = stringToGender(input);
+
+    std::cout << "Current Academic Title: " << academicTitleToString(m_academicTitle) << std::endl << "Enter new Academic Title or skip(Enter): ";
+    std::getline(std::cin, input);
+    if (!input.empty()) m_academicTitle = stringToAcademicTitle(input);
+
+    std::cout << "Current Department: " << departmentToString(m_department) << std::endl << "Enter new Department or skip(Enter): ";
+    std::getline(std::cin, input);
+    if (!input.empty()) m_department = stringToDepartment(input);
 }

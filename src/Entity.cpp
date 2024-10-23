@@ -1,6 +1,8 @@
-#include <iostream>
 #include "Entity.hpp"
-
+#include <string>
+#include <iostream>
+#include <vector>
+#include <set>
 
 Entity::Entity(int indexNumber, const std::string & name, const std::string & lastname, 
                 const std::tm & birthDate, const std::string & address, const std::string & pesel, Gender gender): 

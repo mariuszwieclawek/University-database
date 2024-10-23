@@ -1,6 +1,5 @@
 #pragma once
 #include "Entity.hpp"
-#include <string>
 #include <set>
 #include <map>
 #include <vector>
@@ -14,21 +13,21 @@ private:
     std::string m_fieldOfStudy;
     std::set<std::string> m_subjects;
     std::map<std::string, std::vector<float>> m_grades;
-    std::map<std::string, std::vector<float>> m_averageGrades;
     
 public:
     Student(int indexNumber, const std::string & name, const std::string & lastname, const std::tm & birthDate, const std::string & address = "default",
-            const std::string & pesel = "default", Gender gender = Gender::Default, const std::string & fldOfStudy = "default");
+            const std::string & pesel = "default", Gender gender = Gender::Default, const std::string & fldOfStudy = "default",
+            const std::string & subjects = "default", const std::string & grades = "default");
                          
     Student(int && indexNumber, const std::string && name, const std::string && lastname, const std::tm && birthDate, const std::string && address = "default",
-            const std::string && pesel = "default", Gender && gender = Gender::Default, const std::string && fldOfStudy = "default");
+            const std::string && pesel = "default", Gender && gender = Gender::Default, const std::string && fldOfStudy = "default",
+            const std::string && subjects = "default", const std::string && grades = "default");
                     
     Student(const Student &other);
 
     Student& operator==(const Student & other);
 
     EntityType getEntityType(void) const override;
-    std::string getFieldOfStudy(void) const override;
     void setFieldOfStudy(const std::string & fldOfStudy) override;
 
     std::string serialize(void) const override;

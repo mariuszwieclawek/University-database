@@ -8,13 +8,13 @@ project(UniversityDatabase)
 
 # Pliki źródłowe C++
 set(CXX_SRCS
-    src/Main.cpp
-    src/Entity.cpp
-    src/UniversityDatabase.cpp
-    src/Student.cpp
-    src/Professor.cpp
+    src/main.cpp
     src/CommandLineInterface.cpp
+    src/Entity.cpp
     src/EntityUtils.cpp
+    src/Professor.cpp
+    src/Student.cpp
+    src/UniversityDatabase.cpp
 )
 
 # Budowanie pliku wykonywalnego

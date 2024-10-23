@@ -1,8 +1,7 @@
 #pragma once
-#include <vector>
-#include <memory>
 #include <fstream>
 #include <set>
+#include <vector>
 #include "Entity.hpp"
 
 class UniversityDatabase
@@ -39,7 +38,7 @@ public:
     bool modifyEntityByPesel(const std::string & pesel);
     void sortEntities(SortOrder order);
 
-    std::set<std::string> getFieldsOfStudy(void) const;
+    // std::set<std::string> getFieldsOfStudy(void) const;
     void displayEntities(void) const;
-    void displayEntitiesByFieldOfStudy(const std::string & fldOfStd) const;
+    // void displayEntitiesByFieldOfStudy(const std::string & fldOfStd) const;
 };

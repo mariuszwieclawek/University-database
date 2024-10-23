@@ -1,13 +1,6 @@
 #pragma once
-#include <iostream>
-#include <functional>
-#include <stack>
-#include <limits>
-#include <memory>
-
 #include "UniversityDatabase.hpp"
-#include "Student.hpp"
-#include "Professor.hpp"
+#include <functional>
 
 struct MenuItem {
     std::string label;
@@ -25,8 +18,8 @@ public:
 
     void action1(void);
 
-    void displayFieldsOfStudy(void) const;
-    void displayEntitiesForSelectedFieldOfStudy(void) const;
+    //void displayFieldsOfStudy(void) const;
+    //void displayEntitiesForSelectedFieldOfStudy(void) const;
     void displayEntitiesByLastname(void) const;
 
     void addEntityByUser(void) const;

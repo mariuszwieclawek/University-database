@@ -1,9 +1,10 @@
-#include <iostream>
-#include <sstream>
-
 #include "UniversityDatabase.hpp"
+#include "EntityUtils.hpp"
 #include "Student.hpp"
 #include "Professor.hpp"
+#include <iostream>
+#include <sstream>
+#include <memory>
 
 static std::vector<std::string> splitString(const std::string& str, char delimiter);
 
@@ -12,7 +13,7 @@ UniversityDatabase::UniversityDatabase(void)
 {
     if( true == isCSVFileEmpty(m_file) )
     {
-        std::string data = "Index, Entity Type, Name, Lastname, Date of birth, Address, PESEL, Gender, Field of study\n";
+        std::string data = "Index, Entity Type, Name, Lastname, Date of birth, Address, PESEL, Gender, Field of study, Subjects, Grades, Academic Title, Department\n";
         appendToCSV(m_file, data);
     }
     else
@@ -76,7 +77,7 @@ void UniversityDatabase::saveAllEntitiesToCSV(void)
     }
     
     /* Write the header */
-    m_file <<  "Index, Entity Type, Name, Lastname, Date of birth, Address, PESEL, Gender, Field of study\n";
+    m_file <<  "Index, Entity Type, Name, Lastname, Date of birth, Address, PESEL, Gender, Field of study, Subjects, Grades, Academic Title, Department\n";
     
     /* Write all entites */ 
     for (const auto& ent : m_entities) 
@@ -124,7 +125,7 @@ void UniversityDatabase::readEntitiesFromCSV(std::fstream& file)
     {
         std::vector<std::string> objectFields = splitString(line, ',');
 
-        if (objectFields.size() != 9) 
+        if (objectFields.size() != 13) 
         {
             std::cerr << "\t[ERROR]\t" + std::string(__func__) + " function failed" << std::endl;
             exit(0);
@@ -149,13 +150,14 @@ void UniversityDatabase::readEntitiesFromCSV(std::fstream& file)
         if(enttype == EntityType::Student)
         {
             std::unique_ptr<Entity> student = std::make_unique<Student>(index_number, objectFields[2], objectFields[3], birthdate, 
-                                                            objectFields[5], objectFields[6], gender, objectFields[8]);
+                                                            objectFields[5], objectFields[6], gender, objectFields[8], objectFields[9], objectFields[10]);
             m_entities.push_back(std::move(student));
         }
         else if(enttype == EntityType::Professor)
         {
             std::unique_ptr<Entity> proff = std::make_unique<Professor>(index_number, objectFields[2], objectFields[3], birthdate, 
-                                                            objectFields[5], objectFields[6], gender);
+                                                            objectFields[5], objectFields[6], gender, stringToAcademicTitle(objectFields[11]), 
+                                                            stringToDepartment(objectFields[12]));
             m_entities.push_back(std::move(proff));
         }
     }
@@ -261,56 +263,56 @@ void UniversityDatabase::displayEntities(void) const
         return;
     }
 
-    std::cout << "===========================================================================================================" << std::endl;
-    std::cout << "| Index | Entity type | Name | Last name | Birthday | Address | PESEL | Gender | Field of study |" << std::endl;
-    std::cout << "===========================================================================================================" << std::endl;
+    std::cout << "===================================================================================================================================================" << std::endl;
+    std::cout << "| Index | Entity type | Name | Last name | Birthday | Address | PESEL | Gender | Field of study | Subjects | Grades | Academic Title | Department |" << std::endl;
+    std::cout << "===================================================================================================================================================" << std::endl;
     for(const auto & ent : m_entities)
     {
         ent->show();
     }
 }
 
-void UniversityDatabase::displayEntitiesByFieldOfStudy(const std::string & fldOfStd) const
-{
-    std::vector<Entity*> entForSelecedFldOfStd;
+// void UniversityDatabase::displayEntitiesByFieldOfStudy(const std::string & fldOfStd) const
+// {
+//     std::vector<Entity*> entForSelecedFldOfStd;
 
-    for(const auto & ent : m_entities)
-    {
-        Entity* test = ent.get();
-        std::string test2 = ent->getFieldOfStudy();
-        if(ent->getFieldOfStudy() == fldOfStd)
-        {
-            entForSelecedFldOfStd.push_back(ent.get());
-        }
-    }
+//     for(const auto & ent : m_entities)
+//     {
+//         Entity* test = ent.get();
+//         std::string test2 = ent->getFieldOfStudy();
+//         if(ent->getFieldOfStudy() == fldOfStd)
+//         {
+//             entForSelecedFldOfStd.push_back(ent.get());
+//         }
+//     }
 
-    if(entForSelecedFldOfStd.empty()) return;
+//     if(entForSelecedFldOfStd.empty()) return;
 
-    std::cout << "===========================================================================================================" << std::endl;
-    std::cout << "| Index | Entity type | Name | Last name | Birthday | Address | PESEL | Gender | Field of study |" << std::endl;
-    std::cout << "===========================================================================================================" << std::endl;
-    for(const auto & ent : entForSelecedFldOfStd)
-    {
-        ent->show();
-    }
-}
+//     std::cout << "===================================================================================================================================================" << std::endl;
+//     std::cout << "| Index | Entity type | Name | Last name | Birthday | Address | PESEL | Gender | Field of study |" << std::endl;
+//     std::cout << "===================================================================================================================================================" << std::endl;
+//     for(const auto & ent : entForSelecedFldOfStd)
+//     {
+//         ent->show();
+//     }
+// }
 
-std::set<std::string> UniversityDatabase::getFieldsOfStudy(void) const
-{
-    std::set<std::string> fields_of_study;
+// std::set<std::string> UniversityDatabase::getFieldsOfStudy(void) const
+// {
+//     std::set<std::string> fields_of_study;
 
-    if (m_entities.empty()) {
-        std::cout << "Entity database is empty." << std::endl;
-        return fields_of_study;
-    }
+//     if (m_entities.empty()) {
+//         std::cout << "Entity database is empty." << std::endl;
+//         return fields_of_study;
+//     }
 
-    for(const auto & ent : m_entities)
-    {
-        fields_of_study.insert(ent->getFieldOfStudy());
-    }
+//     for(const auto & ent : m_entities)
+//     {
+//         fields_of_study.insert(ent->getFieldOfStudy());
+//     }
     
-    return fields_of_study;
-}
+//     return fields_of_study;
+// }
 
 static std::vector<std::string> splitString(const std::string& str, char delimiter) 
 {

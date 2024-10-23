@@ -1,10 +1,19 @@
 #pragma once
-#include <string>
-#include <vector>
-#include <set>
 #include <iomanip>
-#include "EntityUtils.hpp"
 
+enum class EntityType 
+{
+    Student,
+    Professor,
+    Admin,
+    Staff
+};
+
+enum class Gender {
+    Male,
+    Female,
+    Default
+};
 
 class Entity
 {
@@ -31,7 +40,7 @@ public:
     void setGender(const Gender & gender);
 
     virtual EntityType getEntityType() const = 0;
-    virtual std::string getFieldOfStudy(void) const = 0;
+
     virtual void setFieldOfStudy(const std::string & fldOfStudy) = 0;
 
     virtual std::string serialize(void) const = 0;
