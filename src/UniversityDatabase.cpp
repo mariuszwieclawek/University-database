@@ -51,6 +51,16 @@ bool UniversityDatabase::compareByIndexDescending(const std::unique_ptr<Entity>&
     return a->getIndex() > b->getIndex();
 }
 
+bool UniversityDatabase::compareByEntityTypeAtoZ(const std::unique_ptr<Entity>& a, const std::unique_ptr<Entity>& b) 
+{
+    return a->getEntityType() > b->getEntityType();
+}
+
+bool UniversityDatabase::compareByEntityTypeZtoA(const std::unique_ptr<Entity>& a, const std::unique_ptr<Entity>& b) 
+{
+    return a->getEntityType() < b->getEntityType();
+}
+
 void UniversityDatabase::appendToCSV(std::fstream& file, const std::string& data) 
 {
     file.open(m_entitiesFilename, std::ios::app);
@@ -245,6 +255,16 @@ void UniversityDatabase::sortEntities(SortOrder order)
             std::sort(m_entities.begin(), m_entities.end(), UniversityDatabase::compareByIndexDescending);
             break;
         }
+        case SORT_BY_ENTITY_TYPE_A_TO_Z:
+        {
+            std::sort(m_entities.begin(), m_entities.end(), UniversityDatabase::compareByEntityTypeAtoZ);
+            break;
+        }
+        case SORT_BY_ENTITY_TYPE_Z_TO_A:
+        {
+            std::sort(m_entities.begin(), m_entities.end(), UniversityDatabase::compareByEntityTypeZtoA);
+            break;
+        }
         default:
         {
             std::sort(m_entities.begin(), m_entities.end(), UniversityDatabase::compareByLastnameAtoZ);
@@ -256,63 +276,53 @@ void UniversityDatabase::sortEntities(SortOrder order)
     this->saveAllEntitiesToCSV();
 }
 
-void UniversityDatabase::displayEntities(void) const
+void UniversityDatabase::showEntities(void) const
 {
-    if (m_entities.empty()) {
-        std::cout << "University database is empty." << std::endl;
-        return;
-    }
+    if (m_entities.empty()) return;
 
-    std::cout << "===================================================================================================================================================" << std::endl;
-    std::cout << "| Index | Entity type | Name | Last name | Birthday | Address | PESEL | Gender | Field of study | Subjects | Grades | Academic Title | Department |" << std::endl;
-    std::cout << "===================================================================================================================================================" << std::endl;
+
     for(const auto & ent : m_entities)
     {
         ent->show();
     }
 }
 
-// void UniversityDatabase::displayEntitiesByFieldOfStudy(const std::string & fldOfStd) const
-// {
-//     std::vector<Entity*> entForSelecedFldOfStd;
+void UniversityDatabase::showEntitiesByEntityType(const EntityType & ent_type) const
+{
+    std::vector<Entity*> entForSelecedFldOfStd;
 
-//     for(const auto & ent : m_entities)
-//     {
-//         Entity* test = ent.get();
-//         std::string test2 = ent->getFieldOfStudy();
-//         if(ent->getFieldOfStudy() == fldOfStd)
-//         {
-//             entForSelecedFldOfStd.push_back(ent.get());
-//         }
-//     }
+    for(const auto & ent : m_entities)
+    {
+        if(ent->getEntityType() == ent_type)
+        {
+            entForSelecedFldOfStd.push_back(ent.get());
+        }
+    }
 
-//     if(entForSelecedFldOfStd.empty()) return;
+    if(entForSelecedFldOfStd.empty()) return;
 
-//     std::cout << "===================================================================================================================================================" << std::endl;
-//     std::cout << "| Index | Entity type | Name | Last name | Birthday | Address | PESEL | Gender | Field of study |" << std::endl;
-//     std::cout << "===================================================================================================================================================" << std::endl;
-//     for(const auto & ent : entForSelecedFldOfStd)
-//     {
-//         ent->show();
-//     }
-// }
+    for(const auto & ent : entForSelecedFldOfStd)
+    {
+        ent->show();
+    }
+}
 
-// std::set<std::string> UniversityDatabase::getFieldsOfStudy(void) const
-// {
-//     std::set<std::string> fields_of_study;
+std::set<EntityType> UniversityDatabase::getEntityTypes(void) const
+{
+    std::set<EntityType> entity_types;
 
-//     if (m_entities.empty()) {
-//         std::cout << "Entity database is empty." << std::endl;
-//         return fields_of_study;
-//     }
+    if (m_entities.empty()) {
+        std::cout << "Entity database is empty." << std::endl;
+        return entity_types;
+    }
 
-//     for(const auto & ent : m_entities)
-//     {
-//         fields_of_study.insert(ent->getFieldOfStudy());
-//     }
+    for(const auto & ent : m_entities)
+    {
+        entity_types.insert(ent->getEntityType());
+    }
     
-//     return fields_of_study;
-// }
+    return entity_types;
+}
 
 static std::vector<std::string> splitString(const std::string& str, char delimiter) 
 {

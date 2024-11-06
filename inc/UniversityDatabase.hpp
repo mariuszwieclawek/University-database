@@ -15,6 +15,8 @@ private:
     static bool compareByLastnameZtoA(const std::unique_ptr<Entity>& a, const std::unique_ptr<Entity>& b);
     static bool compareByIndexAscending(const std::unique_ptr<Entity>& a, const std::unique_ptr<Entity>& b);
     static bool compareByIndexDescending(const std::unique_ptr<Entity>& a, const std::unique_ptr<Entity>& b);
+    static bool compareByEntityTypeAtoZ(const std::unique_ptr<Entity>& a, const std::unique_ptr<Entity>& b);
+    static bool compareByEntityTypeZtoA(const std::unique_ptr<Entity>& a, const std::unique_ptr<Entity>& b);
 
     void appendToCSV(std::fstream& file, const std::string& data);
     bool isCSVFileEmpty(std::fstream& file);
@@ -27,6 +29,8 @@ public:
         SORT_BY_LASTNAME_Z_TO_A = 1,
         SORT_BY_INDEX_ASCENDING = 2,
         SORT_BY_INDEX_DESCENDING = 3,
+        SORT_BY_ENTITY_TYPE_A_TO_Z = 4,
+        SORT_BY_ENTITY_TYPE_Z_TO_A = 5,
     };
 
     UniversityDatabase(void);
@@ -38,7 +42,7 @@ public:
     bool modifyEntityByPesel(const std::string & pesel);
     void sortEntities(SortOrder order);
 
-    // std::set<std::string> getFieldsOfStudy(void) const;
-    void displayEntities(void) const;
-    // void displayEntitiesByFieldOfStudy(const std::string & fldOfStd) const;
+    std::set<EntityType> getEntityTypes(void) const;
+    void showEntities(void) const;
+    void showEntitiesByEntityType(const EntityType & ent_type) const;
 };

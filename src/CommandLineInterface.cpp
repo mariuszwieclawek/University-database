@@ -14,72 +14,97 @@
 
 CommandLineInterface::CommandLineInterface(UniversityDatabase &  db) : m_db(db)
 {
-    //auto action1 = [this]() { this->displayFieldsOfStudy(); };
-    //auto action2 = [this]() { this->displayEntitiesForSelectedFieldOfStudy(); };
-    auto action4 = [this]() { this->m_db.displayEntities(); };
-    auto action5 = [this]() { this->displayEntitiesByLastname(); };
-    auto action6 = [this]() { this->addEntityByUser(); };
-    auto action7 = [this]() { this->removeEntityByUser(); };
-    auto action8 = [this]() { this->modifyEntityByUser(); };
-    auto action9 = [this]() { this->sortEntitiesByLastNameAtoZ(); };
-    auto action10 = [this]() { this->sortEntitiesByLastNameZtoA(); };
-    auto action11 = [this]() { this->sortEntitiesByIndexAscending(); };
-    auto action12 = [this]() { this->sortEntitiesByIndexDescending(); };
+    auto action10 = [this]() { this->displayEntities(); };
+    auto action20 = [this]() { this->sortEntitiesByLastNameAtoZ(); };
+    auto action21 = [this]() { this->sortEntitiesByLastNameZtoA(); };
+    auto action22 = [this]() { this->sortEntitiesByIndexAscending(); };
+    auto action23 = [this]() { this->sortEntitiesByIndexDescending(); };
+    auto action24 = [this]() { this->sortEntitiesByEntityTypeAtoZ(); };
+    auto action25 = [this]() { this->sortEntitiesByEntityTypeZtoA(); };
+    auto action30 = [this]() { this->displayEntitiesByLastname(); };
+    auto action40 = [this]() { this->addEntityByUser(); };
+    auto action50 = [this]() { this->removeEntityByUser(); };
+    auto action60 = [this]() { this->modifyEntityByUser(); };
+
 
     m_mainMenu =
     {
         "Main Menu", nullptr,
         {
-            {"Fields of study list", nullptr, 
-            {
-                {"Enter field of study and display Entity list", nullptr, {}},
-            }},
-            {"List of entities at the university", action4, {}},
+            {"List of entities at the university", action10, {}},
             {"Sort entity list", nullptr, 
             {
-                {"Sort entities by lastname A to Z", action9, {}},
-                {"Sort entities by lastname Z to A", action10, {}},
-                {"Sort entities by index number ascending", action11, {}},
-                {"Sort entities by index number descending", action12, {}},
+                {"Sort entities by lastname A to Z", action20, {}},
+                {"Sort entities by lastname Z to A", action21, {}},
+                {"Sort entities by index number ascending", action22, {}},
+                {"Sort entities by index number descending", action23, {}},
+                {"Sort entities by Entity Type A to Z", action24, {}},
+                {"Sort entities by Entity Type Z to A", action25, {}},
             }},
-            {"Search for entities", action5, {}},
-            {"Add entity", action6, {}},
-            {"Remove entity", action7, {}},
-            {"Modify entity", action8, {}}
+            {"Search for entities", action30, {}},
+            {"Add entity", action40, {}},
+            {"Remove entity", action50, {}},
+            {"Modify entity", action60, {}}
         }
     };
 };
 
-void CommandLineInterface::action1(void)
+void CommandLineInterface::displayEntities(void) const
 {
-    std::cout << "hello" << std::endl;
+    std::cout << "===================================================================================================================================================" << std::endl;
+    std::cout << "| Index | Entity type | Name | Last name | Birthday | Address | PESEL | Gender | Field of study | Subjects | Grades | Academic Title | Department |" << std::endl;
+    std::cout << "===================================================================================================================================================" << std::endl;
+    m_db.showEntities();
+    std::cout << "===================================================================================================================================================" << std::endl << std::endl;
+
+    std::set<EntityType> ent_types = m_db.getEntityTypes();
+    std::map<int, EntityType> ent_type_map;
+
+    std::cout << "Select Entity Type to show list: " << std::endl;
+    int iter = 1;
+    for( const auto & ent_type : ent_types)
+    {
+        std::cout << iter << "." << ent_type << std::endl;
+        ent_type_map.insert({iter, ent_type});
+        iter++;
+    }
+
+    /* Handle user input parameter*/
+    char choice_ch;
+    int choice_digit;
+    while(true)
+    {
+        choice_ch = _getch();
+        if(isdigit(choice_ch))
+        {
+            choice_digit = choice_ch - '0'; // convert to digit
+            /* check if map contains selected digit */
+            if(ent_type_map.find(choice_digit) != ent_type_map.end()) break;
+        }   
+    }
+    
+    EntityType ent_type = ent_type_map[choice_digit];
+
+    std::cout << "===================================================================================================================================================" << std::endl;
+    std::cout << "| Index | Entity type | Name | Last name | Birthday | Address | PESEL | Gender | Field of study | Subjects | Grades | Academic Title | Department |" << std::endl;
+    std::cout << "===================================================================================================================================================" << std::endl;
+    m_db.showEntitiesByEntityType(ent_type);
+    std::cout << "===================================================================================================================================================" << std::endl << std::endl;
 }
 
-// void CommandLineInterface::displayFieldsOfStudy(void) const
-// {
-//     std::cout << "List of fields of study at the university:" << std::endl;
-//     std::set<std::string> fields_of_study = m_db.getFieldsOfStudy();
-//     for(auto fld_of_st : fields_of_study)
-//     {
-//         std::cout << "\t-" << fld_of_st << std::endl;
-//     }
-//     std::cout << std::endl;
-// }
-
-// void CommandLineInterface::displayEntitiesForSelectedFieldOfStudy(void) const
-// {
-//     this->displayFieldsOfStudy();
-//     std::string fldOfStd;
-//     std::cout << "Please enter Field of Study: ";
-//     std::getline(std::cin, fldOfStd);
-
-//     m_db.displayEntitiesByFieldOfStudy(fldOfStd);
-// }
+void CommandLineInterface::displayEntitiesAll(void) const
+{
+    std::cout << "===================================================================================================================================================" << std::endl;
+    std::cout << "| Index | Entity type | Name | Last name | Birthday | Address | PESEL | Gender | Field of study | Subjects | Grades | Academic Title | Department |" << std::endl;
+    std::cout << "===================================================================================================================================================" << std::endl;
+    m_db.showEntities();
+    std::cout << "===================================================================================================================================================" << std::endl << std::endl;
+}
 
 void CommandLineInterface::displayEntitiesByLastname(void) const
 {
-    m_db.displayEntities();
-    std::cout << "=====================================================================================================================" << std::endl << std::endl;
+    this->displayEntitiesAll();
+
     std::string lastname;
     std::cout << "Enter entity lastname to show extended info: ";
     std::getline(std::cin,lastname);
@@ -269,8 +294,8 @@ void CommandLineInterface::addProfessorByUser(void) const
 
 void CommandLineInterface::removeEntityByUser(void) const
 {
-    m_db.displayEntities();
-    std::cout << "===================================================================================================================================================" << std::endl;
+    this->displayEntitiesAll();
+    
     std::string pesel;
 
     std::cout << "Enter the PESEL number of the entity you want to remove from the database: ";
@@ -288,8 +313,8 @@ void CommandLineInterface::removeEntityByUser(void) const
 
 void CommandLineInterface::modifyEntityByUser(void) const
 {
-    m_db.displayEntities();
-    std::cout << "===================================================================================================================================================" << std::endl;
+    this->displayEntitiesAll();
+    
     std::string pesel;
     std::cout << "Enter the PESEL number of the entity you want to modify: ";
     std::getline(std::cin, pesel);
@@ -310,28 +335,42 @@ void CommandLineInterface::sortEntitiesByLastNameAtoZ(void) const
 {
     m_db.sortEntities(UniversityDatabase::SORT_BY_LASTNAME_A_TO_Z);
     std::cout << "Sorted entity list:" << std::endl;
-    m_db.displayEntities();
+    this->displayEntitiesAll();
 }
 
 void CommandLineInterface::sortEntitiesByLastNameZtoA(void) const
 {
     m_db.sortEntities(UniversityDatabase::SORT_BY_LASTNAME_Z_TO_A);
     std::cout << "Sorted entity list:" << std::endl;
-    m_db.displayEntities();
+    this->displayEntitiesAll();
 }
 
 void CommandLineInterface::sortEntitiesByIndexAscending(void) const
 {
     m_db.sortEntities(UniversityDatabase::SORT_BY_INDEX_ASCENDING);
     std::cout << "Sorted entity list:" << std::endl;
-    m_db.displayEntities();
+    this->displayEntitiesAll();
 }
 
 void CommandLineInterface::sortEntitiesByIndexDescending(void) const
 {
     m_db.sortEntities(UniversityDatabase::SORT_BY_INDEX_DESCENDING);
     std::cout << "Sorted entity list:" << std::endl;
-    m_db.displayEntities();
+    this->displayEntitiesAll();
+}
+
+void CommandLineInterface::sortEntitiesByEntityTypeAtoZ(void) const
+{
+    m_db.sortEntities(UniversityDatabase::SORT_BY_ENTITY_TYPE_A_TO_Z);
+    std::cout << "Sorted entity list:" << std::endl;
+    this->displayEntitiesAll();
+}
+
+void CommandLineInterface::sortEntitiesByEntityTypeZtoA(void) const
+{
+    m_db.sortEntities(UniversityDatabase::SORT_BY_ENTITY_TYPE_Z_TO_A);
+    std::cout << "Sorted entity list:" << std::endl;
+    this->displayEntitiesAll();
 }
 
 void CommandLineInterface::displayMenu(const MenuItem & selectedMenu) const 

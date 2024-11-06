@@ -52,7 +52,7 @@ int main()
     // db.addEntity(std::move(student));
 
     // db.sortStudentByLastname();
-    // db.displayEntities();
+    // db.showEntities();
 
     // std::vector<Entity*> sts = db.findEntitiesByLastname("Abacki");
     // sts[0]->show();

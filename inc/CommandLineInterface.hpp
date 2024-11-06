@@ -16,10 +16,8 @@ private:
 public:
     CommandLineInterface(UniversityDatabase &  db);
 
-    void action1(void);
-
-    //void displayFieldsOfStudy(void) const;
-    //void displayEntitiesForSelectedFieldOfStudy(void) const;
+    void displayEntities(void) const;
+    void displayEntitiesAll(void) const;
     void displayEntitiesByLastname(void) const;
 
     void addEntityByUser(void) const;
@@ -31,6 +29,8 @@ public:
     void sortEntitiesByLastNameZtoA(void) const;
     void sortEntitiesByIndexAscending(void) const;
     void sortEntitiesByIndexDescending(void) const;
+    void sortEntitiesByEntityTypeAtoZ(void) const;
+    void sortEntitiesByEntityTypeZtoA(void) const;
 
     void displayMenu(const MenuItem & selectedMenu) const;
     void run();
