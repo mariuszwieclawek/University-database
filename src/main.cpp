@@ -12,7 +12,7 @@ int main()
 {
     // std::unique_ptr<Entity> student = std::make_unique<Student>("Mariusz", "Kowalski", "Czarna 21 33-300 Nowy Sacz",
     //                                                                 400201, "99020213134", Gender::Male);
-    // student->show();
+    // student->infoToString();
 
     // student->addSubject("English");
     // student->removeSubject("Statistics");
@@ -55,7 +55,7 @@ int main()
     // db.showEntities();
 
     // std::vector<Entity*> sts = db.findEntitiesByLastname("Abacki");
-    // sts[0]->show();
+    // sts[0]->infoToString();
 
 
     CommandLineInterface menu(db);

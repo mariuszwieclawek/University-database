@@ -28,13 +28,12 @@ public:
     Student& operator==(const Student & other);
 
     EntityType getEntityType(void) const override;
-    void setFieldOfStudy(const std::string & fldOfStudy) override;
 
     std::string serialize(void) const override;
 
-    void show(void) const override;
-    void showExtented(void) const override;
-    void modify(void) override;
+    std::string infoToString(void) const override;
+    std::string extendedInfoToString(void) const override;
+    bool modifyField(const std::string& fieldName, const FieldValue& newValue) override;
 
 
     void showSubjects(void) const;

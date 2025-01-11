@@ -120,8 +120,8 @@ void CommandLineInterface::displayEntitiesByLastname(void) const
         std::cout << "Selected entities:" << std::endl;
         for(auto ent : entities)
         {
-            ent->showExtented();
-            std::cout << std::endl << std::endl;
+            std::string student_str = ent->extendedInfoToString();
+            std::cout << student_str << std::endl << std::endl;
         }
     }
 }
@@ -219,10 +219,10 @@ void CommandLineInterface::addStudentByUser(void) const
     std::cout << "Field of study:";
     std::getline(std::cin, fieldofstudy);
 
-    std::cout << "Subjects (format: 'Math; Computer Science; Psychics'):";
+    std::cout << "Subjects (format: 'Math; Computer Science; Physics'):";
     std::getline(std::cin, subjects);
 
-    std::cout << "Grades (format: 'Math={2.5 3 4.5 2};Psychics={3.5 5 3.5 4};' ):";
+    std::cout << "Grades (format: 'Math={2.5 3 4.5 2};Physics={3.5 5 3.5 4};' ):";
     std::getline(std::cin, grades);
 
     m_db.addEntity(std::make_unique<Student>(indexNumber, name, lastname, birthdate, address, pesel, gnr, fieldofstudy, subjects, grades));

@@ -49,86 +49,143 @@ std::string Professor::serialize(void) const
     return ret_val;
 }
 
-
 EntityType Professor::getEntityType(void) const
 {
     return EntityType::Professor;
 }
 
-void Professor::setFieldOfStudy(const std::string & fldOfStudy)
+std::string Professor::infoToString(void) const
 {
-    /*TBD*/
-}
+    std::stringstream ssBirthday, ssEntityType, ssGender;
 
-void Professor::show(void) const
-{
-    std::stringstream ssBirthday;
     ssBirthday << std::put_time(&m_birthDate, "%d.%m.%Yr");
+    ssEntityType << this->getEntityType();
+    ssGender << m_gender;
     std::string birthdate = ssBirthday.str();
-    std::cout << "| " << m_indexNumber << " | " << this->getEntityType() << " | " << m_name << " | " << m_lastname << " | " << birthdate << " | " 
-              << m_address << " | " << m_pesel << " | " << m_gender << " | " << "N/A" << " | " << "N/A" << " | " << "N/A" << " | " 
-              << academicTitleToString(m_academicTitle) << " | " << departmentToString(m_department)<< std::endl;
+    std::string entityType = ssEntityType.str();
+    std::string gender = ssGender.str();
+
+    return std::string("| ") + std::to_string(m_indexNumber) + " | " + entityType + " | " + m_name + " | " + m_lastname + " | " + birthdate + " | " 
+              + m_address + " | " + m_pesel + " | " + gender + " | " + "N/A" + " | " + "N/A" + " | " + "N/A" + " | " 
+              + academicTitleToString(m_academicTitle) + " | " + departmentToString(m_department) + "\n";
 }
 
-void Professor::showExtented(void) const
+std::string Professor::extendedInfoToString(void) const
 {
-    std::cout << "===================================================================================================================================================" << std::endl;
-    std::cout << "Information about Professor:" << std::endl;
-    std::cout << "Name: " << m_name << std::endl;
-    std::cout << "Last name: " << m_lastname << std::endl;
-    std::cout << "Address: " << m_address << std::endl;
-    std::cout << "Index number: " << m_indexNumber << std::endl;
-    std::cout << "PESEL: " << m_pesel << std::endl;
-    std::cout << "Gender: " << m_gender << std::endl;
-    std::cout << "===================================================================================================================================================" << std::endl;  
-    std::cout << "===================================================================================================================================================" << std::endl;  
+    std::stringstream ssGender;
+    ssGender << m_gender;
+    std::string gender = ssGender.str();
+    return std::string("===================================================================================================================================================\n") +
+           "Information about Professor:\n" +
+           "Name: " + m_name + "\n" +
+           "Last name: " + m_lastname + "\n" +
+           "Address: " + m_address + "\n" +
+           "Index number: " + std::to_string(m_indexNumber) + "\n" +
+           "PESEL: " + m_pesel + "\n" +
+           "Gender: " + gender + "\n" +
+           "===================================================================================================================================================\n" + 
+           "===================================================================================================================================================\n"; 
 }
 
-void Professor::modify(void)
+bool Professor::modifyField(const std::string& fieldName, const FieldValue& newValue)
 {
-    std::cout << "Actual data for Professor:" << std::endl;
-    this->showExtented();
-    std::cout << "Modification started. Please enter new values:" << std::endl;
-    std::string input;
+    // std::cout << "Actual data for Professor:" << std::endl;
+    // this->extendedInfoToString();
+    // std::cout << "Modification started. Please enter new values:" << std::endl;
+    // std::string input;
 
-    std::cout << "Current Index number: " << m_indexNumber << std::endl << "Enter new Index number or skip(Enter): ";
-    std::getline(std::cin, input);
-    if (!input.empty()) m_indexNumber = std::stoi(input);
+    // std::cout << "Current Index number: " << m_indexNumber << std::endl << "Enter new Index number or skip(Enter): ";
+    // std::getline(std::cin, input);
+    // if (!input.empty()) m_indexNumber = std::stoi(input);
 
-    std::cout << "Current Entity Type: " << this->getEntityType() << std::endl << "Enter new Entity Type or skip(Enter): ";
-    std::getline(std::cin, input);
-    // TBD
-    // if (!input.empty()) m_name = input; 
+    // // std::cout << "Current Entity Type: " << this->getEntityType() << std::endl << "Enter new Entity Type or skip(Enter): ";
+    // // std::getline(std::cin, input);
+    // // TBD
+    // // if (!input.empty()) m_name = input; 
 
-    std::cout << "Current Name: " << m_name << std::endl << "Enter new Name or skip(Enter): ";
-    std::getline(std::cin, input);
-    if (!input.empty()) m_name = input;
+    // std::cout << "Current Name: " << m_name << std::endl << "Enter new Name or skip(Enter): ";
+    // std::getline(std::cin, input);
+    // if (!input.empty()) m_name = input;
 
-    std::cout << "Current Last name: " << m_lastname << std::endl << "Enter new Last name or skip(Enter): ";
-    std::getline(std::cin, input);
-    if (!input.empty()) m_lastname = input;
+    // std::cout << "Current Last name: " << m_lastname << std::endl << "Enter new Last name or skip(Enter): ";
+    // std::getline(std::cin, input);
+    // if (!input.empty()) m_lastname = input;
 
-    std::cout << "Current birthday date: " << TmToString(m_birthDate, "%d.%m.%Y") << std::endl << "Enter new Birthday date or skip(Enter): ";
-    std::getline(std::cin, input);
-    if (!input.empty()) m_birthDate = stringToTm(input, "%d.%m.%Y");
+    // std::cout << "Current birthday date: " << TmToString(m_birthDate, "%d.%m.%Y") << std::endl << "Enter new Birthday date or skip(Enter): ";
+    // std::getline(std::cin, input);
+    // if (!input.empty()) m_birthDate = stringToTm(input, "%d.%m.%Y");
 
-    std::cout << "Current Address: " << m_address << std::endl << "Enter new Address or skip(Enter): ";
-    std::getline(std::cin, input);
-    if (!input.empty()) m_address = input;
+    // std::cout << "Current Address: " << m_address << std::endl << "Enter new Address or skip(Enter): ";
+    // std::getline(std::cin, input);
+    // if (!input.empty()) m_address = input;
 
-    std::cout << "Current PESEL: " << m_pesel << std::endl << "Enter new PESEL or skip(Enter): ";
-    std::getline(std::cin, input);
-    if (!input.empty()) m_pesel = input;
+    // std::cout << "Current PESEL: " << m_pesel << std::endl << "Enter new PESEL or skip(Enter): ";
+    // std::getline(std::cin, input);
+    // if (!input.empty()) m_pesel = input;
 
-    std::cout << "Current Gender: " << m_gender << std::endl << "Enter new Gender or skip(Enter): ";
-    std::getline(std::cin, input);
-    if (!input.empty()) m_gender = stringToGender(input);
+    // std::cout << "Current Gender: " << m_gender << std::endl << "Enter new Gender or skip(Enter): ";
+    // std::getline(std::cin, input);
+    // if (!input.empty()) m_gender = stringToGender(input);
 
-    std::cout << "Current Academic Title: " << academicTitleToString(m_academicTitle) << std::endl << "Enter new Academic Title or skip(Enter): ";
-    std::getline(std::cin, input);
-    if (!input.empty()) m_academicTitle = stringToAcademicTitle(input);
+    // std::cout << "Current Academic Title: " << academicTitleToString(m_academicTitle) << std::endl << "Enter new Academic Title or skip(Enter): ";
+    // std::getline(std::cin, input);
+    // if (!input.empty()) m_academicTitle = stringToAcademicTitle(input);
 
-    std::cout << "Current Department: " << departmentToString(m_department) << std::endl << "Enter new Department or skip(Enter): ";
-    std::getline(std::cin, input);
-    if (!input.empty()) m_department = stringToDepartment(input);
+    // std::cout << "Current Department: " << departmentToString(m_department) << std::endl << "Enter new Department or skip(Enter): ";
+    // std::getline(std::cin, input);
+    // if (!input.empty()) m_department = stringToDepartment(input);
+
+    bool ret_val = false;
+
+    if (fieldName == "index") 
+    {
+        m_indexNumber = std::get<int>(newValue);
+        ret_val = true;
+    } 
+    else if (fieldName == "name") 
+    {
+        m_name = std::get<std::string>(newValue);
+        ret_val = true;
+    } 
+    else if (fieldName == "lastname") 
+    {
+        m_lastname = std::get<std::string>(newValue);
+        ret_val = true;
+    } 
+    else if (fieldName == "birthdaydate") 
+    {
+        m_birthDate = std::get<std::tm>(newValue);
+        ret_val = true;
+    }
+    else if (fieldName == "address") 
+    {
+        m_address = std::get<std::string>(newValue);
+        ret_val = true;
+    }
+    else if (fieldName == "pesel") 
+    {
+        m_pesel = std::get<std::string>(newValue);
+        ret_val = true;
+    }
+    else if (fieldName == "gender") 
+    {
+        m_gender = std::get<Gender>(newValue);
+        ret_val = true;
+    }
+    else if (fieldName == "academictitle") 
+    {
+        m_academicTitle = std::get<AcademicTitle>(newValue);
+        ret_val = true;
+    }
+    else if (fieldName == "department") 
+    {
+        m_department = std::get<Department>(newValue);
+        ret_val = true;
+    } 
+    else 
+    {
+        ret_val = false;
+    }
+
+    return ret_val;
 }

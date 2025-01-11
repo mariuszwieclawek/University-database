@@ -1,19 +1,10 @@
 #pragma once
 #include <iomanip>
-
-enum class EntityType 
-{
-    Student,
-    Professor,
-    Admin,
-    Staff
-};
-
-enum class Gender {
-    Male,
-    Female,
-    Default
-};
+#include <variant>
+#include <map>
+#include <set>
+#include <vector>
+#include "Enums.hpp"
 
 class Entity
 {
@@ -41,14 +32,14 @@ public:
 
     virtual EntityType getEntityType() const = 0;
 
-    virtual void setFieldOfStudy(const std::string & fldOfStudy) = 0;
-
     virtual std::string serialize(void) const = 0;
 
-    virtual void show(void) const = 0;
-    virtual void showExtented(void) const = 0;
+    virtual std::string infoToString(void) const = 0;
+    virtual std::string extendedInfoToString(void) const = 0;
 
-    virtual void modify(void) = 0;
+    using FieldValue = std::variant<int, std::string, float, std::tm, Gender, AcademicTitle, Department,
+                                    std::set<std::string>, std::map<std::string, std::vector<float>>>;
+    virtual bool modifyField(const std::string& fieldName, const FieldValue& newValue) = 0;
 
 protected:
     int m_indexNumber;

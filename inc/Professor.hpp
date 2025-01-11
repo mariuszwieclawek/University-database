@@ -2,29 +2,7 @@
 #include <map>
 #include <iostream>
 #include "Entity.hpp"
-
-enum class AcademicTitle 
-{
-    AssociateProfessor,
-    Professor,
-    TitularProfessor,
-    DoctorHabilitatus,
-};
-
-
-enum class Department
-{
-    ComputerScience,
-    ElectronicsAndTelecommunications,
-    Architecture,
-    Mathematics,
-    Physics,
-    Chemistry,
-    Medicine,
-    Pharmacy,
-    Psychology,
-};
-
+#include "Enums.hpp"
 
 
 class Professor : public Entity
@@ -46,11 +24,10 @@ public:
     Professor& operator==(const Professor & other);
 
     EntityType getEntityType(void) const override;
-    void setFieldOfStudy(const std::string & fldOfStudy) override;
 
     std::string serialize(void) const override;
 
-    void show(void) const override;
-    void showExtented(void) const override;
-    void modify(void) override;
+    std::string infoToString(void) const override;
+    std::string extendedInfoToString(void) const override;
+    bool modifyField(const std::string& fieldName, const FieldValue& newValue) override;
 };

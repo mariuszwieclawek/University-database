@@ -225,7 +225,66 @@ bool UniversityDatabase::modifyEntityByPesel(const std::string & pesel)
         return false;
     }
 
-    (*it)->modify();
+    int indexnmbr;
+    std::string name, lastname, address, psl;
+    std::tm birthday;
+    Gender gndr;
+
+    EntityType ent_type = (*it)->getEntityType();
+    switch (ent_type)
+    {
+    case EntityType::Professor:
+
+        break;
+    case EntityType::Student:
+        /* code */
+        break;
+    default:
+        return false;
+    }
+
+    std::cout << "Actual data for Professor:" << std::endl;
+    std::cout << (*it)->extendedInfoToString();
+    std::cout << "Modification started. Please enter new values:" << std::endl;
+    std::string input;
+
+    std::cout << "Current Index number: " << (*it)->getIndex() << std::endl << "Enter new Index number or skip(Enter): ";
+    std::getline(std::cin, input);
+    if (!input.empty()) indexnmbr = std::stoi(input);
+
+    std::cout << "Current Name: " << (*it)->getName() << std::endl << "Enter new Name or skip(Enter): ";
+    std::getline(std::cin, input);
+    if (!input.empty()) name = input;
+
+    std::cout << "Current Last name: " << (*it)->getLastname() << std::endl << "Enter new Last name or skip(Enter): ";
+    std::getline(std::cin, input);
+    if (!input.empty()) lastname = input;
+
+    std::cout << "Current birthday date: " << TmToString((*it)->getBirthdayDate(), "%d.%m.%Y") << std::endl << "Enter new Birthday date or skip(Enter): ";
+    std::getline(std::cin, input);
+    if (!input.empty()) birthday = stringToTm(input, "%d.%m.%Y");
+
+    std::cout << "Current Address: " << (*it)->getAddress() << std::endl << "Enter new Address or skip(Enter): ";
+    std::getline(std::cin, input);
+    if (!input.empty()) address = input;
+
+    std::cout << "Current PESEL: " << (*it)->getPesel() << std::endl << "Enter new PESEL or skip(Enter): ";
+    std::getline(std::cin, input);
+    if (!input.empty()) psl = input;
+
+    std::cout << "Current Gender: " << (*it)->getGender() << std::endl << "Enter new Gender or skip(Enter): ";
+    std::getline(std::cin, input);
+    if (!input.empty()) gndr = stringToGender(input);
+
+    // std::cout << "Current Academic Title: " << academicTitleToString((*it)->getAcademicTitle()) << std::endl << "Enter new Academic Title or skip(Enter): ";
+    // std::getline(std::cin, input);
+    // if (!input.empty()) m_academicTitle = stringToAcademicTitle(input);
+
+    // std::cout << "Current Department: " << departmentToString((*it)->getDepartment()) << std::endl << "Enter new Department or skip(Enter): ";
+    // std::getline(std::cin, input);
+    // if (!input.empty()) m_department = stringToDepartment(input);
+
+    // (*it)->modifyField();
     this->saveAllEntitiesToCSV();
     
     return true;
@@ -283,7 +342,8 @@ void UniversityDatabase::showEntities(void) const
 
     for(const auto & ent : m_entities)
     {
-        ent->show();
+        std::string info = ent->infoToString();
+        std::cout << info;
     }
 }
 
@@ -303,7 +363,8 @@ void UniversityDatabase::showEntitiesByEntityType(const EntityType & ent_type) c
 
     for(const auto & ent : entForSelecedFldOfStd)
     {
-        ent->show();
+        std::string info = ent->infoToString();
+        std::cout << info;
     }
 }
 
