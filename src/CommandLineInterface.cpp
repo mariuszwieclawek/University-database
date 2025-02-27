@@ -4,13 +4,51 @@
 #include <limits>
 #include <memory>
 #include <sstream>
-#include <conio.h>
 #include <cctype>
-#include "Windows.h"
-
 #include "Student.hpp"
 #include "Professor.hpp"
 #include "EntityUtils.hpp"
+
+
+#ifdef _WIN32
+    #include <conio.h>
+    char getch() 
+    {
+        return _getch();
+    }
+#else
+    #include <termios.h>
+    #include <unistd.h>
+    char getch() 
+    {
+        struct termios oldt, newt;
+        char ch;
+
+        tcgetattr(STDIN_FILENO, &oldt);
+        newt = oldt;
+        newt.c_lflag &= ~(ICANON | ECHO);
+        tcsetattr(STDIN_FILENO, TCSANOW, &newt);
+
+        ch = getchar();
+        tcsetattr(STDIN_FILENO, TCSANOW, &oldt);
+
+        return ch;
+    }
+#endif
+
+#ifdef _WIN32
+    #include <windows.h>
+    void clearScreen() 
+    {
+        system("cls");
+    }
+#else
+    #include <cstdlib>
+    void clearScreen() 
+    {
+        std::system("clear");
+    }
+#endif
 
 CommandLineInterface::CommandLineInterface(UniversityDatabase &  db) : m_db(db)
 {
@@ -74,7 +112,7 @@ void CommandLineInterface::displayEntities(void) const
     int choice_digit;
     while(true)
     {
-        choice_ch = _getch();
+        choice_ch = getch();
         if(isdigit(choice_ch))
         {
             choice_digit = choice_ch - '0'; // convert to digit
@@ -146,7 +184,7 @@ void CommandLineInterface::addEntityByUser(void) const
     /* Handle user input parameter*/
     while(true)
     {
-        choice_ch = _getch();
+        choice_ch = getch();
         if(isdigit(choice_ch))
         {
             choice_digit = choice_ch - '0'; // convert to digit
@@ -495,7 +533,7 @@ void CommandLineInterface::run()
     menuStack.push(currentMenu);
     m_isMenuEnabled = true;
 
-    system("cls");
+    clearScreen();
 
     MenuItem selectedOption;
     while (m_isMenuEnabled) 
@@ -503,17 +541,17 @@ void CommandLineInterface::run()
         displayMenu(currentMenu);
 
         /* Handle user input parameter*/
-        choice_ch = _getch();
+        choice_ch = getch();
         if (isdigit(choice_ch)) 
         { 
             choice_digit = choice_ch - '0'; // convert to digit
         } 
         else 
         {
-            system("cls");
+            clearScreen();
             continue;
         }
-        system("cls");
+        clearScreen();
 
         /* Check input parameter */
         if (choice_digit < 0  || choice_digit > currentMenu.subMenu.size()) 
@@ -572,7 +610,7 @@ void CommandLineInterface::exitFromSelectedAction()
     std::cout << "Press '0' to return: " << std::endl;
     while (true) 
     {
-        choice_ch = _getch();
+        choice_ch = getch();
         if (isdigit(choice_ch)) 
         { 
             choice_digit = choice_ch - '0'; // convert to digit
@@ -580,7 +618,7 @@ void CommandLineInterface::exitFromSelectedAction()
 
         if(choice_digit == 0)
         {
-            system("cls");
+            clearScreen();
             break;
         }
     }
