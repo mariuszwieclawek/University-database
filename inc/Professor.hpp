@@ -23,11 +23,16 @@ public:
 
     Professor& operator==(const Professor & other);
 
+    AcademicTitle getAcademicTitle(void) const;
+    void setAcademicTitle(const AcademicTitle & title);
+    Department getDepartment(void) const;
+    void setDepartment(const Department & dep);
+
     EntityType getEntityType(void) const override;
 
     std::string serialize(void) const override;
-
     std::string infoToString(void) const override;
     std::string extendedInfoToString(void) const override;
-    bool modifyField(const std::string& fieldName, const FieldValue& newValue) override;
+
+    std::unique_ptr<Entity> clone() const override;
 };

@@ -40,6 +40,36 @@ Student& Student::operator==(const Student & other)
     return *this;
 }
 
+std::string Student::getFieldOfStudy(void) const
+{
+    return m_fieldOfStudy;
+}
+
+void Student::setFieldOfStudy(const std::string & fld_of_study)
+{
+    m_fieldOfStudy = fld_of_study;
+}
+
+std::set<std::string> Student::getSubjects(void) const
+{
+    return m_subjects;
+}
+
+void Student::setSubjects(const std::set<std::string> & subjects)
+{
+    m_subjects = subjects;
+}
+
+std::map<std::string, std::vector<float>> Student::getGrades(void) const
+{
+    return m_grades;
+}
+
+void Student::setGrades(const std::map<std::string, std::vector<float>> & grades)
+{
+    m_grades = grades;
+}
+
 std::string Student::serialize(void) const
 {
     std::stringstream ssIndexNmb, ssEntityType, ssGender, ssBirthday;
@@ -98,132 +128,22 @@ std::string Student::extendedInfoToString(void) const
             "===================================================================================================================================================\n"; 
 }
 
-bool Student::modifyField(const std::string& fieldName, const FieldValue& newValue)
+
+std::unique_ptr<Entity> Student::clone() const 
 {
-    // std::cout << "Actual data for student:" << std::endl;
-    // this->extendedInfoToString();
-    // std::cout << "Modification started. Please enter new values:" << std::endl;
-    // std::string input;
-
-    // std::cout << "Current Index number: " << m_indexNumber << std::endl << "Enter new Index number or skip(Enter): ";
-    // std::getline(std::cin, input);
-    // if (!input.empty()) m_indexNumber = std::stoi(input);
-
-    // std::cout << "Current Entity Type: " << this->getEntityType() << std::endl << "Enter new Entity Type or skip(Enter): ";
-    // std::getline(std::cin, input);
-    // // TBD
-    // // if (!input.empty()) m_name = input; 
-
-    // std::cout << "Current Name: " << m_name << std::endl << "Enter new Name or skip(Enter): ";
-    // std::getline(std::cin, input);
-    // if (!input.empty()) m_name = input;
-
-    // std::cout << "Current Last name: " << m_lastname << std::endl << "Enter new Last name or skip(Enter): ";
-    // std::getline(std::cin, input);
-    // if (!input.empty()) m_lastname = input;
-
-    // std::cout << "Current birthday date: " << TmToString(m_birthDate, "%d.%m.%Y") << std::endl << "Enter new Birthday date or skip(Enter): ";
-    // std::getline(std::cin, input);
-    // if (!input.empty()) m_birthDate = stringToTm(input, "%d.%m.%Y");
-
-    // std::cout << "Current Address: " << m_address << std::endl << "Enter new Address or skip(Enter): ";
-    // std::getline(std::cin, input);
-    // if (!input.empty()) m_address = input;
-
-    // std::cout << "Current PESEL: " << m_pesel << std::endl << "Enter new PESEL or skip(Enter): ";
-    // std::getline(std::cin, input);
-    // if (!input.empty()) m_pesel = input;
-
-    // std::cout << "Current Gender: " << m_gender << std::endl << "Enter new Gender or skip(Enter): ";
-    // std::getline(std::cin, input);
-    // if (!input.empty()) m_gender = stringToGender(input);
-
-    // std::cout << "Current Field of Study: " << m_fieldOfStudy << std::endl << "Enter new Field of Study or skip(Enter): ";
-    // std::getline(std::cin, input);
-    // if (!input.empty()) m_fieldOfStudy = input;
-
-    // std::cout << "Current Subjects: ";
-    // this->showSubjects();
-    // std::cout << "Enter new Subjects or skip(Enter): ";
-    // std::getline(std::cin, input);
-    // // if (!input.empty()) m_subjects = input;
-
-    // std::cout << "Current Grades: ";
-    // this->showGrades();
-    // std::cout << "Enter new Grades or skip(Enter): ";
-    // std::getline(std::cin, input);
-    // if (!input.empty()) m_grades = input;
-
-        bool ret_val = false;
-
-    if (fieldName == "index") 
-    {
-        m_indexNumber = std::get<int>(newValue);
-        ret_val = true;
-    } 
-    else if (fieldName == "name") 
-    {
-        m_name = std::get<std::string>(newValue);
-        ret_val = true;
-    } 
-    else if (fieldName == "lastname") 
-    {
-        m_lastname = std::get<std::string>(newValue);
-        ret_val = true;
-    } 
-    else if (fieldName == "birthdaydate") 
-    {
-        m_birthDate = std::get<std::tm>(newValue);
-        ret_val = true;
-    }
-    else if (fieldName == "address") 
-    {
-        m_address = std::get<std::string>(newValue);
-        ret_val = true;
-    }
-    else if (fieldName == "pesel") 
-    {
-        m_pesel = std::get<std::string>(newValue);
-        ret_val = true;
-    }
-    else if (fieldName == "gender") 
-    {
-        m_gender = std::get<Gender>(newValue);
-        ret_val = true;
-    }
-    else if (fieldName == "fieldofstudy") 
-    {
-        m_fieldOfStudy = std::get<std::string>(newValue);
-        ret_val = true;
-    }
-    else if (fieldName == "subjects") 
-    {
-        m_subjects = std::get<std::set<std::string>>(newValue);
-        ret_val = true;
-    }
-    else if (fieldName == "grades") 
-    {
-        m_grades = std::get<std::map<std::string, std::vector<float>>>(newValue);
-        ret_val = true;
-    }
-    else 
-    {
-        ret_val = false;
-    }
-
-    return ret_val;
-    
+    return std::make_unique<Student>(*this);
 }
 
-void Student::showSubjects(void) const
+std::string Student::showSubjects(void) const 
 {
-    std::cout << "===================================================================================================================================================" << std::endl;
-    std::cout << "Subjects for student:" << std::endl;
-    for(const auto & sb : m_subjects)
-    {
-        std::cout << "-" << sb << std::endl;
+    std::ostringstream oss;
+    oss << "===================================================================================================================================================" << std::endl;
+    oss << "Subjects for student:" << std::endl;
+    for (const auto& sb : m_subjects) {
+        oss << "-" << sb << std::endl;
     }
-    std::cout << "===================================================================================================================================================" << std::endl;
+    oss << "===================================================================================================================================================" << std::endl;
+    return oss.str();
 }
 
 bool Student::addSubject(const std::string & subjectName)
@@ -250,19 +170,22 @@ bool Student::removeSubject(const std::string & subjectName)
     return isExist;
 }
 
-void Student::showGrades(void) const
+std::string Student::showGrades(void) const
 {
-    std::cout << "===================================================================================================================================================" << std::endl;
-    std::cout << "Grades of a " << m_name << " " << m_lastname << ":" << std::endl;
+    std::ostringstream oss;
+    oss << "===================================================================================================================================================" << std::endl;
+    oss << "Grades of a " << m_name << " " << m_lastname << ":" << std::endl;
     for(const auto & [subject, grades] : m_grades)
     {
-        std::cout << "\rSubject: \n\t" << subject << ":\n\t\t";
+        oss << "\rSubject: \n\t" << subject << ":\n\t\t";
         for(const auto & grade : grades)
         {
-            std::cout << grade << ",";
+            oss << grade << ",";
         }
     }
-    std::cout << "\r===================================================================================================================================================" << std::endl;
+    oss << "\r===================================================================================================================================================" << std::endl;
+    
+    return oss.str();
 }
 
 bool Student::addGrade(const std::string & subject, float grade)

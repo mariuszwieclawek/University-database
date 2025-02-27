@@ -5,6 +5,7 @@
 #include <iostream>
 #include <sstream>
 #include <memory>
+#include <algorithm>
 
 static std::vector<std::string> splitString(const std::string& str, char delimiter);
 
@@ -215,7 +216,20 @@ std::vector<const Entity*> UniversityDatabase::findEntitiesByLastname(const std:
     return foundEntities;
 }
 
-bool UniversityDatabase::modifyEntityByPesel(const std::string & pesel)
+std::unique_ptr<Entity> UniversityDatabase::findEntityByPesel(const std::string & pesel)
+{
+    auto it = std::find_if(m_entities.begin(), m_entities.end(),
+                            [&pesel](const std::unique_ptr<Entity> & st){return st->getPesel() == pesel;});
+
+    if (it == m_entities.end())
+    {
+        return nullptr;
+    }
+
+    return (*it)->clone();
+}
+
+bool UniversityDatabase::modifyEntityByPesel(const std::string & pesel, std::unique_ptr<Entity> new_ent)
 {
     auto it = std::find_if(m_entities.begin(), m_entities.end(),
                             [&pesel](const std::unique_ptr<Entity> & st){return st->getPesel() == pesel;});
@@ -225,66 +239,8 @@ bool UniversityDatabase::modifyEntityByPesel(const std::string & pesel)
         return false;
     }
 
-    int indexnmbr;
-    std::string name, lastname, address, psl;
-    std::tm birthday;
-    Gender gndr;
+    *it = std::move(new_ent);
 
-    EntityType ent_type = (*it)->getEntityType();
-    switch (ent_type)
-    {
-    case EntityType::Professor:
-
-        break;
-    case EntityType::Student:
-        /* code */
-        break;
-    default:
-        return false;
-    }
-
-    std::cout << "Actual data for Professor:" << std::endl;
-    std::cout << (*it)->extendedInfoToString();
-    std::cout << "Modification started. Please enter new values:" << std::endl;
-    std::string input;
-
-    std::cout << "Current Index number: " << (*it)->getIndex() << std::endl << "Enter new Index number or skip(Enter): ";
-    std::getline(std::cin, input);
-    if (!input.empty()) indexnmbr = std::stoi(input);
-
-    std::cout << "Current Name: " << (*it)->getName() << std::endl << "Enter new Name or skip(Enter): ";
-    std::getline(std::cin, input);
-    if (!input.empty()) name = input;
-
-    std::cout << "Current Last name: " << (*it)->getLastname() << std::endl << "Enter new Last name or skip(Enter): ";
-    std::getline(std::cin, input);
-    if (!input.empty()) lastname = input;
-
-    std::cout << "Current birthday date: " << TmToString((*it)->getBirthdayDate(), "%d.%m.%Y") << std::endl << "Enter new Birthday date or skip(Enter): ";
-    std::getline(std::cin, input);
-    if (!input.empty()) birthday = stringToTm(input, "%d.%m.%Y");
-
-    std::cout << "Current Address: " << (*it)->getAddress() << std::endl << "Enter new Address or skip(Enter): ";
-    std::getline(std::cin, input);
-    if (!input.empty()) address = input;
-
-    std::cout << "Current PESEL: " << (*it)->getPesel() << std::endl << "Enter new PESEL or skip(Enter): ";
-    std::getline(std::cin, input);
-    if (!input.empty()) psl = input;
-
-    std::cout << "Current Gender: " << (*it)->getGender() << std::endl << "Enter new Gender or skip(Enter): ";
-    std::getline(std::cin, input);
-    if (!input.empty()) gndr = stringToGender(input);
-
-    // std::cout << "Current Academic Title: " << academicTitleToString((*it)->getAcademicTitle()) << std::endl << "Enter new Academic Title or skip(Enter): ";
-    // std::getline(std::cin, input);
-    // if (!input.empty()) m_academicTitle = stringToAcademicTitle(input);
-
-    // std::cout << "Current Department: " << departmentToString((*it)->getDepartment()) << std::endl << "Enter new Department or skip(Enter): ";
-    // std::getline(std::cin, input);
-    // if (!input.empty()) m_department = stringToDepartment(input);
-
-    // (*it)->modifyField();
     this->saveAllEntitiesToCSV();
     
     return true;

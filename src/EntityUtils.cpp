@@ -1,5 +1,6 @@
 #include "EntityUtils.hpp"
 #include "Professor.hpp"
+#include <algorithm>
 
 Gender stringToGender(const std::string& str) 
 {

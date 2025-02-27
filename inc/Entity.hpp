@@ -1,9 +1,9 @@
 #pragma once
 #include <iomanip>
-#include <variant>
 #include <map>
 #include <set>
 #include <vector>
+#include <memory>
 #include "Enums.hpp"
 
 class Entity
@@ -37,9 +37,7 @@ public:
     virtual std::string infoToString(void) const = 0;
     virtual std::string extendedInfoToString(void) const = 0;
 
-    using FieldValue = std::variant<int, std::string, float, std::tm, Gender, AcademicTitle, Department,
-                                    std::set<std::string>, std::map<std::string, std::vector<float>>>;
-    virtual bool modifyField(const std::string& fieldName, const FieldValue& newValue) = 0;
+    virtual std::unique_ptr<Entity> clone() const = 0;
 
 protected:
     int m_indexNumber;

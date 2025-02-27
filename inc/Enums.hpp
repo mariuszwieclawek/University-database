@@ -5,7 +5,8 @@ enum class EntityType
     Student,
     Professor,
     Admin,
-    Staff
+    Staff,
+    Unknown,
 };
 
 enum class Gender {

@@ -2,6 +2,8 @@
 #include <fstream>
 #include <set>
 #include <vector>
+#include <memory>
+#include <optional>
 #include "Entity.hpp"
 
 class UniversityDatabase
@@ -39,7 +41,8 @@ public:
     void addEntity(std::unique_ptr<Entity> entity);
     bool removeEntityByPesel(const std::string & pesel);
     std::vector<const Entity*> findEntitiesByLastname(const std::string & lastname);
-    bool modifyEntityByPesel(const std::string & pesel);
+    std::unique_ptr<Entity> findEntityByPesel(const std::string & pesel);
+    bool modifyEntityByPesel(const std::string & pesel, std::unique_ptr<Entity> new_ent);
     void sortEntities(SortOrder order);
 
     std::set<EntityType> getEntityTypes(void) const;

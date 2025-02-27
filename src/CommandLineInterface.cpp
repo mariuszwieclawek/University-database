@@ -315,20 +315,114 @@ void CommandLineInterface::modifyEntityByUser(void) const
 {
     this->displayEntitiesAll();
     
-    std::string pesel;
+    std::string pesel_input;
     std::cout << "Enter the PESEL number of the entity you want to modify: ";
-    std::getline(std::cin, pesel);
+    std::getline(std::cin, pesel_input);
 
-    bool isModified = m_db.modifyEntityByPesel(pesel);
+    std::unique_ptr<Entity> entity = m_db.findEntityByPesel(pesel_input);
 
-    if(isModified == false)
+    if(entity == nullptr)
     {
         std::cout << "The entity could not be found" << std::endl;
+        return;
     }
-    else
+
+    /* Collect Entity data */
+
+    std::cout << "Actual data for " << entity->getEntityType() << ":" << std::endl;
+    entity->extendedInfoToString();
+    std::cout << "Modification started. Please enter new values:" << std::endl;
+    std::string input;
+
+    std::cout << "Current Index number: " << entity->getIndex() << std::endl << "Enter new Index number or skip(Enter): ";
+    std::getline(std::cin, input);
+    if (!input.empty()) entity->setIndex(std::stoi(input));
+
+    std::cout << "Current Name: " << entity->getName() << std::endl << "Enter new Name or skip(Enter): ";
+    std::getline(std::cin, input);
+    if (!input.empty()) entity->setName(input);
+
+    std::cout << "Current Last name: " << entity->getLastname() << std::endl << "Enter new Last name or skip(Enter): ";
+    std::getline(std::cin, input);
+    if (!input.empty()) entity->setLastname(input);;
+
+    std::cout << "Current birthday date: " << TmToString(entity->getBirthdayDate(), "%d.%m.%Y") << std::endl << "Enter new Birthday date or skip(Enter): ";
+    std::getline(std::cin, input);
+    if (!input.empty()) entity->setBirthdayDate(stringToTm(input, "%d.%m.%Y"));
+
+    std::cout << "Current Address: " << entity->getAddress() << std::endl << "Enter new Address or skip(Enter): ";
+    std::getline(std::cin, input);
+    if (!input.empty()) entity->setAddress(input);
+
+    std::cout << "Current PESEL: " << entity->getPesel() << std::endl << "Enter new PESEL or skip(Enter): ";
+    std::getline(std::cin, input);
+    if (!input.empty()) entity->setPesel(input);
+
+    std::cout << "Current Gender: " << entity->getGender() << std::endl << "Enter new Gender or skip(Enter): ";
+    std::getline(std::cin, input);
+    if (!input.empty()) entity->setGender(stringToGender(input));
+
+    EntityType ent_type = entity->getEntityType();
+    switch (ent_type)
     {
-        std::cout << "Entity modified!" << std::endl;
+        case EntityType::Student:
+        {
+            Student* student = dynamic_cast<Student*>(entity.get());
+
+            std::cout << "Current Field of Study: " << student->getFieldOfStudy() << std::endl << "Enter new Field of Study or skip(Enter): ";
+            std::getline(std::cin, input);
+            if (!input.empty()) student->setFieldOfStudy(input);
+
+            std::cout << "Current Subjects:" << std::endl;
+            std::cout << student->showSubjects();
+            std::cout << "Enter new Subjects(format: 'Math; Computer Science; Physics') or skip(Enter): ";
+            std::getline(std::cin, input);
+            if (!input.empty()) student->setSubjects(stringToSet(input));
+        
+            std::cout << "Current Grades: " << std::endl;
+            std::cout << student->showGrades();
+            std::cout << "Enter new Grades(format: 'Math={2.5 3 4.5 2};Physics={3.5 5 3.5 4};' ) or skip(Enter): ";
+            std::getline(std::cin, input);
+            if (!input.empty()) student->setGrades(parseGrades(input));
+
+            std::unique_ptr<Entity> new_student = std::make_unique<Student>(*student);
+            if(m_db.modifyEntityByPesel(pesel_input, std::move(new_student)) != true)
+            {
+                std::cout << "Nie znaleziono " << std::endl;
+            }
+            break;
+        }    
+        case EntityType::Professor:
+        {
+            auto prof = dynamic_cast<Professor*>(entity.get());
+            AcademicTitle test = prof->getAcademicTitle();
+            if(test == AcademicTitle::AssociateProfessor)
+            {
+                std::cout << "test" << std::endl;
+            }
+            std::cout << "Current Academic Title: " << academicTitleToString(prof->getAcademicTitle()) << std::endl << "Enter new Academic Title or skip(Enter): ";
+            std::getline(std::cin, input);
+            if (!input.empty()) prof->setAcademicTitle(stringToAcademicTitle(input)); 
+
+            std::cout << "Current Department: " << departmentToString(prof->getDepartment()) << std::endl << "Enter new Department or skip(Enter): ";
+            std::getline(std::cin, input);
+            if (!input.empty()) prof->setDepartment(stringToDepartment(input)); 
+
+            std::unique_ptr<Professor> new_prof = std::make_unique<Professor>(*prof);
+            if(m_db.modifyEntityByPesel(pesel_input, std::move(new_prof)) != true)
+            {
+                std::cout << "Nie znaleziono " << std::endl;
+            }
+
+            break;
+        }
+
+        default:
+            break;
     }
+
+
+    
 }
 
 void CommandLineInterface::sortEntitiesByLastNameAtoZ(void) const
