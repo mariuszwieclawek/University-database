@@ -12,14 +12,14 @@
 
 #ifdef _WIN32
     #include <conio.h>
-    char getch() 
+    char my_getch() 
     {
         return _getch();
     }
 #else
     #include <termios.h>
     #include <unistd.h>
-    char getch() 
+    char my_getch() 
     {
         struct termios oldt, newt;
         char ch;
@@ -112,7 +112,7 @@ void CommandLineInterface::displayEntities(void) const
     int choice_digit;
     while(true)
     {
-        choice_ch = getch();
+        choice_ch = my_getch();
         if(isdigit(choice_ch))
         {
             choice_digit = choice_ch - '0'; // convert to digit
@@ -184,7 +184,7 @@ void CommandLineInterface::addEntityByUser(void) const
     /* Handle user input parameter*/
     while(true)
     {
-        choice_ch = getch();
+        choice_ch = my_getch();
         if(isdigit(choice_ch))
         {
             choice_digit = choice_ch - '0'; // convert to digit
@@ -541,7 +541,7 @@ void CommandLineInterface::run()
         displayMenu(currentMenu);
 
         /* Handle user input parameter*/
-        choice_ch = getch();
+        choice_ch = my_getch();
         if (isdigit(choice_ch)) 
         { 
             choice_digit = choice_ch - '0'; // convert to digit
@@ -610,7 +610,7 @@ void CommandLineInterface::exitFromSelectedAction()
     std::cout << "Press '0' to return: " << std::endl;
     while (true) 
     {
-        choice_ch = getch();
+        choice_ch = my_getch();
         if (isdigit(choice_ch)) 
         { 
             choice_digit = choice_ch - '0'; // convert to digit
