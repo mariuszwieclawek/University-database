@@ -41,7 +41,7 @@ public:
     void addEntity(std::unique_ptr<Entity> entity);
     bool removeEntityByPesel(const std::string & pesel);
     std::vector<const Entity*> findEntitiesByLastname(const std::string & lastname);
-    std::unique_ptr<Entity> findEntityByPesel(const std::string & pesel);
+    const Entity& findEntityByPesel(const std::string & pesel);
     bool modifyEntityByPesel(const std::string & pesel, std::unique_ptr<Entity> new_ent);
     void sortEntities(SortOrder order);
 

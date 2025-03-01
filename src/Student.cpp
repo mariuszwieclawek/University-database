@@ -21,7 +21,12 @@ Student::Student(int && indexNumber, const std::string && name, const std::strin
     m_grades(std::move(parseGrades(grades)))
     {};
 
-Student::Student(const Student & other): Entity(other), m_fieldOfStudy(other.m_fieldOfStudy){};
+Student::Student(const Student & other): Entity(other)
+{
+    this->m_fieldOfStudy = other.m_fieldOfStudy;
+    this->m_subjects =  other.m_subjects;
+    this->m_grades =  other.m_grades;
+}
 
 Student& Student::operator==(const Student & other)
 {
@@ -34,6 +39,7 @@ Student& Student::operator==(const Student & other)
         this->m_indexNumber = other.m_indexNumber;
         this->m_pesel = other.m_pesel;
         this->m_gender = other.m_gender;
+        this->m_fieldOfStudy = other.m_fieldOfStudy;
         this->m_subjects = other.m_subjects;
         this->m_grades = other.m_grades;
     }
@@ -123,16 +129,11 @@ std::string Student::extendedInfoToString(void) const
             "PESEL: " + m_pesel + "\n" +
             "Gender: " + gender + "\n" +
             "===================================================================================================================================================\n" +
-    // this->showSubjects();
-    // this->showGrades();
+            this->showSubjects() +
+            this->showGrades() +
             "===================================================================================================================================================\n"; 
 }
 
-
-std::unique_ptr<Entity> Student::clone() const 
-{
-    return std::make_unique<Student>(*this);
-}
 
 std::string Student::showSubjects(void) const 
 {
@@ -182,6 +183,7 @@ std::string Student::showGrades(void) const
         {
             oss << grade << ",";
         }
+        oss << "\n";
     }
     oss << "\r===================================================================================================================================================" << std::endl;
     

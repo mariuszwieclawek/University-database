@@ -15,7 +15,11 @@ Professor::Professor(int && indexNumber, std::string && name, std::string && las
     m_department(std::move(dprtm))
     {};
 
-Professor::Professor(const Professor & other): Entity(other){};
+Professor::Professor(const Professor & other): Entity(other)
+{
+    this->m_academicTitle = other.m_academicTitle;
+    this->m_department = other.m_department;
+}
 
 Professor& Professor::operator==(const Professor & other)
 {
@@ -28,6 +32,8 @@ Professor& Professor::operator==(const Professor & other)
         this->m_indexNumber = other.m_indexNumber;
         this->m_pesel = other.m_pesel;
         this->m_gender = other.m_gender;
+        this->m_academicTitle = other.m_academicTitle;
+        this->m_department = other.m_department;
     }
     return *this;
 }
@@ -108,10 +114,4 @@ std::string Professor::extendedInfoToString(void) const
            "Department: " + departmentToString(m_department) + "\n" +
            "===================================================================================================================================================\n" + 
            "===================================================================================================================================================\n"; 
-}
-
-
-std::unique_ptr<Entity> Professor::clone() const 
-{
-    return std::make_unique<Professor>(*this);
 }

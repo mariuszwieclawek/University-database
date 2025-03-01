@@ -173,7 +173,7 @@ std::set<std::string> stringToSet(const std::string& str)
     std::stringstream ss(str);
     std::string temp;
     
-    while (std::getline(ss, temp, ',')) 
+    while (std::getline(ss, temp, ';')) 
     {
         temp.erase(0, temp.find_first_not_of(' ')); // remove space in front
         temp.erase(temp.find_last_not_of(' ') + 1); // remove space from the back

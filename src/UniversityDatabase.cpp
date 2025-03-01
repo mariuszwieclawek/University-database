@@ -216,17 +216,17 @@ std::vector<const Entity*> UniversityDatabase::findEntitiesByLastname(const std:
     return foundEntities;
 }
 
-std::unique_ptr<Entity> UniversityDatabase::findEntityByPesel(const std::string & pesel)
+const Entity& UniversityDatabase::findEntityByPesel(const std::string & pesel)
 {
     auto it = std::find_if(m_entities.begin(), m_entities.end(),
                             [&pesel](const std::unique_ptr<Entity> & st){return st->getPesel() == pesel;});
 
     if (it == m_entities.end())
     {
-        return nullptr;
+        throw std::runtime_error("Entity with the given PESEL not found.");
     }
 
-    return (*it)->clone();
+    return *(it->get());
 }
 
 bool UniversityDatabase::modifyEntityByPesel(const std::string & pesel, std::unique_ptr<Entity> new_ent)
@@ -234,16 +234,16 @@ bool UniversityDatabase::modifyEntityByPesel(const std::string & pesel, std::uni
     auto it = std::find_if(m_entities.begin(), m_entities.end(),
                             [&pesel](const std::unique_ptr<Entity> & st){return st->getPesel() == pesel;});
 
-    if (it == m_entities.end())
+    if (it != m_entities.end())
+    {
+        *it = std::move(new_ent);
+        this->saveAllEntitiesToCSV();
+        return true;
+    }
+    else
     {
         return false;
     }
-
-    *it = std::move(new_ent);
-
-    this->saveAllEntitiesToCSV();
-    
-    return true;
 }
 
 void UniversityDatabase::sortEntities(SortOrder order)

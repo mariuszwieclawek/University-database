@@ -37,8 +37,6 @@ public:
     virtual std::string infoToString(void) const = 0;
     virtual std::string extendedInfoToString(void) const = 0;
 
-    virtual std::unique_ptr<Entity> clone() const = 0;
-
 protected:
     int m_indexNumber;
     std::string m_name;
