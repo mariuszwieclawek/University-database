@@ -32,36 +32,6 @@ UniversityDatabase::~UniversityDatabase(void)
     }
 }
 
-bool UniversityDatabase::compareByLastnameAtoZ(const std::unique_ptr<Entity>& a, const std::unique_ptr<Entity>& b) 
-{
-    return a->getLastname() < b->getLastname();
-}
-
-bool UniversityDatabase::compareByLastnameZtoA(const std::unique_ptr<Entity>& a, const std::unique_ptr<Entity>& b) 
-{
-    return a->getLastname() > b->getLastname();
-}
-
-bool UniversityDatabase::compareByIndexAscending(const std::unique_ptr<Entity>& a, const std::unique_ptr<Entity>& b) 
-{
-    return a->getIndex() < b->getIndex();
-}
-
-bool UniversityDatabase::compareByIndexDescending(const std::unique_ptr<Entity>& a, const std::unique_ptr<Entity>& b) 
-{
-    return a->getIndex() > b->getIndex();
-}
-
-bool UniversityDatabase::compareByEntityTypeAtoZ(const std::unique_ptr<Entity>& a, const std::unique_ptr<Entity>& b) 
-{
-    return a->getEntityType() > b->getEntityType();
-}
-
-bool UniversityDatabase::compareByEntityTypeZtoA(const std::unique_ptr<Entity>& a, const std::unique_ptr<Entity>& b) 
-{
-    return a->getEntityType() < b->getEntityType();
-}
-
 void UniversityDatabase::appendToCSV(std::fstream& file, const std::string& data) 
 {
     file.open(m_entitiesFilename, std::ios::app);
@@ -201,22 +171,22 @@ bool UniversityDatabase::removeEntityByPesel(const std::string & pesel)
     return isRemoved;
 }
 
-std::vector<const Entity*> UniversityDatabase::findEntitiesByLastname(const std::string & lastname)
+std::vector<std::unique_ptr<Entity>> UniversityDatabase::findEntitiesByLastname(const std::string & lastname)
 {
     /* Return vector because there is a possibility to exist several entities with the same lastname */
-    std::vector<const Entity*> foundEntities;
-    for(const auto & s : m_entities)
+    std::vector<std::unique_ptr<Entity>> foundEntities;
+    for(const auto & ent : m_entities)
     {
-        if(s->getLastname() == lastname)
+        if(ent->getLastname() == lastname)
         {
-            foundEntities.push_back(s.get());
+            foundEntities.push_back(ent->clone());
         }
     }
 
     return foundEntities;
 }
 
-const Entity& UniversityDatabase::findEntityByPesel(const std::string & pesel)
+std::unique_ptr<Entity> UniversityDatabase::findEntityByPesel(const std::string & pesel)
 {
     auto it = std::find_if(m_entities.begin(), m_entities.end(),
                             [&pesel](const std::unique_ptr<Entity> & st){return st->getPesel() == pesel;});
@@ -226,7 +196,7 @@ const Entity& UniversityDatabase::findEntityByPesel(const std::string & pesel)
         throw std::runtime_error("Entity with the given PESEL not found.");
     }
 
-    return *(it->get());
+    return (*it)->clone();
 }
 
 bool UniversityDatabase::modifyEntityByPesel(const std::string & pesel, std::unique_ptr<Entity> new_ent)
@@ -252,37 +222,44 @@ void UniversityDatabase::sortEntities(SortOrder order)
     {
         case SORT_BY_LASTNAME_A_TO_Z:
         {
-            std::sort(m_entities.begin(), m_entities.end(), UniversityDatabase::compareByLastnameAtoZ);
+            std::sort(m_entities.begin(), m_entities.end(), 
+                [](const std::unique_ptr<Entity>& a, const std::unique_ptr<Entity>& b){return a->getLastname() < b->getLastname();});
             break;
         }
         case SORT_BY_LASTNAME_Z_TO_A:
         {
-            std::sort(m_entities.begin(), m_entities.end(), UniversityDatabase::compareByLastnameZtoA);
+            std::sort(m_entities.begin(), m_entities.end(),
+                [](const std::unique_ptr<Entity>& a, const std::unique_ptr<Entity>& b){return a->getLastname() > b->getLastname();});
             break;
         }
         case SORT_BY_INDEX_ASCENDING:
         {
-            std::sort(m_entities.begin(), m_entities.end(), UniversityDatabase::compareByIndexAscending);
+            std::sort(m_entities.begin(), m_entities.end(),
+                [](const std::unique_ptr<Entity>& a, const std::unique_ptr<Entity>& b){return a->getIndex() < b->getIndex();});
             break;
         }
         case SORT_BY_INDEX_DESCENDING:
         {
-            std::sort(m_entities.begin(), m_entities.end(), UniversityDatabase::compareByIndexDescending);
+            std::sort(m_entities.begin(), m_entities.end(),
+                [](const std::unique_ptr<Entity>& a, const std::unique_ptr<Entity>& b){return a->getIndex() > b->getIndex();});
             break;
         }
         case SORT_BY_ENTITY_TYPE_A_TO_Z:
         {
-            std::sort(m_entities.begin(), m_entities.end(), UniversityDatabase::compareByEntityTypeAtoZ);
+            std::sort(m_entities.begin(), m_entities.end(),
+                [](const std::unique_ptr<Entity>& a, const std::unique_ptr<Entity>& b){return a->getEntityType() > b->getEntityType();});
             break;
         }
         case SORT_BY_ENTITY_TYPE_Z_TO_A:
         {
-            std::sort(m_entities.begin(), m_entities.end(), UniversityDatabase::compareByEntityTypeZtoA);
+            std::sort(m_entities.begin(), m_entities.end(),
+                [](const std::unique_ptr<Entity>& a, const std::unique_ptr<Entity>& b){return a->getEntityType() < b->getEntityType();});
             break;
         }
         default:
         {
-            std::sort(m_entities.begin(), m_entities.end(), UniversityDatabase::compareByLastnameAtoZ);
+            std::sort(m_entities.begin(), m_entities.end(), 
+                [](const std::unique_ptr<Entity>& a, const std::unique_ptr<Entity>& b){return a->getLastname() < b->getLastname();});
             break;
         }
             

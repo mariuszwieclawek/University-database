@@ -54,7 +54,7 @@ int main()
     // db.sortStudentByLastname();
     // db.showEntities();
 
-    // std::vector<Entity*> sts = db.findEntitiesByLastname("Abacki");
+    // std::vector<std::unique_ptr<Entity>> sts = db.findEntitiesByLastname("Abacki");
     // sts[0]->infoToString();
 
 

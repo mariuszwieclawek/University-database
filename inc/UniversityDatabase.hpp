@@ -13,13 +13,6 @@ private:
     const std::string m_entitiesFilename = "../database/entities.csv";
     std::fstream m_file;
 
-    static bool compareByLastnameAtoZ(const std::unique_ptr<Entity>& a, const std::unique_ptr<Entity>& b);
-    static bool compareByLastnameZtoA(const std::unique_ptr<Entity>& a, const std::unique_ptr<Entity>& b);
-    static bool compareByIndexAscending(const std::unique_ptr<Entity>& a, const std::unique_ptr<Entity>& b);
-    static bool compareByIndexDescending(const std::unique_ptr<Entity>& a, const std::unique_ptr<Entity>& b);
-    static bool compareByEntityTypeAtoZ(const std::unique_ptr<Entity>& a, const std::unique_ptr<Entity>& b);
-    static bool compareByEntityTypeZtoA(const std::unique_ptr<Entity>& a, const std::unique_ptr<Entity>& b);
-
     void appendToCSV(std::fstream& file, const std::string& data);
     bool isCSVFileEmpty(std::fstream& file);
     void readEntitiesFromCSV(std::fstream& file);
@@ -40,8 +33,8 @@ public:
 
     void addEntity(std::unique_ptr<Entity> entity);
     bool removeEntityByPesel(const std::string & pesel);
-    std::vector<const Entity*> findEntitiesByLastname(const std::string & lastname);
-    const Entity& findEntityByPesel(const std::string & pesel);
+    std::vector<std::unique_ptr<Entity>> findEntitiesByLastname(const std::string & lastname);
+    std::unique_ptr<Entity> findEntityByPesel(const std::string & pesel);
     bool modifyEntityByPesel(const std::string & pesel, std::unique_ptr<Entity> new_ent);
     void sortEntities(SortOrder order);
 

@@ -1,5 +1,6 @@
 #include "Professor.hpp"
 #include "EntityUtils.hpp"
+#include <format>
 
 Professor::Professor(int indexNumber, const std::string & name, const std::string & lastname, const std::tm & birthDate, const std::string & address,
                         const std::string & pesel, const Gender & gender, const AcademicTitle & acdtitle, const Department & dprtm):
@@ -61,19 +62,21 @@ void Professor::setDepartment(const Department & dep)
 
 std::string Professor::serialize(void) const
 {
-    std::stringstream ssIndexNmb, ssEntityType, ssGender, ssBirthday;
-    ssIndexNmb << m_indexNumber;
-    ssEntityType << this->getEntityType();
-    ssGender << m_gender;
-    ssBirthday << std::put_time(&m_birthDate, "%d.%m.%Yr");
-    std::string indexNumber = ssIndexNmb.str();
-    std::string entityType = ssEntityType.str();
-    std::string gender = ssGender.str();
-    std::string birthdate = ssBirthday.str();
-    std::string ret_val = indexNumber + "," + entityType + "," + m_name + "," + m_lastname + "," + birthdate + "," + m_address + "," +
-                          m_pesel + "," + gender + "," + "N/A" + "," + "N/A" + "," + "N/A" + "," + academicTitleToString(m_academicTitle)
-                          + "," + departmentToString(m_department) + "," + "\n";
-    return ret_val;
+    std::ostringstream oss;
+    oss << m_indexNumber << ","
+        << this->getEntityType() << ","
+        << m_name << ","
+        << m_lastname << ","
+        << std::put_time(&m_birthDate, "%d.%m.%Yr") << ","
+        << m_address << ","
+        << m_pesel << ","
+        << m_gender << ","
+        << "N/A" << ","
+        << "N/A" << ","
+        << "N/A" << ","
+        << academicTitleToString(m_academicTitle) << ","
+        << departmentToString(m_department) << "\n";
+    return oss.str();
 }
 
 EntityType Professor::getEntityType(void) const
@@ -83,35 +86,45 @@ EntityType Professor::getEntityType(void) const
 
 std::string Professor::infoToString(void) const
 {
-    std::stringstream ssBirthday, ssEntityType, ssGender;
+    std::ostringstream oss;
+    oss << "| " << m_indexNumber << " | "
+        << this->getEntityType() << " | "
+        << m_name << " | "
+        << m_lastname << " | "
+        << std::put_time(&m_birthDate, "%d.%m.%Yr") << " | "
+        << m_address << " | "
+        << m_pesel << " | "
+        << m_gender << " | "
+        << "N/A" << " | "
+        << "N/A" << " | "
+        << "N/A" << " | "
+        << academicTitleToString(m_academicTitle) << " | "
+        << departmentToString(m_department) << " | \n";
 
-    ssBirthday << std::put_time(&m_birthDate, "%d.%m.%Yr");
-    ssEntityType << this->getEntityType();
-    ssGender << m_gender;
-    std::string birthdate = ssBirthday.str();
-    std::string entityType = ssEntityType.str();
-    std::string gender = ssGender.str();
-
-    return std::string("| ") + std::to_string(m_indexNumber) + " | " + entityType + " | " + m_name + " | " + m_lastname + " | " + birthdate + " | " 
-              + m_address + " | " + m_pesel + " | " + gender + " | " + "N/A" + " | " + "N/A" + " | " + "N/A" + " | " 
-              + academicTitleToString(m_academicTitle) + " | " + departmentToString(m_department) + "\n";
+    return oss.str();
 }
 
 std::string Professor::extendedInfoToString(void) const
 {
-    std::stringstream ssGender;
-    ssGender << m_gender;
-    std::string gender = ssGender.str();
-    return std::string("===================================================================================================================================================\n") +
-           "Information about Professor:\n" +
-           "Name: " + m_name + "\n" +
-           "Last name: " + m_lastname + "\n" +
-           "Address: " + m_address + "\n" +
-           "Index number: " + std::to_string(m_indexNumber) + "\n" +
-           "PESEL: " + m_pesel + "\n" +
-           "Gender: " + gender + "\n" +
-           "AcademicTitle: " + academicTitleToString(m_academicTitle) + "\n" +
-           "Department: " + departmentToString(m_department) + "\n" +
-           "===================================================================================================================================================\n" + 
-           "===================================================================================================================================================\n"; 
+    std::ostringstream oss;
+
+    oss << "===================================================================================================================================================\n"
+        << "Information about Professor:\n"
+        << "Name: " << m_name << "\n"
+        << "Last name: " << m_lastname << "\n"
+        << "Address: " << m_address << "\n"
+        << "Index number: " << m_indexNumber << "\n"
+        << "PESEL: " << m_pesel << "\n"
+        << "Gender: " << m_gender << "\n"
+        << "AcademicTitle: " << academicTitleToString(m_academicTitle) << "\n"
+        << "Department: " << departmentToString(m_department) << "\n"
+        << "===================================================================================================================================================\n"
+        << "===================================================================================================================================================\n";
+
+    return oss.str();
+}
+
+std::unique_ptr<Entity> Professor::clone(void) const
+{
+    return std::make_unique<Professor>(*this);
 }

@@ -33,4 +33,6 @@ public:
     std::string serialize(void) const override;
     std::string infoToString(void) const override;
     std::string extendedInfoToString(void) const override;
+
+    std::unique_ptr<Entity> clone(void) const override;
 };

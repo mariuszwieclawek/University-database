@@ -40,6 +40,8 @@ public:
     std::string infoToString(void) const override;
     std::string extendedInfoToString(void) const override;
 
+    std::unique_ptr<Entity> clone(void) const override;
+
     std::string showSubjects(void) const;
     bool addSubject(const std::string & subjectName);
     bool removeSubject(const std::string & subjectName);

@@ -78,19 +78,24 @@ void Student::setGrades(const std::map<std::string, std::vector<float>> & grades
 
 std::string Student::serialize(void) const
 {
-    std::stringstream ssIndexNmb, ssEntityType, ssGender, ssBirthday;
-    ssIndexNmb << m_indexNumber;
-    ssEntityType << this->getEntityType();
-    ssGender << m_gender;
-    ssBirthday << std::put_time(&m_birthDate, "%d.%m.%Yr");
-    std::string indexNumber = ssIndexNmb.str();
-    std::string entityType = ssEntityType.str();
-    std::string gender = ssGender.str();
-    std::string birthdate = ssBirthday.str();
-    std::string ret_val = indexNumber + "," + entityType + "," + m_name + "," + m_lastname + "," + birthdate + "," + m_address + "," +
-                          m_pesel + "," + gender + "," + m_fieldOfStudy + "," + setToString(m_subjects) + "," + gradesToString(m_grades) + "," 
-                          + "N/A" + "," + "N/A" + "," "\n";
-    return ret_val;
+    std::ostringstream oss;
+
+    oss << m_indexNumber << ","
+        << this->getEntityType() << ","
+        << m_name << ","
+        << m_lastname << ","
+        << std::put_time(&m_birthDate, "%d.%m.%Yr") << ","
+        << m_address << ","
+        << m_pesel << ","
+        << m_gender << ","
+        << m_fieldOfStudy << ","
+        << setToString(m_subjects) << ","
+        << gradesToString(m_grades) << ","
+        << "N/A" << ","
+        << "N/A" << ","
+        << "\n";
+
+    return oss.str();
 }
 
 
@@ -102,38 +107,48 @@ EntityType Student::getEntityType(void) const
 
 std::string Student::infoToString(void) const
 {
-    std::stringstream ssBirthday, ssEntityType, ssGender;
+    std::ostringstream oss;
 
-    ssBirthday << std::put_time(&m_birthDate, "%d.%m.%Yr");
-    ssEntityType << this->getEntityType();
-    ssGender << m_gender;
-    std::string birthdate = ssBirthday.str();
-    std::string entityType = ssEntityType.str();   
-    std::string gender = ssGender.str();
+    oss << "| " << m_indexNumber << " | "
+        << this->getEntityType() << " | "
+        << m_name << " | "
+        << m_lastname << " | "
+        << std::put_time(&m_birthDate, "%d.%m.%Yr") << " | "
+        << m_address << " | "
+        << m_pesel << " | "
+        << m_gender << " | "
+        << m_fieldOfStudy << " | "
+        << setToString(m_subjects) << " | "
+        << gradesToString(m_grades) << " |"
+        << "\n";
 
-    return std::string("| ") + std::to_string(m_indexNumber) + " | " + entityType + " | " + m_name + " | " + m_lastname + " | " + birthdate + " | " 
-    + m_address + " | " + m_pesel + " | " + gender + " | " + m_fieldOfStudy + " | " + setToString(m_subjects) + " | " + gradesToString(m_grades) + " |" + "\n";
+    return oss.str();
 }
 
 std::string Student::extendedInfoToString(void) const
 {
-    std::stringstream ssGender;
-    ssGender << m_gender;
-    std::string gender = ssGender.str();
-    return  std::string("===================================================================================================================================================\n") +
-            "Information about student:\n" +
-            "Name: " + m_name + "\n" +
-            "Last name: " + m_lastname + "\n" +
-            "Address: " + m_address + "\n" +
-            "Index number: " + std::to_string(m_indexNumber) + "\n" +
-            "PESEL: " + m_pesel + "\n" +
-            "Gender: " + gender + "\n" +
-            "===================================================================================================================================================\n" +
-            this->showSubjects() +
-            this->showGrades() +
-            "===================================================================================================================================================\n"; 
+    std::ostringstream oss;
+
+    oss << "===================================================================================================================================================\n"
+        << "Information about student:\n"
+        << "Name: " << m_name << "\n"
+        << "Last name: " << m_lastname << "\n"
+        << "Address: " << m_address << "\n"
+        << "Index number: " << m_indexNumber << "\n"
+        << "PESEL: " << m_pesel << "\n"
+        << "Gender: " << m_gender << "\n"
+        << "===================================================================================================================================================\n"
+        << this->showSubjects()
+        << this->showGrades()
+        << "===================================================================================================================================================\n";
+
+    return oss.str();
 }
 
+std::unique_ptr<Entity> Student::clone(void) const
+{
+    return std::make_unique<Student>(*this);
+}
 
 std::string Student::showSubjects(void) const 
 {
