@@ -131,7 +131,8 @@ void UniversityDatabase::readEntitiesFromCSV(std::fstream& file)
         if(enttype == EntityType::Student)
         {
             std::unique_ptr<Entity> student = std::make_unique<Student>(index_number, objectFields[2], objectFields[3], birthdate, 
-                                                            objectFields[5], objectFields[6], gender, objectFields[8], objectFields[9], objectFields[10]);
+                                                            objectFields[5], objectFields[6], gender, stringToFieldOfStudy(objectFields[8]), 
+                                                            stringToSubjects(objectFields[9]), parseGrades(objectFields[10]));
             m_entities.push_back(std::move(student));
         }
         else if(enttype == EntityType::Professor)

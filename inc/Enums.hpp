@@ -37,3 +37,37 @@ enum class Department
     Pharmacy,
     Psychology,
 };
+
+enum class FieldOfStudy 
+{
+    ComputerScience,
+    ElectricalEngineering,
+    MechanicalEngineering,
+    CivilEngineering,
+    Architecture,
+    Medicine,
+    Law,
+    Business,
+    Psychology,
+    Philosophy,
+    Mathematics,
+    Physics,
+    Default
+};
+
+enum class Subject 
+{
+    Analytics,
+    Algebra,
+    DataStructures,
+    Math,
+    Economics,
+    Astrophysics,
+    Physics,
+    Philosophy,
+    Psychology,
+    LiteraryAnalysis,
+    StatisticalAnalysis,
+    SoftwareEngineering,
+    Default
+};

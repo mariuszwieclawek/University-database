@@ -217,14 +217,12 @@ void CommandLineInterface::addStudentByUser(void) const
     std::string address;
     std::string pesel; 
     Gender gnr;
-    std::string fieldofstudy;
-    std::string subjects;
-    std::string grades;
+    FieldOfStudy fieldofstudy;
+    subjects_t subjects;
+    gradesToSubject_t grades;
     std::cout << "Please enter:" << std::endl;
 
-    std::cout << "Index number:";
-    std::getline(std::cin, input);
-    indexNumber = stoi(input);
+    indexNumber = getIndexFromUser();
 
     std::cout << "Name:";
     std::getline(std::cin, name);
@@ -232,36 +230,20 @@ void CommandLineInterface::addStudentByUser(void) const
     std::cout << "Lastname:";
     std::getline(std::cin, lastname);
 
-    std::cout << "Birthdate..." << std::endl << "\tDay:";
-    std::getline(std::cin, input);
-    birthdate.tm_mday = stoi(input);
-    std::cout << "\tMonth:";
-    std::getline(std::cin, input);
-    birthdate.tm_mon = stoi(input);
-    birthdate.tm_mon -= 1;
-    std::cout << "\tYear:";
-    std::getline(std::cin, input);
-    birthdate.tm_year = stoi(input);
-    birthdate.tm_year -= 1900;
+    birthdate = getBirthdateFromUser();
 
     std::cout << "Residential address:";
     std::getline(std::cin >> std::ws, address);
 
-    std::cout << "PESEL:";
-    std::getline(std::cin, pesel);
+    pesel = getPeselFromUser();
 
-    std::cout << "Gender:";
-    std::getline(std::cin, input);
-    gnr = stringToGender(input);
+    gnr = getGenderFromUser();
 
-    std::cout << "Field of study:";
-    std::getline(std::cin, fieldofstudy);
+    fieldofstudy = getFieldOfStudyFromUser();
 
-    std::cout << "Subjects (format: 'Math; Computer Science; Physics'):";
-    std::getline(std::cin, subjects);
+    subjects = getSubjectsFromUser();
 
-    std::cout << "Grades (format: 'Math={2.5 3 4.5 2};Physics={3.5 5 3.5 4};' ):";
-    std::getline(std::cin, grades);
+    grades = getGradesFromUser();
 
     m_db.addEntity(std::make_unique<Student>(indexNumber, name, lastname, birthdate, address, pesel, gnr, fieldofstudy, subjects, grades));
 
@@ -283,9 +265,7 @@ void CommandLineInterface::addProfessorByUser(void) const
     Department department;
     std::cout << "Please enter:" << std::endl;
 
-    std::cout << "Index number:";
-    std::getline(std::cin, input);
-    indexNumber = stoi(input);
+    indexNumber = getIndexFromUser();
 
     entitytype = EntityType::Professor;
 
@@ -295,27 +275,14 @@ void CommandLineInterface::addProfessorByUser(void) const
     std::cout << "Lastname:";
     std::getline(std::cin, lastname);
 
-    std::cout << "Birthdate..." << std::endl << "\tDay:";
-    std::getline(std::cin, input);
-    birthdate.tm_mday = stoi(input);
-    std::cout << "\tMonth:";
-    std::getline(std::cin, input);
-    birthdate.tm_mon = stoi(input);
-    birthdate.tm_mon -= 1;
-    std::cout << "\tYear:";
-    std::getline(std::cin, input);
-    birthdate.tm_year = stoi(input);
-    birthdate.tm_year -= 1900;
+    birthdate = getBirthdateFromUser();
 
     std::cout << "Residential address:";
     std::getline(std::cin >> std::ws, address);
 
-    std::cout << "PESEL:";
-    std::getline(std::cin, pesel);
+    pesel = getPeselFromUser();
 
-    std::cout << "Gender:";
-    std::getline(std::cin, input);
-    gnr = stringToGender(input);
+    gnr = getGenderFromUser();
 
     std::cout << "Academic Title:";
     std::getline(std::cin, input);
@@ -397,15 +364,15 @@ void CommandLineInterface::modifyEntityByUser(void) const
     /* Enter student specific parameters */
     if (auto studentPtr = dynamic_cast<Student*>(entity.get())) 
     {
-        std::cout << "Current Field of Study: " << studentPtr->getFieldOfStudy() << std::endl << "Enter new Field of Study or skip(Enter): ";
+        std::cout << "Current Field of Study: " << fieldOfStudyToString(studentPtr->getFieldOfStudy()) << std::endl << "Enter new Field of Study or skip(Enter): ";
         std::getline(std::cin, input);
-        if (!input.empty()) studentPtr->setFieldOfStudy(input);
+        if (!input.empty()) studentPtr->setFieldOfStudy(stringToFieldOfStudy(input));
 
         std::cout << "Current Subjects:" << std::endl;
         std::cout << studentPtr->showSubjects();
         std::cout << "Enter new Subjects(format: 'Math; Computer Science; Physics') or skip(Enter): ";
         std::getline(std::cin, input);
-        if (!input.empty()) studentPtr->setSubjects(stringToSet(input));
+        if (!input.empty()) studentPtr->setSubjects(stringToSubjects(input));
     
         std::cout << "Current Grades: " << std::endl;
         std::cout << studentPtr->showGrades();

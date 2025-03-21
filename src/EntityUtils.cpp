@@ -153,12 +153,12 @@ std::istream& operator>>(std::istream& is, EntityType & entity_type)
 }
 
 
-std::string setToString(const std::set<std::string>& st) 
+std::string subjectsToString(const subjects_t & st)
 {
     std::stringstream ss;
     for (auto it = st.begin(); it != st.end(); ++it) 
     {
-        ss << *it;
+        ss << subjectToString(*it);
         if (std::next(it) != st.end())
         {  
             ss << "; ";  
@@ -167,9 +167,9 @@ std::string setToString(const std::set<std::string>& st)
     return ss.str();
 }
 
-std::set<std::string> stringToSet(const std::string& str) 
+subjects_t stringToSubjects(const std::string& str)
 {
-    std::set<std::string> result;
+    subjects_t result;
     std::stringstream ss(str);
     std::string temp;
     
@@ -178,15 +178,18 @@ std::set<std::string> stringToSet(const std::string& str)
         temp.erase(0, temp.find_first_not_of(' ')); // remove space in front
         temp.erase(temp.find_last_not_of(' ') + 1); // remove space from the back
         
-        if (!temp.empty()) result.insert(temp);
+        if (!temp.empty())
+        {
+            result.insert(stringToSubject(temp));
+        }
     }
     
     return result;
 }
 
-std::map<std::string, std::vector<float>> parseGrades(const std::string& data) 
+gradesToSubject_t parseGrades(const std::string& data)
 {
-    std::map<std::string, std::vector<float>> m_grades;
+    gradesToSubject_t m_grades;
 
     /* remove whitespace at the beginning and end */
     std::string trimmedData = data;
@@ -220,7 +223,17 @@ std::map<std::string, std::vector<float>> parseGrades(const std::string& data)
                 }
             }
 
-            m_grades[subject] = grades;
+            try 
+            {
+                std::cout << subject << std::endl;
+                m_grades[stringToSubject(subject)] = grades;
+            } 
+            catch (const std::exception& e) 
+            {
+                std::cerr << "[ERROR] " << e.what() << " The subject in the database does not match the list of available subjects." << std::endl;
+                exit(0);
+            }
+                
         }
     }
 
@@ -228,12 +241,12 @@ std::map<std::string, std::vector<float>> parseGrades(const std::string& data)
 }
 
 
-std::string gradesToString(const std::map<std::string, std::vector<float>>& m_grades) 
+std::string gradesToString(const gradesToSubject_t& m_grades) 
 {
     std::ostringstream oss; 
     for (const auto& [subject, grades] : m_grades)
     {
-        oss << subject << "={" ;
+        oss << subjectToString(subject) << "={" ;
         for (size_t i = 0; i < grades.size(); ++i)
         {
             oss << grades[i];
@@ -269,6 +282,37 @@ std::map<std::string, Department> stringToDepartmentMapping =
     {"Medicine"                          ,      Department::Medicine                                  },
     {"Pharmacy"                          ,      Department::Pharmacy                                  },
     {"Psychology"                        ,      Department::Psychology                                }
+};
+
+std::map<std::string, FieldOfStudy> stringToFieldOfStudyMapping =
+{
+    {"Computer Science"         , FieldOfStudy::ComputerScience         },
+    {"Architecture"             , FieldOfStudy::Architecture            },
+    {"Medicine"                 , FieldOfStudy::Medicine                },
+    {"Law"                      , FieldOfStudy::Law                     },
+    {"Business"                 , FieldOfStudy::Business                },
+    {"Psychology"               , FieldOfStudy::Psychology              },
+    {"Philosophy"               , FieldOfStudy::Philosophy              },
+    {"Mathematics"              , FieldOfStudy::Mathematics             },
+    {"Physics"                  , FieldOfStudy::Physics                 },
+    {"Default"                  , FieldOfStudy::Default                 },
+};
+
+std::map<std::string, Subject> stringToSubjectMapping =
+{
+    {"Analytics"               , Subject::Analytics                 },
+    {"Algebra"                  , Subject::Algebra                  },
+    {"Data Structures"          , Subject::DataStructures           },
+    {"Math"                     , Subject::Math                     },
+    {"Economics"                , Subject::Economics                },
+    {"Astrophysics"             , Subject::Astrophysics             },
+    {"Physics"                  , Subject::Physics                  },
+    {"Philosophy"               , Subject::Philosophy               },
+    {"Psychology"               , Subject::Psychology               },
+    {"Literary Analysis"        , Subject::LiteraryAnalysis         },
+    {"Statistical Analysis"     , Subject::StatisticalAnalysis      },
+    {"Software Engineering"     , Subject::SoftwareEngineering      },
+    {"Default"                  , Subject::Default                  }
 };
 
 
@@ -325,4 +369,285 @@ std::string departmentToString(Department dep)
         }
     }
     return depstr;
+}
+
+FieldOfStudy stringToFieldOfStudy(const std::string& str) 
+{
+    auto it = stringToFieldOfStudyMapping.find(str);
+    if (it != stringToFieldOfStudyMapping.end())
+    {
+        return it->second;
+    }
+    else
+    {
+        throw std::runtime_error(std::string(__func__) + " function failed");
+    }
+}
+
+std::string fieldOfStudyToString(FieldOfStudy field) 
+{
+    std::string fieldOfStudy;
+    for (const auto& pair : stringToFieldOfStudyMapping) 
+    {
+        if (pair.second == field) 
+        {
+            fieldOfStudy = pair.first;
+            break;
+        }
+    }
+    return fieldOfStudy;
+}
+
+Subject stringToSubject(const std::string& subject) 
+{
+    auto it = stringToSubjectMapping.find(subject);
+    if (it != stringToSubjectMapping.end())
+    {
+        return it->second;
+    }
+    else
+    {
+        throw std::runtime_error(std::string(__func__) + " function failed.");
+    }
+}
+
+std::string subjectToString(Subject subj) 
+{
+    std::string subject;
+    for (const auto& pair : stringToSubjectMapping) 
+    {
+        if (pair.second == subj) 
+        {
+            subject = pair.first;
+            break;
+        }
+    }
+    return subject;
+}
+
+unsigned int getIndexFromUser(void)
+{
+    std::string input;
+    int indexNumber = 0;
+
+    while (true) 
+    {
+        std::cout << "Index number (max 6 digits):";
+        std::getline(std::cin, input);
+
+        try 
+        {
+            if (input.find_first_not_of("0123456789") != std::string::npos) 
+            {
+                throw std::invalid_argument("Entered invalid characters!");
+            }
+
+            indexNumber = std::stoi(input);
+
+            if (input.length() > 6) 
+            {
+                throw std::out_of_range("Index lenght cannot be greater than 6 digits!");
+            }
+
+            break;
+
+        } 
+        catch (const std::exception& e) 
+        {
+            std::cerr << "[ERROR] " << e.what() << " Try again." << std::endl;
+        }
+    }
+
+    return indexNumber;
+}
+
+std::tm getBirthdateFromUser() 
+{
+    std::string input;
+    std::tm birthdate;
+
+    while (true) 
+    {
+        try 
+        {
+            std::cout << "Birthdate..." << std::endl << "\tDay: ";
+            std::getline(std::cin, input);
+            birthdate.tm_mday = std::stoi(input);
+
+            if (birthdate.tm_mday < 1 || birthdate.tm_mday > 31) 
+            {
+                throw std::out_of_range("Day must be between 1-31.");
+            }
+
+            std::cout << "\tMonth: ";
+            std::getline(std::cin, input);
+            birthdate.tm_mon = std::stoi(input);
+            
+            if (birthdate.tm_mon < 1 || birthdate.tm_mon > 12) 
+            {
+                throw std::out_of_range("Month must be between 1-12.");
+            }
+
+            std::cout << "\tYear: ";
+            std::getline(std::cin, input);
+            birthdate.tm_year = std::stoi(input);
+            
+            if (birthdate.tm_year < 1900 || birthdate.tm_year > 2010) 
+            {
+                throw std::out_of_range("Year must be greater than or equal to 1900 and less than 2010.");
+            }
+
+            birthdate.tm_mon -= 1; // january = 0
+            birthdate.tm_year -= 1900; // tm_year start from 1900
+
+            break;
+
+        } 
+        catch (const std::exception& e) 
+        {
+            std::cerr << "[Error] " << e.what() << " Try again." << std::endl;
+        }
+    }
+
+    return birthdate;
+}
+
+std::string getPeselFromUser(void)
+{
+    std::string input;
+
+    while (true) 
+    {
+        std::cout << "Pesel number (11 digits):";
+        std::getline(std::cin, input);
+
+        try 
+        {
+            if (input.find_first_not_of("0123456789") != std::string::npos) 
+            {
+                throw std::invalid_argument("Entered invalid characters!");
+            }
+
+            if (input.length() != 11) 
+            {
+                throw std::out_of_range("Index lenght cannot be greater than 6 digits!");
+            }
+
+            break;
+
+        } 
+        catch (const std::exception& e) 
+        {
+            std::cerr << "[ERROR] " << e.what() << " Try again." << std::endl;
+        }
+    }
+
+    return input;
+}
+
+Gender getGenderFromUser(void)
+{
+    std::string input;
+    Gender gnr;
+
+    while (true) 
+    {
+        std::cout << "Gender (Male, Female, Default):";
+        std::getline(std::cin, input);
+
+        try 
+        {
+            gnr = stringToGender(input);
+            break;
+        } 
+        catch (const std::exception& e) 
+        {
+            std::cerr << "[ERROR] " << e.what() << " Try again." << std::endl;
+        }
+        
+    }
+
+    return gnr;
+}
+
+FieldOfStudy getFieldOfStudyFromUser(void)
+{
+    std::string input;
+    FieldOfStudy fieldOfStudy;
+
+    while (true) 
+    {
+        std::cout << "Field of Study: (";
+        for (const auto& entry : stringToFieldOfStudyMapping) {
+            std::cout << entry.first << ',';
+        }
+        std::cout << ")" << std::endl;
+        std::getline(std::cin, input);
+
+        try 
+        {
+            fieldOfStudy = stringToFieldOfStudy(input);
+            break;
+        } 
+        catch (const std::exception& e) 
+        {
+            std::cerr << "[ERROR] " << e.what() << " Try again." << std::endl;
+        }
+        
+    }
+
+    return fieldOfStudy;
+}
+
+subjects_t getSubjectsFromUser(void)
+{
+    std::string input;
+    subjects_t subjects;
+
+    while (true) 
+    {
+        std::cout << "Subjects: (";
+        for (const auto& entry : stringToSubjectMapping) {
+            std::cout << entry.first << ',';
+        }
+        std::cout << ")" << std::endl << "Format: 'Philosophy; Algebra; Psychology;' :" << std::endl;
+        std::getline(std::cin, input);
+
+        try 
+        {
+            subjects = stringToSubjects(input);
+            break;
+        } 
+        catch (const std::exception& e) 
+        {
+            std::cerr << "[ERROR] " << e.what() << " Try again." << std::endl;
+        }
+        
+    }
+
+    return subjects;
+}
+
+gradesToSubject_t getGradesFromUser(void)
+{
+    std::string input;
+    gradesToSubject_t grades;
+
+    // while (true) 
+    // {
+    //     std::cout << "F: (";
+    //     std::getline(std::cin, input);
+
+    //     try 
+    //     {
+
+    //     } 
+    //     catch (const std::exception& e) 
+    //     {
+    //         std::cerr << "[ERROR] " << e.what() << " Try again." << std::endl;
+    //     }
+        
+    // }
+
+    return grades;
 }

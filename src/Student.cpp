@@ -4,21 +4,21 @@
 #include <iostream>
 
 Student::Student(int indexNumber, const std::string & name, const std::string & lastname, const std::tm & birthDate, 
-                    const std::string & address, const std::string & pesel, Gender gender, const std::string & fldOfStudy,
-                    const std::string & subjects, const std::string & grades):
+                    const std::string & address, const std::string & pesel, Gender gender, const FieldOfStudy & fldOfStudy,
+                    const subjects_t & subjects, const gradesToSubject_t & grades):
     Entity(indexNumber, name, lastname, birthDate, address, pesel, gender),
     m_fieldOfStudy(fldOfStudy),
-    m_subjects(stringToSet(subjects)),
-    m_grades(parseGrades(grades))
+    m_subjects(subjects),
+    m_grades(grades)
     {};
 
 Student::Student(int && indexNumber, const std::string && name, const std::string && lastname, const std::tm && birthDate, 
-                const std::string && address, const std::string && pesel, Gender && gender, const std::string && fldOfStudy,
-                const std::string && subjects, const std::string && grades):
+                const std::string && address, const std::string && pesel, Gender && gender, const FieldOfStudy && fldOfStudy,
+                const subjects_t && subjects, const gradesToSubject_t && grades):
     Entity(std::move(indexNumber), std::move(name), std::move(lastname), std::move(birthDate), std::move(address), std::move(pesel), std::move(gender)),  
     m_fieldOfStudy(std::move(fldOfStudy)),
-    m_subjects(std::move(stringToSet(subjects))),
-    m_grades(std::move(parseGrades(grades)))
+    m_subjects(std::move(subjects)),
+    m_grades(std::move(grades))
     {};
 
 Student::Student(const Student & other): Entity(other)
@@ -46,32 +46,32 @@ Student& Student::operator==(const Student & other)
     return *this;
 }
 
-std::string Student::getFieldOfStudy(void) const
+FieldOfStudy Student::getFieldOfStudy(void) const
 {
     return m_fieldOfStudy;
 }
 
-void Student::setFieldOfStudy(const std::string & fld_of_study)
+void Student::setFieldOfStudy(const FieldOfStudy & fld_of_study)
 {
     m_fieldOfStudy = fld_of_study;
 }
 
-std::set<std::string> Student::getSubjects(void) const
+subjects_t Student::getSubjects(void) const
 {
     return m_subjects;
 }
 
-void Student::setSubjects(const std::set<std::string> & subjects)
+void Student::setSubjects(const subjects_t & subjects)
 {
     m_subjects = subjects;
 }
 
-std::map<std::string, std::vector<float>> Student::getGrades(void) const
+gradesToSubject_t Student::getGrades(void) const
 {
     return m_grades;
 }
 
-void Student::setGrades(const std::map<std::string, std::vector<float>> & grades)
+void Student::setGrades(const gradesToSubject_t & grades)
 {
     m_grades = grades;
 }
@@ -88,8 +88,8 @@ std::string Student::serialize(void) const
         << m_address << ","
         << m_pesel << ","
         << m_gender << ","
-        << m_fieldOfStudy << ","
-        << setToString(m_subjects) << ","
+        << fieldOfStudyToString(m_fieldOfStudy) << ","
+        << subjectsToString(m_subjects) << ","
         << gradesToString(m_grades) << ","
         << "N/A" << ","
         << "N/A" << ","
@@ -117,8 +117,8 @@ std::string Student::infoToString(void) const
         << m_address << " | "
         << m_pesel << " | "
         << m_gender << " | "
-        << m_fieldOfStudy << " | "
-        << setToString(m_subjects) << " | "
+        << fieldOfStudyToString(m_fieldOfStudy) << " | "
+        << subjectsToString(m_subjects) << " | "
         << gradesToString(m_grades) << " |"
         << "\n";
 
@@ -156,34 +156,10 @@ std::string Student::showSubjects(void) const
     oss << "===================================================================================================================================================" << std::endl;
     oss << "Subjects for student:" << std::endl;
     for (const auto& sb : m_subjects) {
-        oss << "-" << sb << std::endl;
+        oss << "-" << subjectToString(sb) << std::endl;
     }
     oss << "===================================================================================================================================================" << std::endl;
     return oss.str();
-}
-
-bool Student::addSubject(const std::string & subjectName)
-{
-    auto isSubjectInserted = m_subjects.insert(subjectName); 
-    if( false == isSubjectInserted.second)
-    {
-        std::cerr << "\t[ERROR]\t" + std::string(__func__) + " function failed" << std::endl;
-    }
-    return isSubjectInserted.second;
-}
-
-bool Student::removeSubject(const std::string & subjectName)
-{
-    bool isExist = m_subjects.contains(subjectName);
-    if( true == isExist)
-    {
-        m_subjects.erase(subjectName);
-    }
-    else
-    {
-        std::cerr << "\t[ERROR]\t" + std::string(__func__) + " function failed" << std::endl;
-    }
-    return isExist;
 }
 
 std::string Student::showGrades(void) const
@@ -193,7 +169,7 @@ std::string Student::showGrades(void) const
     oss << "Grades of a " << m_name << " " << m_lastname << ":" << std::endl;
     for(const auto & [subject, grades] : m_grades)
     {
-        oss << "\rSubject: \n\t" << subject << ":\n\t\t";
+        oss << "\rSubject: \n\t" << subjectToString(subject) << ":\n\t\t";
         for(const auto & grade : grades)
         {
             oss << grade << ",";
@@ -205,34 +181,42 @@ std::string Student::showGrades(void) const
     return oss.str();
 }
 
-bool Student::addGrade(const std::string & subject, float grade)
+bool Student::addSubject(const Subject & subjectName)
 {
-    if( (grade < MIN_GRADE) && (grade > MAX_GRADE) )
+    auto isSubjectInserted = m_subjects.insert(subjectName); 
+
+    return isSubjectInserted.second;
+}
+
+bool Student::removeSubject(const Subject & subjectName)
+{
+    auto it = m_subjects.find(subjectName);
+
+    if (it != m_subjects.end())
     {
-        std::cerr << "\t[ERROR]\t" + std::string(__func__) + " function failed" << std::endl;
-        return false;
+        m_subjects.erase(it);
+        return true;
     }
 
-    if( bool subjectIsAdded = m_subjects.contains(subject); false == subjectIsAdded )
-    {
-        std::cerr << "\t[ERROR]\t" + std::string(__func__) + " function failed" << std::endl;
-        return false;
-    }
+    return false;
+}
 
-    m_grades[subject].push_back(grade);
+bool Student::addGrade(const Subject& subject, float grade)
+{
+    if (grade < MIN_GRADE || grade > MAX_GRADE) return false;
+
+    if (m_subjects.find(subject) == m_subjects.end()) return false; // Sprawdzamy, czy przedmiot istnieje
+
+    m_grades[subject].push_back(grade); // Dodajemy ocenę do mapy
 
     return true;
 }
-    
-bool Student::removeGrade(const std::string & subject)
-{
-    if( bool subjectIsAdded = m_subjects.contains(subject); false == subjectIsAdded )
-    {
-        std::cerr << "\t[ERROR]\t" + std::string(__func__) + " function failed" << std::endl;
-        return false;
-    }
 
-    m_grades[subject].clear();
+bool Student::removeGrade(const Subject& subject)
+{
+    if (m_subjects.find(subject) == m_subjects.end()) return false; // Sprawdzamy, czy przedmiot istnieje
+
+    m_grades[subject].clear(); // Czyścimy listę ocen dla danego przedmiotu
 
     return true;
 }
