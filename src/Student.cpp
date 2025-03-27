@@ -129,7 +129,7 @@ std::string Student::extendedInfoToString(void) const
 {
     std::ostringstream oss;
 
-    oss << "===================================================================================================================================================\n"
+    oss << getPrintHeader()
         << "Information about student:\n"
         << "Name: " << m_name << "\n"
         << "Last name: " << m_lastname << "\n"
@@ -137,10 +137,8 @@ std::string Student::extendedInfoToString(void) const
         << "Index number: " << m_indexNumber << "\n"
         << "PESEL: " << m_pesel << "\n"
         << "Gender: " << m_gender << "\n"
-        << "===================================================================================================================================================\n"
         << this->showSubjects()
-        << this->showGrades()
-        << "===================================================================================================================================================\n";
+        << this->showGrades();
 
     return oss.str();
 }
@@ -153,19 +151,19 @@ std::unique_ptr<Entity> Student::clone(void) const
 std::string Student::showSubjects(void) const 
 {
     std::ostringstream oss;
-    oss << "===================================================================================================================================================" << std::endl;
+    oss << getPrintHeader();
     oss << "Subjects for student:" << std::endl;
     for (const auto& sb : m_subjects) {
         oss << "-" << subjectToString(sb) << std::endl;
     }
-    oss << "===================================================================================================================================================" << std::endl;
+    oss << getPrintHeader();
     return oss.str();
 }
 
 std::string Student::showGrades(void) const
 {
     std::ostringstream oss;
-    oss << "===================================================================================================================================================" << std::endl;
+    oss << getPrintHeader();
     oss << "Grades of a " << m_name << " " << m_lastname << ":" << std::endl;
     for(const auto & [subject, grades] : m_grades)
     {
@@ -176,7 +174,7 @@ std::string Student::showGrades(void) const
         }
         oss << "\n";
     }
-    oss << "\r===================================================================================================================================================" << std::endl;
+    oss << getPrintHeader();
     
     return oss.str();
 }

@@ -17,6 +17,7 @@ set(CXX_SRCS
     src/Professor.cpp
     src/Student.cpp
     src/UniversityDatabase.cpp
+    src/EntityFactory.cpp
 )
 
 # Budowanie pliku wykonywalnego

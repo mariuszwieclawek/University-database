@@ -2,6 +2,11 @@
 #include "Professor.hpp"
 #include <algorithm>
 
+std::string getPrintHeader(void)
+{
+    return std::string("===================================================================================================================================================\n");
+}
+
 Gender stringToGender(const std::string& str) 
 {
     if (str == "Male") 
@@ -225,7 +230,6 @@ gradesToSubject_t parseGrades(const std::string& data)
 
             try 
             {
-                std::cout << subject << std::endl;
                 m_grades[stringToSubject(subject)] = grades;
             } 
             catch (const std::exception& e) 
@@ -309,8 +313,6 @@ std::map<std::string, Subject> stringToSubjectMapping =
     {"Physics"                  , Subject::Physics                  },
     {"Philosophy"               , Subject::Philosophy               },
     {"Psychology"               , Subject::Psychology               },
-    {"Literary Analysis"        , Subject::LiteraryAnalysis         },
-    {"Statistical Analysis"     , Subject::StatisticalAnalysis      },
     {"Software Engineering"     , Subject::SoftwareEngineering      },
     {"Default"                  , Subject::Default                  }
 };
@@ -432,7 +434,7 @@ unsigned int getIndexFromUser(void)
 
     while (true) 
     {
-        std::cout << "Index number (max 6 digits):";
+        std::cout << getPrintHeader() << "Index number (max 6 digits):";
         std::getline(std::cin, input);
 
         try 
@@ -470,7 +472,7 @@ std::tm getBirthdateFromUser()
     {
         try 
         {
-            std::cout << "Birthdate..." << std::endl << "\tDay: ";
+            std::cout << getPrintHeader() << "Birthdate..." << std::endl << "\tDay: ";
             std::getline(std::cin, input);
             birthdate.tm_mday = std::stoi(input);
 
@@ -518,7 +520,7 @@ std::string getPeselFromUser(void)
 
     while (true) 
     {
-        std::cout << "Pesel number (11 digits):";
+        std::cout << getPrintHeader() << "Pesel number (11 digits):";
         std::getline(std::cin, input);
 
         try 
@@ -552,7 +554,7 @@ Gender getGenderFromUser(void)
 
     while (true) 
     {
-        std::cout << "Gender (Male, Female, Default):";
+        std::cout << getPrintHeader() << "Gender (Male, Female, Default):";
         std::getline(std::cin, input);
 
         try 
@@ -577,11 +579,11 @@ FieldOfStudy getFieldOfStudyFromUser(void)
 
     while (true) 
     {
-        std::cout << "Field of Study: (";
+        std::cout << getPrintHeader() << "Field of Study (";
         for (const auto& entry : stringToFieldOfStudyMapping) {
             std::cout << entry.first << ',';
         }
-        std::cout << ")" << std::endl;
+        std::cout << "): " << std::endl;
         std::getline(std::cin, input);
 
         try 
@@ -606,7 +608,7 @@ subjects_t getSubjectsFromUser(void)
 
     while (true) 
     {
-        std::cout << "Subjects: (";
+        std::cout << getPrintHeader() << "Subjects: (";
         for (const auto& entry : stringToSubjectMapping) {
             std::cout << entry.first << ',';
         }
@@ -615,6 +617,10 @@ subjects_t getSubjectsFromUser(void)
 
         try 
         {
+            if (input.empty())
+            {
+                throw std::invalid_argument("Entered empty string");
+            }
             subjects = stringToSubjects(input);
             break;
         } 
@@ -628,26 +634,51 @@ subjects_t getSubjectsFromUser(void)
     return subjects;
 }
 
-gradesToSubject_t getGradesFromUser(void)
+gradesToSubject_t getGradesFromUser(subjects_t subj)
 {
     std::string input;
-    gradesToSubject_t grades;
+    gradesToSubject_t gradesToSubject;
+    float grade;
+    std::set<float> validGrades = {2.0, 2.5, 3.0, 3.5, 4.0, 4.5, 5.0};
 
-    // while (true) 
-    // {
-    //     std::cout << "F: (";
-    //     std::getline(std::cin, input);
+    /* Iterate for entered subjects and add grades to list */
+    for(auto & subject : subj)
+    {
+        grades_t grades;
+        while(true)
+        {
+            std::cout << getPrintHeader() << "Enter grade for subject: " << subjectToString(subject) << std::endl;
+            std::cout << "Expected value from set: {2.0, 2.5, 3.0, 3.5, 4.0, 4.5, 5.0}" << std::endl;
+            std::cout << "Enter 'ESC' to stop adding grades for " << subjectToString(subject) << std::endl;
 
-    //     try 
-    //     {
+            std::getline(std::cin, input);
 
-    //     } 
-    //     catch (const std::exception& e) 
-    //     {
-    //         std::cerr << "[ERROR] " << e.what() << " Try again." << std::endl;
-    //     }
-        
-    // }
+            if("ESC" == input) break;
 
-    return grades;
+            try 
+            {
+                grade = std::stof(input);
+                if (validGrades.find(grade) == validGrades.end())
+                {
+                    throw std::out_of_range("Grade must be one of the given expected values.");
+                }
+                grades.push_back(std::stof(input));
+
+            } 
+            catch (const std::exception& e) 
+            {
+                std::cerr << "[ERROR] " << e.what() << " Try again." << std::endl;
+            }
+
+            std::cout << "Current grades for" << subjectToString(subject) << ": { ";
+            for( auto grade : grades )
+            {
+                std::cout << grade << ", ";
+            }
+            std::cout << " }" << std::endl;
+        }
+        gradesToSubject.insert({subject, grades});
+    }
+
+    return gradesToSubject;
 }

@@ -5,9 +5,8 @@
 #include <memory>
 #include <sstream>
 #include <cctype>
-#include "Student.hpp"
-#include "Professor.hpp"
 #include "EntityUtils.hpp"
+#include "EntityFactory.hpp"
 
 
 #ifdef _WIN32
@@ -89,11 +88,11 @@ CommandLineInterface::CommandLineInterface(UniversityDatabase &  db) : m_db(db)
 
 void CommandLineInterface::displayEntities(void) const
 {
-    std::cout << "===================================================================================================================================================" << std::endl;
+    std::cout << getPrintHeader();
     std::cout << "| Index | Entity type | Name | Last name | Birthday | Address | PESEL | Gender | Field of study | Subjects | Grades | Academic Title | Department |" << std::endl;
-    std::cout << "===================================================================================================================================================" << std::endl;
+    std::cout << getPrintHeader();
     m_db.showEntities();
-    std::cout << "===================================================================================================================================================" << std::endl << std::endl;
+    std::cout << getPrintHeader() << std::endl;
 
     std::set<EntityType> ent_types = m_db.getEntityTypes();
     std::map<int, EntityType> ent_type_map;
@@ -123,20 +122,20 @@ void CommandLineInterface::displayEntities(void) const
     
     EntityType ent_type = ent_type_map[choice_digit];
 
-    std::cout << "===================================================================================================================================================" << std::endl;
+    std::cout << getPrintHeader();
     std::cout << "| Index | Entity type | Name | Last name | Birthday | Address | PESEL | Gender | Field of study | Subjects | Grades | Academic Title | Department |" << std::endl;
-    std::cout << "===================================================================================================================================================" << std::endl;
+    std::cout << getPrintHeader();
     m_db.showEntitiesByEntityType(ent_type);
-    std::cout << "===================================================================================================================================================" << std::endl << std::endl;
+    std::cout << getPrintHeader() << std::endl;
 }
 
 void CommandLineInterface::displayEntitiesAll(void) const
 {
-    std::cout << "===================================================================================================================================================" << std::endl;
+    std::cout << getPrintHeader();
     std::cout << "| Index | Entity type | Name | Last name | Birthday | Address | PESEL | Gender | Field of study | Subjects | Grades | Academic Title | Department |" << std::endl;
-    std::cout << "===================================================================================================================================================" << std::endl;
+    std::cout << getPrintHeader();
     m_db.showEntities();
-    std::cout << "===================================================================================================================================================" << std::endl << std::endl;
+    std::cout << getPrintHeader() << std::endl;
 }
 
 void CommandLineInterface::displayEntitiesByLastname(void) const
@@ -159,7 +158,7 @@ void CommandLineInterface::displayEntitiesByLastname(void) const
         for(const auto& ent : entities)
         {
             std::string info = ent->extendedInfoToString();
-            std::cout << info << std::endl << std::endl;
+            std::cout << info;
         }
     }
 }
@@ -224,15 +223,15 @@ void CommandLineInterface::addStudentByUser(void) const
 
     indexNumber = getIndexFromUser();
 
-    std::cout << "Name:";
+    std::cout << getPrintHeader() << "Name:";
     std::getline(std::cin, name);
 
-    std::cout << "Lastname:";
+    std::cout << getPrintHeader() << "Lastname:";
     std::getline(std::cin, lastname);
 
     birthdate = getBirthdateFromUser();
 
-    std::cout << "Residential address:";
+    std::cout << getPrintHeader() << "Residential address:";
     std::getline(std::cin >> std::ws, address);
 
     pesel = getPeselFromUser();
@@ -243,9 +242,10 @@ void CommandLineInterface::addStudentByUser(void) const
 
     subjects = getSubjectsFromUser();
 
-    grades = getGradesFromUser();
+    grades = getGradesFromUser(subjects);
 
-    m_db.addEntity(std::make_unique<Student>(indexNumber, name, lastname, birthdate, address, pesel, gnr, fieldofstudy, subjects, grades));
+    std::unique_ptr<Entity> student = EntityFactory::createStudent(indexNumber, name, lastname, birthdate, address, pesel, gnr, fieldofstudy, subjects, grades);
+    m_db.addEntity(std::move(student));
 
     std::cout << "Student added!" << std::endl;
 }
@@ -292,7 +292,8 @@ void CommandLineInterface::addProfessorByUser(void) const
     std::getline(std::cin, input);
     department = stringToDepartment(input);
 
-    m_db.addEntity(std::make_unique<Professor>(indexNumber, name, lastname, birthdate, address, pesel, gnr, acdtitle, department));
+    std::unique_ptr<Entity> professor = EntityFactory::createProfessor(indexNumber, name, lastname, birthdate, address, pesel, gnr, acdtitle, department);
+    m_db.addEntity(std::move(professor));
 
     std::cout << "Professor added!" << std::endl;
 }
@@ -447,14 +448,14 @@ void CommandLineInterface::sortEntitiesByEntityTypeZtoA(void) const
 
 void CommandLineInterface::displayMenu(const MenuItem & selectedMenu) const 
 {
-    std::cout << "===================================================================================================================================================" << std::endl;
+    std::cout << getPrintHeader();
     for (int i = 0; i < selectedMenu.subMenu.size(); i++) 
     {
         std::cout << i+1 << ". " << selectedMenu.subMenu[i].label << std::endl;
     }
-    std::cout << "===================================================================================================================================================" << std::endl;
+    std::cout << getPrintHeader();
     std::cout << "0. Exit " << std::endl;
-    std::cout << "===================================================================================================================================================" << std::endl;
+    std::cout << getPrintHeader();
     std::cout << "Select option: ";
 }
 
@@ -546,7 +547,7 @@ void CommandLineInterface::exitFromSelectedAction()
     char choice_ch;
     int choice_digit;
 
-    std::cout << "===================================================================================================================================================" << std::endl;
+    std::cout << getPrintHeader();
     std::cout << "Press '0' to return: " << std::endl;
     while (true) 
     {

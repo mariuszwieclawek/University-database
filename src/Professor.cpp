@@ -108,7 +108,7 @@ std::string Professor::extendedInfoToString(void) const
 {
     std::ostringstream oss;
 
-    oss << "===================================================================================================================================================\n"
+    oss << getPrintHeader()
         << "Information about Professor:\n"
         << "Name: " << m_name << "\n"
         << "Last name: " << m_lastname << "\n"
@@ -117,9 +117,7 @@ std::string Professor::extendedInfoToString(void) const
         << "PESEL: " << m_pesel << "\n"
         << "Gender: " << m_gender << "\n"
         << "AcademicTitle: " << academicTitleToString(m_academicTitle) << "\n"
-        << "Department: " << departmentToString(m_department) << "\n"
-        << "===================================================================================================================================================\n"
-        << "===================================================================================================================================================\n";
+        << "Department: " << departmentToString(m_department) << "\n";
 
     return oss.str();
 }

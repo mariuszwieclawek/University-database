@@ -1,7 +1,6 @@
 #include "UniversityDatabase.hpp"
 #include "EntityUtils.hpp"
-#include "Student.hpp"
-#include "Professor.hpp"
+#include "EntityFactory.hpp"
 #include <iostream>
 #include <sstream>
 #include <memory>
@@ -130,17 +129,18 @@ void UniversityDatabase::readEntitiesFromCSV(std::fstream& file)
         EntityType enttype = stringToEntityType(objectFields[1]);
         if(enttype == EntityType::Student)
         {
-            std::unique_ptr<Entity> student = std::make_unique<Student>(index_number, objectFields[2], objectFields[3], birthdate, 
-                                                            objectFields[5], objectFields[6], gender, stringToFieldOfStudy(objectFields[8]), 
-                                                            stringToSubjects(objectFields[9]), parseGrades(objectFields[10]));
+            std::unique_ptr<Entity> student = EntityFactory::createStudent(index_number, objectFields[2], objectFields[3], birthdate, 
+                objectFields[5], objectFields[6], gender, stringToFieldOfStudy(objectFields[8]), 
+                stringToSubjects(objectFields[9]), parseGrades(objectFields[10]));
+    
             m_entities.push_back(std::move(student));
         }
         else if(enttype == EntityType::Professor)
         {
-            std::unique_ptr<Entity> proff = std::make_unique<Professor>(index_number, objectFields[2], objectFields[3], birthdate, 
+            std::unique_ptr<Entity> prof = EntityFactory::createProfessor(index_number, objectFields[2], objectFields[3], birthdate, 
                                                             objectFields[5], objectFields[6], gender, stringToAcademicTitle(objectFields[11]), 
                                                             stringToDepartment(objectFields[12]));
-            m_entities.push_back(std::move(proff));
+            m_entities.push_back(std::move(prof));
         }
     }
 

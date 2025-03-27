@@ -10,6 +10,8 @@
 #include "Professor.hpp"
 #include "Student.hpp"
 
+std::string getPrintHeader(void);
+
 Gender stringToGender(const std::string& str);
 EntityType stringToEntityType(const std::string& str);
 std::tm stringToTm(const std::string& dateStr, const std::string& format);
@@ -41,4 +43,4 @@ std::string getPeselFromUser(void);
 Gender getGenderFromUser(void);
 FieldOfStudy getFieldOfStudyFromUser(void);
 subjects_t getSubjectsFromUser(void);
-gradesToSubject_t getGradesFromUser(void);
+gradesToSubject_t getGradesFromUser(subjects_t subj);

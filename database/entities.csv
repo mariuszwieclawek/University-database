@@ -17,3 +17,4 @@ Index, Entity Type, Name, Lastname, Date of birth, Address, PESEL, Gender, Field
 332299,Professor,Adam,Kowalski,12.03.1978r,Czarnowiejska 1 Krakow,33221112345,Male,N/A,N/A,N/A,Professor,Mathematics
 343343,Professor,Mateusz,Mikolajak,12.12.1992r,Krakow,34343412345,Male,N/A,N/A,N/A,Professor,Physics
 111222,Professor,Mikolaj,Kopernik,13.02.1966r,Krakow Czarna 12,88779912345,Male,N/A,N/A,N/A,Associate Professor,Computer Science
+929292,Student,Mateo,Kovacic,12.02.1999r,ul.Kawala 12 Krakow,12345678911,Male,Law,Philosophy; Psychology,Philosophy={2.5 2 4.5};Psychology={3.5 3.5 4.5};,N/A,N/A,
