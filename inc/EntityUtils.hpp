@@ -35,12 +35,3 @@ FieldOfStudy stringToFieldOfStudy(const std::string& str);
 std::string fieldOfStudyToString(FieldOfStudy field);
 Subject stringToSubject(const std::string& subject);
 std::string subjectToString(Subject subj);
-    
-
-unsigned int getIndexFromUser(void);
-std::tm getBirthdateFromUser(void);
-std::string getPeselFromUser(void);
-Gender getGenderFromUser(void);
-FieldOfStudy getFieldOfStudyFromUser(void);
-subjects_t getSubjectsFromUser(void);
-gradesToSubject_t getGradesFromUser(subjects_t subj);

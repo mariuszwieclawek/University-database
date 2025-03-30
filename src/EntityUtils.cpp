@@ -328,7 +328,7 @@ AcademicTitle stringToAcademicTitle(const std::string& str)
     }
     else
     {
-        throw std::runtime_error(std::string(__func__) + " function failed");
+        throw std::runtime_error(std::string(__func__) + " failed: Invalid academic title string '" + str + "'");
     }
 }
 
@@ -355,7 +355,7 @@ Department stringToDepartment(const std::string& str)
     }
     else
     {
-        throw std::runtime_error(std::string(__func__) + " function failed");
+        throw std::runtime_error(std::string(__func__) + " failed: Invalid department string '" + str + "'");
     }
 }
 
@@ -382,7 +382,7 @@ FieldOfStudy stringToFieldOfStudy(const std::string& str)
     }
     else
     {
-        throw std::runtime_error(std::string(__func__) + " function failed");
+        throw std::runtime_error(std::string(__func__) + " failed: Invalid field of study string '" + str + "'");
     }
 }
 
@@ -409,7 +409,7 @@ Subject stringToSubject(const std::string& subject)
     }
     else
     {
-        throw std::runtime_error(std::string(__func__) + " function failed.");
+        throw std::runtime_error(std::string(__func__) + " failed: Invalid subject string '" + subject + "'");
     }
 }
 
@@ -427,258 +427,3 @@ std::string subjectToString(Subject subj)
     return subject;
 }
 
-unsigned int getIndexFromUser(void)
-{
-    std::string input;
-    int indexNumber = 0;
-
-    while (true) 
-    {
-        std::cout << getPrintHeader() << "Index number (max 6 digits):";
-        std::getline(std::cin, input);
-
-        try 
-        {
-            if (input.find_first_not_of("0123456789") != std::string::npos) 
-            {
-                throw std::invalid_argument("Entered invalid characters!");
-            }
-
-            indexNumber = std::stoi(input);
-
-            if (input.length() > 6) 
-            {
-                throw std::out_of_range("Index lenght cannot be greater than 6 digits!");
-            }
-
-            break;
-
-        } 
-        catch (const std::exception& e) 
-        {
-            std::cerr << "[ERROR] " << e.what() << " Try again." << std::endl;
-        }
-    }
-
-    return indexNumber;
-}
-
-std::tm getBirthdateFromUser() 
-{
-    std::string input;
-    std::tm birthdate;
-
-    while (true) 
-    {
-        try 
-        {
-            std::cout << getPrintHeader() << "Birthdate..." << std::endl << "\tDay: ";
-            std::getline(std::cin, input);
-            birthdate.tm_mday = std::stoi(input);
-
-            if (birthdate.tm_mday < 1 || birthdate.tm_mday > 31) 
-            {
-                throw std::out_of_range("Day must be between 1-31.");
-            }
-
-            std::cout << "\tMonth: ";
-            std::getline(std::cin, input);
-            birthdate.tm_mon = std::stoi(input);
-            
-            if (birthdate.tm_mon < 1 || birthdate.tm_mon > 12) 
-            {
-                throw std::out_of_range("Month must be between 1-12.");
-            }
-
-            std::cout << "\tYear: ";
-            std::getline(std::cin, input);
-            birthdate.tm_year = std::stoi(input);
-            
-            if (birthdate.tm_year < 1900 || birthdate.tm_year > 2010) 
-            {
-                throw std::out_of_range("Year must be greater than or equal to 1900 and less than 2010.");
-            }
-
-            birthdate.tm_mon -= 1; // january = 0
-            birthdate.tm_year -= 1900; // tm_year start from 1900
-
-            break;
-
-        } 
-        catch (const std::exception& e) 
-        {
-            std::cerr << "[Error] " << e.what() << " Try again." << std::endl;
-        }
-    }
-
-    return birthdate;
-}
-
-std::string getPeselFromUser(void)
-{
-    std::string input;
-
-    while (true) 
-    {
-        std::cout << getPrintHeader() << "Pesel number (11 digits):";
-        std::getline(std::cin, input);
-
-        try 
-        {
-            if (input.find_first_not_of("0123456789") != std::string::npos) 
-            {
-                throw std::invalid_argument("Entered invalid characters!");
-            }
-
-            if (input.length() != 11) 
-            {
-                throw std::out_of_range("Index lenght cannot be greater than 6 digits!");
-            }
-
-            break;
-
-        } 
-        catch (const std::exception& e) 
-        {
-            std::cerr << "[ERROR] " << e.what() << " Try again." << std::endl;
-        }
-    }
-
-    return input;
-}
-
-Gender getGenderFromUser(void)
-{
-    std::string input;
-    Gender gnr;
-
-    while (true) 
-    {
-        std::cout << getPrintHeader() << "Gender (Male, Female, Default):";
-        std::getline(std::cin, input);
-
-        try 
-        {
-            gnr = stringToGender(input);
-            break;
-        } 
-        catch (const std::exception& e) 
-        {
-            std::cerr << "[ERROR] " << e.what() << " Try again." << std::endl;
-        }
-        
-    }
-
-    return gnr;
-}
-
-FieldOfStudy getFieldOfStudyFromUser(void)
-{
-    std::string input;
-    FieldOfStudy fieldOfStudy;
-
-    while (true) 
-    {
-        std::cout << getPrintHeader() << "Field of Study (";
-        for (const auto& entry : stringToFieldOfStudyMapping) {
-            std::cout << entry.first << ',';
-        }
-        std::cout << "): " << std::endl;
-        std::getline(std::cin, input);
-
-        try 
-        {
-            fieldOfStudy = stringToFieldOfStudy(input);
-            break;
-        } 
-        catch (const std::exception& e) 
-        {
-            std::cerr << "[ERROR] " << e.what() << " Try again." << std::endl;
-        }
-        
-    }
-
-    return fieldOfStudy;
-}
-
-subjects_t getSubjectsFromUser(void)
-{
-    std::string input;
-    subjects_t subjects;
-
-    while (true) 
-    {
-        std::cout << getPrintHeader() << "Subjects: (";
-        for (const auto& entry : stringToSubjectMapping) {
-            std::cout << entry.first << ',';
-        }
-        std::cout << ")" << std::endl << "Format: 'Philosophy; Algebra; Psychology;' :" << std::endl;
-        std::getline(std::cin, input);
-
-        try 
-        {
-            if (input.empty())
-            {
-                throw std::invalid_argument("Entered empty string");
-            }
-            subjects = stringToSubjects(input);
-            break;
-        } 
-        catch (const std::exception& e) 
-        {
-            std::cerr << "[ERROR] " << e.what() << " Try again." << std::endl;
-        }
-        
-    }
-
-    return subjects;
-}
-
-gradesToSubject_t getGradesFromUser(subjects_t subj)
-{
-    std::string input;
-    gradesToSubject_t gradesToSubject;
-    float grade;
-    std::set<float> validGrades = {2.0, 2.5, 3.0, 3.5, 4.0, 4.5, 5.0};
-
-    /* Iterate for entered subjects and add grades to list */
-    for(auto & subject : subj)
-    {
-        grades_t grades;
-        while(true)
-        {
-            std::cout << getPrintHeader() << "Enter grade for subject: " << subjectToString(subject) << std::endl;
-            std::cout << "Expected value from set: {2.0, 2.5, 3.0, 3.5, 4.0, 4.5, 5.0}" << std::endl;
-            std::cout << "Enter 'ESC' to stop adding grades for " << subjectToString(subject) << std::endl;
-
-            std::getline(std::cin, input);
-
-            if("ESC" == input) break;
-
-            try 
-            {
-                grade = std::stof(input);
-                if (validGrades.find(grade) == validGrades.end())
-                {
-                    throw std::out_of_range("Grade must be one of the given expected values.");
-                }
-                grades.push_back(std::stof(input));
-
-            } 
-            catch (const std::exception& e) 
-            {
-                std::cerr << "[ERROR] " << e.what() << " Try again." << std::endl;
-            }
-
-            std::cout << "Current grades for" << subjectToString(subject) << ": { ";
-            for( auto grade : grades )
-            {
-                std::cout << grade << ", ";
-            }
-            std::cout << " }" << std::endl;
-        }
-        gradesToSubject.insert({subject, grades});
-    }
-
-    return gradesToSubject;
-}

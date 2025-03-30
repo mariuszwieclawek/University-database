@@ -7,6 +7,7 @@
 #include <cctype>
 #include "EntityUtils.hpp"
 #include "EntityFactory.hpp"
+#include "UserInputHandler.hpp"
 
 
 #ifdef _WIN32
@@ -208,41 +209,17 @@ void CommandLineInterface::addEntityByUser(void) const
 
 void CommandLineInterface::addStudentByUser(void) const
 {
-    std::string input;
-    int indexNumber;
-    std::string name;
-    std::string lastname;
-    std::tm birthdate;
-    std::string address;
-    std::string pesel; 
-    Gender gnr;
-    FieldOfStudy fieldofstudy;
-    subjects_t subjects;
-    gradesToSubject_t grades;
     std::cout << "Please enter:" << std::endl;
-
-    indexNumber = getIndexFromUser();
-
-    std::cout << getPrintHeader() << "Name:";
-    std::getline(std::cin, name);
-
-    std::cout << getPrintHeader() << "Lastname:";
-    std::getline(std::cin, lastname);
-
-    birthdate = getBirthdateFromUser();
-
-    std::cout << getPrintHeader() << "Residential address:";
-    std::getline(std::cin >> std::ws, address);
-
-    pesel = getPeselFromUser();
-
-    gnr = getGenderFromUser();
-
-    fieldofstudy = getFieldOfStudyFromUser();
-
-    subjects = getSubjectsFromUser();
-
-    grades = getGradesFromUser(subjects);
+    unsigned int indexNumber = UserInputHandler::getIndexFromUser();
+    std::string name = UserInputHandler::getNameFromUser();
+    std::string lastname = UserInputHandler::getLastnameFromUser();
+    std::tm birthdate = UserInputHandler::getBirthdateFromUser();
+    std::string address = UserInputHandler::getAddressFromUser();
+    std::string pesel = UserInputHandler::getPeselFromUser();
+    Gender gnr = UserInputHandler::getGenderFromUser();
+    FieldOfStudy fieldofstudy = UserInputHandler::getFieldOfStudyFromUser();
+    subjects_t subjects = UserInputHandler::getSubjectsFromUser();
+    gradesToSubject_t grades = UserInputHandler::getGradesFromUser(subjects);
 
     std::unique_ptr<Entity> student = EntityFactory::createStudent(indexNumber, name, lastname, birthdate, address, pesel, gnr, fieldofstudy, subjects, grades);
     m_db.addEntity(std::move(student));
@@ -252,45 +229,16 @@ void CommandLineInterface::addStudentByUser(void) const
 
 void CommandLineInterface::addProfessorByUser(void) const
 {
-    std::string input;
-    int indexNumber;
-    EntityType entitytype;
-    std::string name;
-    std::string lastname;
-    std::tm birthdate;
-    std::string address;
-    std::string pesel; 
-    Gender gnr;
-    AcademicTitle acdtitle;
-    Department department;
     std::cout << "Please enter:" << std::endl;
-
-    indexNumber = getIndexFromUser();
-
-    entitytype = EntityType::Professor;
-
-    std::cout << "Name:";
-    std::getline(std::cin, name);
-
-    std::cout << "Lastname:";
-    std::getline(std::cin, lastname);
-
-    birthdate = getBirthdateFromUser();
-
-    std::cout << "Residential address:";
-    std::getline(std::cin >> std::ws, address);
-
-    pesel = getPeselFromUser();
-
-    gnr = getGenderFromUser();
-
-    std::cout << "Academic Title:";
-    std::getline(std::cin, input);
-    acdtitle = stringToAcademicTitle(input);
-
-    std::cout << "Department:";
-    std::getline(std::cin, input);
-    department = stringToDepartment(input);
+    unsigned int indexNumber = UserInputHandler::getIndexFromUser();
+    std::string name = UserInputHandler::getNameFromUser();
+    std::string lastname = UserInputHandler::getLastnameFromUser();
+    std::tm birthdate = UserInputHandler::getBirthdateFromUser();
+    std::string address = UserInputHandler::getAddressFromUser();
+    std::string pesel = UserInputHandler::getPeselFromUser();
+    Gender gnr = UserInputHandler::getGenderFromUser();
+    AcademicTitle acdtitle = UserInputHandler::getAcademicTitleFromUser();
+    Department department = UserInputHandler::getDepartmentFromUser();
 
     std::unique_ptr<Entity> professor = EntityFactory::createProfessor(indexNumber, name, lastname, birthdate, address, pesel, gnr, acdtitle, department);
     m_db.addEntity(std::move(professor));
@@ -322,74 +270,50 @@ void CommandLineInterface::modifyEntityByUser(void) const
     this->displayEntitiesAll();
     
     std::string pesel_input;
-    std::cout << "Enter the PESEL number of the entity you want to modify: ";
-    std::getline(std::cin, pesel_input);
+    std::unique_ptr<Entity> entity = nullptr;
+    
+    while (true) 
+    {
+        std::cout << "Enter the PESEL number of the entity you want to modify: ";
+        std::getline(std::cin, pesel_input);
 
-    std::unique_ptr<Entity> entity = m_db.findEntityByPesel(pesel_input);
+        try 
+        {
+            entity = m_db.findEntityByPesel(pesel_input);
+            break;
+
+        } 
+        catch (const std::exception& e) 
+        {
+            std::cerr << "[ERROR] " << e.what() << " Try again." << std::endl;
+        }
+    }
 
     /* Enter common entity parameters */
-    std::cout << "Actual data for entity:" << std::endl;
+    std::cout << getPrintHeader() << "Actual data for entity:" << std::endl;
     std::cout << entity->extendedInfoToString();
-    std::cout << "Modification started. Please enter new values:" << std::endl;
-    std::string input;
+    std::cout << getPrintHeader() << "Modification started. Please enter new values:" << std::endl;
 
-    std::cout << "Current Index number: " << entity->getIndex() << std::endl << "Enter new Index number or skip(Enter): ";
-    std::getline(std::cin, input);
-    if (!input.empty()) entity->setIndex(std::stoi(input));
-
-    std::cout << "Current Name: " << entity->getName() << std::endl << "Enter new Name or skip(Enter): ";
-    std::getline(std::cin, input);
-    if (!input.empty()) entity->setName(input);
-
-    std::cout << "Current Last name: " << entity->getLastname() << std::endl << "Enter new Last name or skip(Enter): ";
-    std::getline(std::cin, input);
-    if (!input.empty()) entity->setLastname(input);;
-
-    std::cout << "Current birthday date: " << TmToString(entity->getBirthdayDate(), "%d.%m.%Y") << std::endl << "Enter new Birthday date or skip(Enter): ";
-    std::getline(std::cin, input);
-    if (!input.empty()) entity->setBirthdayDate(stringToTm(input, "%d.%m.%Y"));
-
-    std::cout << "Current Address: " << entity->getAddress() << std::endl << "Enter new Address or skip(Enter): ";
-    std::getline(std::cin, input);
-    if (!input.empty()) entity->setAddress(input);
-
-    std::cout << "Current PESEL: " << entity->getPesel() << std::endl << "Enter new PESEL or skip(Enter): ";
-    std::getline(std::cin, input);
-    if (!input.empty()) entity->setPesel(input);
-
-    std::cout << "Current Gender: " << entity->getGender() << std::endl << "Enter new Gender or skip(Enter): ";
-    std::getline(std::cin, input);
-    if (!input.empty()) entity->setGender(stringToGender(input));
+    entity->setIndex(UserInputHandler::modifyIndexByUser(entity->getIndex()));
+    entity->setName(UserInputHandler::modifyNameByUser(entity->getName()));
+    entity->setLastname(UserInputHandler::modifyLastnameByUser(entity->getLastname()));
+    entity->setBirthdayDate(UserInputHandler::modifyBirthdateByUser(entity->getBirthdayDate()));
+    entity->setAddress(UserInputHandler::modifyAddressByUser(entity->getAddress()));
+    entity->setPesel(UserInputHandler::modifyPeselByUser(entity->getPesel()));
+    entity->setGender(UserInputHandler::modifyGenderByUser(entity->getGender()));
 
 
     /* Enter student specific parameters */
     if (auto studentPtr = dynamic_cast<Student*>(entity.get())) 
     {
-        std::cout << "Current Field of Study: " << fieldOfStudyToString(studentPtr->getFieldOfStudy()) << std::endl << "Enter new Field of Study or skip(Enter): ";
-        std::getline(std::cin, input);
-        if (!input.empty()) studentPtr->setFieldOfStudy(stringToFieldOfStudy(input));
-
-        std::cout << "Current Subjects:" << std::endl;
-        std::cout << studentPtr->showSubjects();
-        std::cout << "Enter new Subjects(format: 'Math; Computer Science; Physics') or skip(Enter): ";
-        std::getline(std::cin, input);
-        if (!input.empty()) studentPtr->setSubjects(stringToSubjects(input));
-    
-        std::cout << "Current Grades: " << std::endl;
-        std::cout << studentPtr->showGrades();
-        std::cout << "Enter new Grades(format: 'Math={2.5 3 4.5 2};Physics={3.5 5 3.5 4};' ) or skip(Enter): ";
-        std::getline(std::cin, input);
-        if (!input.empty()) studentPtr->setGrades(parseGrades(input));
+        studentPtr->setFieldOfStudy(UserInputHandler::modifyFieldOfStudyByUser(studentPtr->getFieldOfStudy()));
+        studentPtr->setSubjects(UserInputHandler::modifySubjectsByUser(studentPtr->getSubjects()));
+        studentPtr->setGrades(UserInputHandler::modifyGradesByUser(studentPtr->getSubjects(), studentPtr->getGrades()));
     }
     else if (auto professorPtr = dynamic_cast<Professor*>(entity.get())) /* Enter professor specific parameters */
     {
-        std::cout << "Current Academic Title: " << academicTitleToString(professorPtr->getAcademicTitle()) << std::endl << "Enter new Academic Title or skip(Enter): ";
-        std::getline(std::cin, input);
-        if (!input.empty()) professorPtr->setAcademicTitle(stringToAcademicTitle(input)); 
-
-        std::cout << "Current Department: " << departmentToString(professorPtr->getDepartment()) << std::endl << "Enter new Department or skip(Enter): ";
-        std::getline(std::cin, input);
-        if (!input.empty()) professorPtr->setDepartment(stringToDepartment(input));
+        professorPtr->setAcademicTitle(UserInputHandler::modifyAcademicTitleByUser(professorPtr->getAcademicTitle())); 
+        professorPtr->setDepartment(UserInputHandler::modifyDepartmentByUser(professorPtr->getDepartment()));
     }
     else
     {
@@ -398,7 +322,7 @@ void CommandLineInterface::modifyEntityByUser(void) const
 
     if(m_db.modifyEntityByPesel(pesel_input, std::move(entity)) != true)
     {
-        std::cout << "Nie znaleziono " << std::endl;
+        std::cout << "Nie udalo sie zmodyfikowac " << std::endl;
     }
 
     std::cout << "Zmodyfikowano!" << std::endl;

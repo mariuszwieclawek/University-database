@@ -18,6 +18,7 @@ set(CXX_SRCS
     src/Student.cpp
     src/UniversityDatabase.cpp
     src/EntityFactory.cpp
+    src/UserInputHandler.cpp
 )
 
 # Budowanie pliku wykonywalnego
